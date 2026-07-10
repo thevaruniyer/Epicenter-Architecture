@@ -1,0 +1,10 @@
+{
+  "name": "@epicenter/config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared TypeScript and ESLint configuration for the Epicenter monorepo",
+  "files": [
+    "tsconfig.base.json",
+    "eslint.base.cjs"
+  ]
+}

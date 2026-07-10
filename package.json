@@ -1,0 +1,17 @@
+{
+  "name": "epicenter-architecture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Epicenter Education — college-counselling platform (single-school pilot)",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @epicenter/web dev",
+    "build": "pnpm --filter @epicenter/web build",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test"
+  }
+}

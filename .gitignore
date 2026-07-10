@@ -29,6 +29,9 @@ blob-report/
 *.local.json
 .turbo/
 
+# graphify knowledge-graph index (regenerable local artifact; refreshed per stage)
+graphify-out/
+
 # OS / editor
 .DS_Store
 *.log

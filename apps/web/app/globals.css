@@ -1,0 +1,80 @@
+/* Satoshi — the single Epicenter typeface, loaded via Fontshare (Doctrine §9.1). */
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,900&display=swap");
+
+/* Tailwind CSS v4 baseline. */
+@import "tailwindcss";
+/* Animation utilities used by shadcn/ui primitives. */
+@import "tw-animate-css";
+
+/*
+ * v3-config bridge: Tailwind v4 no longer auto-detects a JS/TS config file, so we
+ * load the UI/UX Doctrine token block from tailwind.config.ts explicitly. This is
+ * Tailwind's own supported bridge — the §0 Doctrine tokens keep loading as written.
+ * (Do not add corePlugins/safelist/separator to that config — unsupported by the bridge.)
+ */
+@config "../tailwind.config.ts";
+
+/*
+ * shadcn/ui CSS variables, set to UI/UX Doctrine colours so every primitive
+ * inherits the Doctrine palette (Epicenter Yellow / paper / ink), not shadcn
+ * defaults. Values are HSL channels (space-separated), consumed as hsl(var(--x))
+ * by the token mappings in tailwind.config.ts. The pilot is light-only
+ * (Doctrine: color-scheme light); .dark mirrors light.
+ */
+@layer base {
+  :root {
+    --background: 0 0% 99%; /* #FDFDFD paper */
+    --foreground: 0 0% 0%; /* #000000 ink */
+    --card: 0 0% 100%; /* #FFFFFF surface-raised */
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 48 99% 47%; /* #EDC001 Epicenter Yellow */
+    --primary-foreground: 0 0% 0%; /* black text on yellow */
+    --secondary: 60 11% 96%; /* #F5F5F2 surface-muted */
+    --secondary-foreground: 0 0% 0%;
+    --muted: 60 20% 98%; /* #FAFAF7 surface-subtle */
+    --muted-foreground: 60 3% 37%; /* #5F5F59 ink-secondary */
+    --accent: 60 11% 96%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 5 51% 37%; /* #8D352E error ink */
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 13% 91%; /* #E8E8E2 border-soft */
+    --input: 51 11% 83%; /* #D7D7CF border-strong */
+    --ring: 48 99% 47%; /* yellow focus ring (Doctrine) */
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 0 0% 99%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 48 99% 47%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 60 11% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 60 20% 98%;
+    --muted-foreground: 60 3% 37%;
+    --accent: 60 11% 96%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 5 51% 37%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 13% 91%;
+    --input: 51 11% 83%;
+    --ring: 48 99% 47%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}

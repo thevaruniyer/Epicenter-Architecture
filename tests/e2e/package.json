@@ -1,0 +1,7 @@
+{
+  "name": "@epicenter/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Playwright end-to-end specs (one test per major screen/flow, per stage)",
+  "type": "module"
+}
