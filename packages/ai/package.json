@@ -1,0 +1,19 @@
+{
+  "name": "@epicenter/ai",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Gemini 2.5 Flash abstraction layer (lib/ai/*), server-side only, one file per feature",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@epicenter/config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}
