@@ -11,6 +11,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Satoshi (the single Epicenter typeface) is loaded via Fontshare in
+  // globals.css and applied through the `font-sans` body style — no second font.
   return (
     <html lang="en">
       <body>{children}</body>
