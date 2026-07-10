@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epicenter Education — Full Counsellor Flow Storyboard (PRD Order)</title>
+<style>
+  :root{
+    --bg:#F7F5F0; --panel:#FFFFFF; --ink:#292420; --ink-soft:#8A8378; --line:#E9E4DA;
+    --terracotta:#D8724C; --terracotta-dark:#BD5C39; --terracotta-soft:#FBEAE0;
+    --rose:#E7C7BE; --rose-ink:#8C4232; --teal:#7FA6AC;
+    --dark:#2A2521; --dark-soft:#3B342E; --dark-line:#4B443C;
+    --ok:#4C7A54; --ok-bg:#E7F0E5; --warn:#A97327; --warn-bg:#F7ECDA;
+    --danger:#AA4437; --danger-bg:#F8E7E3; --blue:#476386; --blue-bg:#E9EEF5; --purple:#6C4A8C; --purple-bg:#EFE7F5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink);}
+
+  .doc-header{padding:48px 40px 30px; max-width:920px;}
+  .doc-header .kicker{color:var(--terracotta-dark); font-weight:700; font-size:12.5px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;}
+  .doc-header h1{font-size:28px; margin:0 0 12px;}
+  .doc-header p{color:var(--ink-soft); font-size:14.5px; line-height:1.6; max-width:780px;}
+  .notice{background:#fff; border:1px solid var(--line); border-left:4px solid var(--terracotta); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--ink); margin-top:18px; max-width:780px;}
+  .toc{position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:14px 40px; z-index:50; display:flex; gap:16px; flex-wrap:wrap;}
+  .toc a{color:var(--ink-soft); text-decoration:none; font-size:12.3px; font-weight:650;}
+  .toc a:hover{color:var(--terracotta-dark);}
+
+  .flow-section{padding:44px 40px 6px; max-width:1600px;}
+  .flow-eyebrow{color:var(--terracotta-dark); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;}
+  .flow-title{font-size:22px; margin:0 0 8px;}
+  .flow-desc{color:var(--ink-soft); font-size:13.6px; max-width:760px; margin-bottom:10px; line-height:1.55;}
+  .flow-prd-quote{background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 16px; font-size:12.6px; color:var(--ink-soft); font-style:italic; max-width:760px; margin-bottom:22px;}
+  .sub-label{font-size:12.3px; font-weight:700; color:var(--ink); margin:6px 0 12px;}
+  .time-jump{display:flex; align-items:center; gap:12px; color:var(--ink-soft); font-size:12px; font-weight:650; margin:6px 0 18px; max-width:400px;}
+  .time-jump::before, .time-jump::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  .flow-row{display:flex; align-items:flex-start; gap:0; overflow-x:auto; padding-bottom:24px;}
+  .flow-step{display:flex; flex-direction:column; align-items:center; flex:none; width:480px;}
+  .step-badge{align-self:flex-start; background:var(--dark); color:#fff; font-size:11px; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:10px;}
+  .flow-caption{max-width:460px; margin-top:14px;}
+  .flow-caption .cap-text{font-size:13px; line-height:1.5; color:var(--ink);}
+  .flow-caption .cap-cite{font-size:11px; color:var(--ink-soft); font-style:italic; margin-top:5px;}
+  .flow-arrow{flex:none; width:56px; display:flex; align-items:center; justify-content:center; padding-top:150px; color:#C9C2B4; font-size:26px;}
+
+  .frame-wrapper{width:480px; height:307px; border-radius:14px; border:1px solid var(--line); overflow:hidden; position:relative; background:#fff; box-shadow:0 6px 18px rgba(30,26,22,0.06);}
+  .frame-canvas{width:1000px; height:640px; transform:scale(0.48); transform-origin:top left; position:relative;}
+
+  .f-topbar{position:absolute; top:0; left:0; right:0; height:56px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:16px; padding:0 22px;}
+  .f-logo{width:32px;height:32px;border-radius:9px; background:var(--dark); display:flex; align-items:center; justify-content:center;}
+  .f-logo span{width:11px;height:11px;border-radius:50%; background:var(--terracotta); display:block;}
+  .f-search{flex:1; max-width:420px; margin:0 auto; background:#F1EEE7; border-radius:20px; padding:9px 16px; color:var(--ink-soft); font-size:13px;}
+  .f-icons{display:flex; gap:8px; margin-left:auto;}
+  .f-icon{width:32px;height:32px; border:1px solid var(--line); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink-soft);}
+
+  .f-sidebar{position:absolute; top:56px; left:0; bottom:0; width:168px; padding:18px 12px; background:var(--bg);}
+  .f-sidegroup{display:flex; flex-direction:column; gap:7px; margin-bottom:18px;}
+  .f-sidebtn{background:#fff; border:1px solid var(--line); border-radius:9px; padding:9px 12px; font-size:12px; font-weight:600; color:var(--ink);}
+  .f-sidebtn.active{background:#EAE6DC; border-color:#d9d2c3;}
+
+  .f-main{position:absolute; top:56px; left:168px; right:0; bottom:0; padding:22px 26px; overflow:hidden;}
+  .f-page-title{font-size:20px; margin:0 0 4px;}
+  .f-page-sub{color:var(--ink-soft); font-size:12px; margin:0 0 16px;}
+
+  .f-dash-cols{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:14px;}
+  .f-hero{background:var(--terracotta); color:#fff; border-radius:16px; padding:20px; margin-bottom:12px;}
+  .f-hero h3{font-size:18px; margin:0 0 30px;}
+  .f-hero-btn{background:#fff; color:var(--terracotta-dark); border-radius:20px; padding:8px 14px; font-size:11.5px; font-weight:700;}
+  .f-teal{background:var(--teal); color:#fff; border-radius:16px; padding:18px; min-height:110px;}
+  .f-teal .n{font-size:13px; font-weight:700; margin-bottom:4px;}
+  .f-card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px;}
+  .f-card h4{font-size:14.5px; margin:0 0 10px;}
+  .f-todo{border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-size:11.8px; font-weight:650; margin-bottom:8px;}
+  .f-todo .sub{font-weight:400; color:var(--ink-soft); font-size:10.5px; margin-top:2px;}
+  .f-checkin{background:var(--rose); border-radius:13px; padding:12px 13px; margin-bottom:8px;}
+  .f-checkin .nm{color:var(--rose-ink); font-weight:750; font-size:13.5px;}
+  .f-checkin .rs{color:var(--rose-ink); opacity:0.85; font-size:10.8px; margin:2px 0 8px;}
+  .f-checkin .go{background:rgba(255,255,255,0.55); border-radius:16px; padding:5px 10px; font-size:10.3px; font-weight:650; color:var(--rose-ink); display:flex; justify-content:space-between;}
+
+  .f-search-pill{background:#F1EEE7; border-radius:18px; padding:9px 14px; font-size:12.5px; color:var(--ink-soft); max-width:280px; margin-bottom:16px;}
+  .f-student-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .f-student-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:15px; position:relative;}
+  .f-student-card .nm{color:var(--rose-ink); font-weight:750; font-size:14px;}
+  .f-student-card .gr{color:var(--ink-soft); font-size:11px; margin:2px 0 10px;}
+  .f-student-card .go{font-size:10.5px; color:var(--ink-soft); font-weight:650;}
+  .f-student-card.hl{border-color:var(--terracotta); box-shadow:0 0 0 3px var(--terracotta-soft);}
+  .f-student-card .new-tag{position:absolute; top:12px; right:12px; background:var(--terracotta-soft); color:var(--terracotta-dark); font-size:8.5px; font-weight:750; padding:2px 7px; border-radius:10px;}
+  .f-checkbox{position:absolute; top:14px; right:14px; width:17px; height:17px; border-radius:5px; border:2px solid var(--line); background:#fff;}
+  .f-checkbox.checked{background:var(--terracotta); border-color:var(--terracotta); position:absolute;}
+  .f-checkbox.checked::after{content:"✓"; color:#fff; font-size:11px; position:absolute; top:-1px; left:2.5px;}
+
+  .f-ws-header h2{font-size:19px; margin:0;}
+  .f-ws-header .sub{color:var(--ink-soft); font-size:11.5px; margin-top:2px;}
+  .f-tabs{display:flex; gap:6px; margin:14px 0 16px;}
+  .f-tab{background:#fff; border:1px solid var(--line); border-radius:16px; padding:6px 13px; font-size:11px; font-weight:650; color:var(--ink-soft);}
+  .f-tab.active{background:var(--dark); color:#fff; border-color:var(--dark);}
+
+  .f-add-btn{background:var(--dark); color:#fff; border-radius:16px; padding:8px 14px; font-size:11.3px; font-weight:650; display:inline-block; margin-bottom:14px;}
+  .f-add-btn.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-link-btn{background:#fff; border:1px solid var(--line); color:var(--ink); border-radius:16px; padding:7px 13px; font-size:10.8px; font-weight:650; display:inline-block;}
+
+  .f-note{background:#fff; border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-bottom:10px;}
+  .f-note .head{display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+  .f-note .dt{font-weight:700; font-size:12px;}
+  .f-note .ty{color:var(--ink-soft); font-size:10.8px;}
+  .f-vis{margin-left:auto; font-size:9.5px; font-weight:700; padding:3px 9px; border-radius:16px;}
+  .f-vis.shared{background:var(--blue-bg); color:var(--blue);}
+  .f-vis.private{background:var(--warn-bg); color:var(--warn);}
+  .f-note .txt{font-size:11.8px; line-height:1.45;}
+  .f-note.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+
+  .f-milestone{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-milestone.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-m-top{display:flex; align-items:center; gap:10px;}
+  .f-m-title{font-weight:650; font-size:12.6px; flex:1;}
+  .f-m-bar{width:80px; height:6px; background:#EDE9E0; border-radius:4px; overflow:hidden;}
+  .f-m-fill{height:100%; background:var(--terracotta);}
+  .f-m-pct{font-size:10.5px; color:var(--ink-soft); width:28px; text-align:right;}
+  .f-task-list{margin-top:10px; padding-top:10px; border-top:1px solid var(--line);}
+  .f-task{display:flex; align-items:center; gap:8px; padding:5px 0; font-size:11.5px;}
+  .f-task .dot{width:7px;height:7px;border-radius:50%; flex:none;}
+  .f-task .dot.complete{background:var(--ok);} .f-task .dot.progress{background:var(--warn);} .f-task .dot.pending{background:#cfc9bc;}
+  .f-task .st{margin-left:auto; color:var(--ink-soft); font-size:10px;}
+  .f-task.hl{background:var(--terracotta-soft); border-radius:8px; padding:5px 8px; margin:2px -8px;}
+
+  .f-uni{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-uni.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-uni-top{display:flex; align-items:center; gap:8px;}
+  .f-uni-name{font-weight:750; font-size:13px; flex:1;}
+  .f-uni-sub{color:var(--ink-soft); font-size:10.8px; margin-top:2px;}
+  .f-pill{display:inline-block; padding:3px 9px; border-radius:16px; font-size:9.8px; font-weight:700;}
+  .f-pill.ok{background:var(--ok-bg); color:var(--ok);} .f-pill.warn{background:var(--warn-bg); color:var(--warn);}
+  .f-pill.blue{background:var(--blue-bg); color:var(--blue);} .f-pill.purple{background:var(--purple-bg); color:var(--purple);}
+  .f-pill.gray{background:#EDEAE3; color:var(--ink-soft);} .f-pill.danger{background:var(--danger-bg); color:var(--danger);}
+  .f-convert-btn{background:var(--terracotta); color:#fff; border-radius:16px; padding:7px 13px; font-size:10.8px; font-weight:650; margin-top:9px; display:inline-block;}
+
+  .f-doc-row{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:11.8px;}
+  .f-doc-row.hl{background:var(--terracotta-soft); border-radius:8px; padding:11px 10px; margin:0 -10px; border-bottom:none;}
+  .f-doc-preview{background:#F1EEE7; border-radius:10px; padding:14px; margin-bottom:12px;}
+  .f-doc-preview .ln{height:6px; background:#dcd6c9; border-radius:3px; margin-bottom:6px;}
+  .f-doc-preview .ln:nth-child(2){width:80%;} .f-doc-preview .ln:nth-child(3){width:60%;}
+
+  .f-team-row{display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--line);}
+  .f-team-row .nm{font-weight:650; font-size:12.6px; width:130px;}
+  .f-team-row .bar{flex:1; height:8px; background:#EDE9E0; border-radius:5px; overflow:hidden;}
+  .f-team-row .bar-fill{height:100%; background:var(--terracotta);}
+  .f-team-row .ct{width:26px; text-align:right; font-size:11.5px; color:var(--ink-soft);}
+  .f-team-row.hl{background:var(--terracotta-soft); border-radius:8px; padding:11px 10px; margin:0 -10px; border-bottom:none;}
+
+  .f-dim{position:absolute; top:56px; left:168px; right:0; bottom:0; background:rgba(30,26,22,0.32);}
+  .f-panel{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:300px; background:var(--dark); border-radius:16px; padding:18px 18px 16px; color:#fff; box-shadow:0 14px 34px rgba(0,0,0,0.3);}
+  .f-panel h4{font-size:14.5px; margin:0 0 12px;}
+  .f-panel-row{display:flex; gap:7px; margin-bottom:10px;}
+  .f-panel-pill{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:16px; padding:7px 10px; font-size:10.3px; color:#ddd6cc; flex:1; text-align:center;}
+  .f-seg{display:flex; background:var(--dark-soft); border-radius:16px; padding:3px; margin-bottom:11px;}
+  .f-seg-btn{flex:1; text-align:center; font-size:10.3px; font-weight:650; padding:7px 4px; border-radius:13px; color:#c9c1b5;}
+  .f-seg-btn.active{background:#fff; color:var(--dark);}
+  .f-seg-btn.active.priv{background:var(--warn); color:#fff;}
+  .f-panel-field{margin-bottom:10px;}
+  .f-panel-field label{display:block; font-size:9.8px; color:#a79f92; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px;}
+  .f-panel-field .v{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:9px; padding:8px 10px; font-size:11.5px; color:#fff;}
+  .f-panel-desc{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:10px; padding:10px; font-size:11px; color:#ddd6cc; min-height:52px; margin-bottom:12px; line-height:1.4;}
+  .f-panel-save{background:var(--terracotta); color:#fff; border-radius:12px; padding:9px; font-size:11.5px; font-weight:700; text-align:center;}
+  .f-confirm-field{display:flex; justify-content:space-between; font-size:10.8px; padding:6px 0; border-bottom:1px solid var(--dark-line); color:#ddd6cc;}
+  .f-confirm-field b{color:#fff;}
+  .f-confirm-note{font-size:10px; color:#a79f92; margin:10px 0 12px;}
+  .f-checklist-row{display:flex; align-items:center; gap:8px; font-size:11px; color:#ddd6cc; padding:5px 0;}
+  .f-checklist-row .cb{width:14px;height:14px;border-radius:4px; border:2px solid var(--dark-line); flex:none;}
+  .f-checklist-row .cb.on{background:var(--terracotta); border-color:var(--terracotta);}
+
+  .closing{padding:30px 40px 70px; max-width:900px;}
+  .closing h3{font-size:17px; margin-bottom:10px;}
+  .closing p{color:var(--ink-soft); font-size:13.4px; line-height:1.6;}
+  .uc-skip{background:#fff; border:1px dashed var(--line); border-radius:12px; padding:16px 20px; margin-top:16px;}
+  .uc-skip .lbl{font-weight:700; font-size:13px; margin-bottom:6px;}
+
+  .new-scope-banner{background:var(--blue-bg); border:1px solid #cddaea; border-radius:10px; padding:12px 16px; font-size:12.6px; color:#2f4a6b; margin-bottom:22px; max-width:760px;}
+
+  .f-cal-topctrl{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .f-cal-seg{display:flex; background:#fff; border:1px solid var(--line); border-radius:16px; padding:3px;}
+  .f-cal-seg-btn{padding:6px 13px; font-size:10.8px; font-weight:650; color:var(--ink-soft); border-radius:13px;}
+  .f-cal-seg-btn.active{background:var(--dark); color:#fff;}
+  .f-cal-nav{display:flex; align-items:center; gap:10px; font-size:12px; font-weight:650; margin-left:8px;}
+  .f-cal-nav .arrow{color:var(--ink-soft); font-size:13px;}
+  .f-gcal-link{margin-left:auto; font-size:10.8px; color:var(--blue); font-weight:650;}
+
+  .f-cal-grid{display:grid; grid-template-columns:repeat(7,1fr); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .f-cal-weekday{text-align:center; font-size:9.3px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.3px; padding:7px 0; background:#F1EEE7; border-bottom:1px solid var(--line);}
+  .f-cal-day{border-right:1px solid var(--line); border-bottom:1px solid var(--line); min-height:58px; padding:5px 6px; background:#fff;}
+  .f-cal-daynum{font-size:10px; color:var(--ink-soft); margin-bottom:3px;}
+  .f-cal-chip{font-size:8.3px; font-weight:650; padding:2px 6px; border-radius:8px; display:inline-block; margin-top:2px;}
+  .f-cal-chip.native{background:var(--terracotta-soft); color:var(--terracotta-dark);}
+  .f-cal-chip.native.blue{background:var(--blue-bg); color:var(--blue);}
+  .f-cal-chip.google{background:#fff; border:1px solid var(--blue); color:var(--blue);}
+  .g-dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:conic-gradient(#4285F4 0 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%); margin-right:3px; vertical-align:middle;}
+
+  .f-week-grid{display:grid; grid-template-columns:repeat(7,1fr); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .f-week-col{border-right:1px solid var(--line); padding:8px 7px; min-height:180px; background:#fff;}
+  .f-week-col:last-child{border-right:none;}
+  .f-week-head{text-align:center; font-size:9.8px; font-weight:700; color:var(--ink); padding-bottom:6px; border-bottom:1px solid var(--line); margin-bottom:7px;}
+  .f-week-head .d{color:var(--ink-soft); font-weight:500; font-size:8.8px; display:block;}
+  .f-week-chip{font-size:9px; padding:5px 7px; border-radius:7px; margin-bottom:5px; line-height:1.3;}
+  .f-week-chip.native{background:var(--terracotta-soft); color:var(--terracotta-dark);}
+  .f-week-chip.native.blue{background:var(--blue-bg); color:var(--blue);}
+  .f-week-chip.google{background:#fff; border:1px solid var(--blue); color:var(--blue);}
+
+  .f-gicon{width:20px;height:20px;border-radius:50%; background:conic-gradient(#4285F4 0 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%); display:inline-block; margin-right:8px; vertical-align:middle;}
+  .f-connect-row{display:flex; align-items:center; font-size:12.5px; font-weight:650; margin-bottom:10px;}
+  .f-toggle-row{display:flex; align-items:center; justify-content:space-between; font-size:10.8px; color:#ddd6cc; padding:8px 0; border-bottom:1px solid var(--dark-line);}
+  .f-toggle{width:28px; height:16px; border-radius:10px; background:var(--terracotta); position:relative; flex:none;}
+  .f-toggle::after{content:""; width:12px; height:12px; border-radius:50%; background:#fff; position:absolute; top:2px; right:2px;}
+  .f-toggle.off{background:var(--dark-line);}
+  .f-toggle.off::after{left:2px; right:auto;}
+
+  /* ---------- v2 additions: pending-review states, evidence visuals, forms, shortlist priorities ---------- */
+  .f-pill.review{background:#E4EEEF; color:#2F5A61;}
+  .f-task .dot.review{background:var(--teal);}
+  .f-evidence-thumb{background:linear-gradient(135deg, var(--terracotta-soft), var(--rose)); border-radius:10px; height:88px; display:flex; align-items:center; justify-content:center; font-size:32px; margin-bottom:8px; border:1px solid var(--line);}
+  .f-evidence-filename{font-size:10px; color:var(--ink-soft); margin-bottom:10px; text-align:center;}
+  .f-confirm-banner{background:var(--teal); color:#fff; border-radius:10px; padding:9px 12px; font-size:11px; font-weight:650; margin-bottom:10px; display:flex; align-items:center; gap:7px;}
+  .f-pref-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-pref-card h4{font-size:13.5px; margin:0 0 9px;}
+  .f-pref-tag{display:inline-block; background:var(--terracotta-soft); color:var(--terracotta-dark); font-size:9.8px; font-weight:650; padding:4px 10px; border-radius:14px; margin:0 5px 6px 0;}
+  .f-pref-note-sm{font-size:10.3px; color:var(--ink-soft); margin-top:6px; line-height:1.4;}
+  .f-ms-icon{width:16px;height:16px;border-radius:4px; background:#5C2D91; display:inline-block; margin-right:7px; vertical-align:middle;}
+  .f-form-embed{background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:10px;}
+  .f-form-embed .fh{display:flex; align-items:center; font-size:11.8px; font-weight:700; color:#5C2D91; margin-bottom:10px;}
+  .f-form-q{background:#F7F5F0; border-radius:8px; padding:9px 11px; font-size:10.8px; margin-bottom:7px;}
+  .f-form-q .ql{font-weight:650; margin-bottom:5px; color:var(--ink);}
+  .f-form-choice{display:flex; align-items:center; gap:6px; font-size:10.3px; color:var(--ink-soft); padding:3px 0;}
+  .f-form-choice .rb{width:11px;height:11px;border-radius:50%; border:2px solid var(--line); flex:none;}
+  .f-form-choice .rb.on{border-color:var(--terracotta); background:radial-gradient(circle, var(--terracotta) 40%, transparent 46%);}
+  .f-form-row{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:11.8px;}
+  .f-form-row.hl{background:var(--terracotta-soft); border-radius:8px; padding:11px 10px; margin:0 -10px; border-bottom:none;}
+
+  /* ---------- v3 additions: AI visual marker + onboarding wizard shell ---------- */
+  :root{}
+  .ai-badge{display:inline-flex; align-items:center; gap:4px; background:#EFEBFC; color:#5B4FC7; font-size:9px; font-weight:750; padding:3px 8px; border-radius:12px;}
+  .ai-badge::before{content:"\2728";}
+  .ai-note{background:#EFEBFC; border:1px solid #D9D1F5; border-radius:8px; padding:8px 10px; font-size:10px; color:#5B4FC7; margin-bottom:8px; display:flex; align-items:flex-start; gap:6px;}
+  .ai-note .lbl{font-weight:750; flex:none;}
+  .ai-inline{color:#5B4FC7; font-weight:750;}
+  .f-dismiss-btn{background:#fff; border:1px solid var(--line); color:var(--ink-soft); border-radius:14px; padding:5px 10px; font-size:9.5px; font-weight:650; display:inline-block;}
+  .f-risk-card{background:#FDECE9; border:1px solid #f3c9c1; border-radius:14px; padding:12px 14px; margin-bottom:10px;}
+  .f-risk-card .lbl{color:#A33F2E; font-weight:750; font-size:11.5px; margin-bottom:4px;}
+  .f-stalled{outline:2px dashed #C77B3E !important;}
+  .f-digest-card{background:#fff; border:1px solid #D9D1F5; border-left:4px solid #6E62E5; border-radius:14px; padding:14px 16px; margin-bottom:14px;}
+  .f-digest-card .hd{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .f-digest-card .txt{font-size:11.5px; line-height:1.5; color:var(--ink);}
+  .onb-shell{position:absolute; inset:0; background:#fff; display:flex; flex-direction:column; align-items:center; padding:36px 40px;}
+  .onb-progress{width:360px; height:6px; background:#EDE9E0; border-radius:4px; overflow:hidden; margin-bottom:28px;}
+  .onb-progress-fill{height:100%; background:var(--terracotta);}
+  .onb-step-label{font-size:11px; color:var(--ink-soft); font-weight:650; margin-bottom:10px;}
+  .onb-question{font-size:19px; font-weight:700; margin-bottom:18px; text-align:center; max-width:380px;}
+  .onb-input{width:340px; background:#F7F5F0; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--ink); margin-bottom:16px;}
+  .onb-chipwrap{width:340px; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+  .onb-chip{background:var(--terracotta-soft); color:var(--terracotta-dark); font-size:10.5px; font-weight:650; padding:5px 11px; border-radius:14px; display:inline-flex; align-items:center; gap:5px;}
+  .onb-chip .x{opacity:0.6;}
+  .onb-nav{width:340px; display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+  .onb-btn{background:var(--terracotta); color:#fff; border-radius:10px; padding:10px 22px; font-size:12px; font-weight:700;}
+  .onb-skip{color:var(--ink-soft); font-size:11px; font-weight:650;}
+  .onb-back{color:var(--ink-soft); font-size:12px; font-weight:650;}
+  .onb-confirm-row{width:340px; background:#F7F5F0; border-radius:10px; padding:10px 12px; font-size:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="kicker">Epicenter Education · Counsellor Flows</div>
+  <h1>Full Counsellor Flow Storyboard — In PRD Order</h1>
+  <p>Every use case from the PRD's Use Cases section (§4), in the order they're written, told as one continuous storyboard following the same small caseload of students. Static screens only — nothing here is clickable or functional. Counsellor view only, as scoped.</p>
+  <div class="notice">📌 Structure: one section per PRD use case, in the exact order listed in the PRD. Read each row left to right; the caption under a frame explains the action that produces the next frame.</div>
+  <div class="notice">🔄 v2 update: task and application statuses now follow a tick-then-confirm pattern; profiles gained Extracurriculars &amp; Achievements and Test Scores &amp; Academic History; evidence uploads show a real thumbnail; shortlist entries pair with a student priorities card (not an automated suggester); pop-ups now open centered; and a new Forms feature (UC10) was added using a Microsoft Forms embed.</div>
+  <div class="notice">✨ v3 update: AI features from `AI_Integrations_Spec_v1.md` and `AI_Integration_Flow_Plan_v1.md` are now woven directly into UC1 (Dashboard digest, note clean-up), UC2 (category-aware nudge, stalled-task alert), UC3 (risk flagging), UC5 (requirement checklist extraction), UC6 (reassignment handoff snapshot), UC7 (essay feedback first pass), and UC9 (meeting prep briefing) — look for the small <span class="ai-badge">AI</span> badge.</div>
+</div>
+
+<div class="toc">
+  <a href="#uc1">UC1 · Onboarding</a>
+  <a href="#uc2">UC2 · Summer Roadmap</a>
+  <a href="#uc3">UC3 · Grade Checkpoint</a>
+  <a href="#uc4">UC4 · Building a Shortlist</a>
+  <a href="#uc5">UC5 · Promote to Application</a>
+  <a href="#uc6">UC6 · Reassigning a Caseload</a>
+  <a href="#uc7">UC7 · Document Handoff</a>
+  <a href="#uc8">UC8 · Pilot Rollout</a>
+  <a href="#uc9">UC9 · Calendar &amp; Google Sync <span style="color:var(--blue);">(new)</span></a>
+  <a href="#uc10">UC10 · Creating a Form <span style="color:var(--blue);">(new)</span></a>
+</div>
+
+<!-- ============ UC1 ============ -->
+<div class="flow-section" id="uc1">
+  <div class="flow-eyebrow">PRD §4 · Use Case 1</div>
+  <h2 class="flow-title">Onboarding a Grade 11 Student</h2>
+  <p class="flow-prd-quote">"Priya creates Ananya's profile at the start of Grade 11 with subjects and base info. Rohan (assigned counsellor) fills in interests, ECs, preferences, and private notes after the discovery meeting."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Dashboard, with AI digest</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn active">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Dashboard</div>
+          <div class="f-page-sub">Good morning, Rohan</div>
+          <div class="f-digest-card">
+            <div class="hd"><span class="ai-badge">AI</span></div>
+            <div class="txt">You have <b>2 items</b> pending your confirmation, <b>3 deadlines</b> in the next 7 days, and <b>1 student</b> you haven't checked in on in 2+ weeks.</div>
+          </div>
+          <div class="f-dash-cols">
+            <div>
+              <div class="f-hero"><h3>34 students<br>in your caseload</h3><div class="f-hero-btn">Go to Students →</div></div>
+              <div class="f-teal"><div class="n">Applications Centre</div><div style="font-size:11px; opacity:0.9;">6 active applications this season</div></div>
+            </div>
+            <div>
+              <div class="f-todo"><div>Confirm Kabir's SAT registration</div><div class="sub">Pending Review · 1 day</div></div>
+              <div class="f-todo"><div>Review Ananya's essay draft</div><div class="sub">Documents · Due Fri</div></div>
+            </div>
+            <div>
+              <div class="f-checkin"><div class="nm">Meera Iyer</div><div class="rs">No check-in in 16 days</div><div class="go">Go to Student <span>→</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Before opening any single student, Rohan sees a plain-language summary of what actually needs his attention today — a live LLM call phrasing real task/deadline facts, not a generic greeting.</div><div class="cap-cite">v3 addition — Daily Triage Digest (AI Integration Flow Plan §4.5)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · New profile appears</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Students</div>
+          <div class="f-search-pill">Search Students</div>
+          <div class="f-student-grid">
+            <div class="f-student-card hl"><span class="new-tag">NEW</span><div class="nm">Kabir Singh</div><div class="gr">Grade 11</div><div class="go">Go to Student →</div></div>
+            <div class="f-student-card"><div class="nm">Ananya Kapoor</div><div class="gr">Grade 12</div><div class="go">Go to Student →</div></div>
+            <div class="f-student-card"><div class="nm">Meera Iyer</div><div class="gr">Grade 12</div><div class="go">Go to Student →</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The School Administrator has just created Kabir's record with his subjects and base info. Rohan, his assigned counsellor, opens it for the first time.</div><div class="cap-cite">PRD §4 UC1 — profile creation is an Administrator step; the counsellor's work starts here</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Sparse Overview</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11 · Assigned to Rohan Mehta</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-card" style="margin-bottom:10px;"><h4>Profile Completion</h4><div style="font-size:20px; font-weight:750; color:var(--warn);">20%</div></div>
+          <div class="f-link-btn hl">Edit Profile</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Beyond subjects and base info, the profile is mostly empty. Rohan taps Edit Profile to fill it in after their first meeting.</div><div class="cap-cite">PRD §4 UC1 — interests, ECs, preferences still to be recorded</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Edit Profile</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Edit Profile</h4>
+          <div class="f-panel-field"><label>Intended Major</label><div class="v">Computer Science</div></div>
+          <div class="f-panel-field"><label>Preferred Countries</label><div class="v">United Kingdom, Canada</div></div>
+          <div class="f-panel-field"><label>Career Interest</label><div class="v">Software engineering / entrepreneurship</div></div>
+          <div class="f-panel-field"><label>Testing Plan</label><div class="v">SAT — planned for December</div></div>
+          <div class="f-panel-field"><label>Extracurriculars &amp; Achievements</label><div class="v">Robotics club (Team Lead) · School debate team · Regional Math Olympiad qualifier</div></div>
+          <div class="f-panel-field"><label>Test Scores &amp; Academic History</label><div class="v">PSAT: 1350 (Oct) · No SAT/ACT sat yet</div></div>
+          <div class="f-panel-save">Save Profile</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan records what came up in the discovery meeting: intended major, preferred countries, career interest, testing plans — plus two new fields for a fuller picture, extracurriculars/achievements and test scores/academic history.</div><div class="cap-cite">PRD §4 UC1; v2 addition — expanded profile fields for a more holistic view</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Profile updated</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11 · Computer Science · UK, Canada</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-card" style="margin-bottom:10px;"><h4>Profile Completion</h4><div style="font-size:20px; font-weight:750; color:var(--ok);">70%</div></div>
+          <div class="f-card"><h4>Extracurriculars &amp; Test Scores</h4><div class="f-pref-note-sm"><b>Extracurriculars:</b> Robotics club (Lead), debate team, Math Olympiad qualifier<br><b>Test Scores:</b> PSAT 1350 (Oct) · SAT planned Dec</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The profile now carries real signal, including the fuller extracurricular and testing picture — enough for the shortlist and roadmap work that follows over the year.</div><div class="cap-cite">PRD §4 UC1 — "This creates the student workspace, the central record of the counselling journey"; v2 addition</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 6 · Drafting raw notes</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel" style="width:320px;">
+          <h4>+ New Meeting Note</h4>
+          <div class="f-panel-desc" style="min-height:70px;">talked abt CS interest. also said want uk canada. seemed pretty set on it tbh, mentioned imperial too but thats more the parents tbh need to manage that gently</div>
+          <div class="f-panel-row"><div class="f-panel-pill">Clean Up with AI</div></div>
+          <div class="f-panel-save">Save Note</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan types the session up quickly, in whatever order it comes out — same shorthand he'd use in a notes app. He taps "Clean Up with AI" before saving.</div><div class="cap-cite">v3 addition — AI Meeting Note Clean-Up (AI Integration Flow Plan §4.1)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 7 · Cleaned up, ready to save</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel" style="width:320px;">
+          <h4>+ New Meeting Note</h4>
+          <div class="ai-note"><span class="lbl">✨ AI</span><span>Cleaned up — Undo</span></div>
+          <div class="f-panel-desc" style="min-height:70px;">Strong interest in Computer Science confirmed; shortlist to focus on UK + Canada. Parents pushing hard for Imperial — manage expectations gently over the year.</div>
+          <div class="f-panel-save">Save Note</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The raw text is replaced in place by the cleaned version — still editable, with Undo available. Rohan will actually save this as two separate notes (one shared, one private); shown here as one box for the clean-up step itself.</div><div class="cap-cite">v3 addition — preview-then-approve workflow, nothing saved until Rohan taps Save</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 8 · Session logged</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab active">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-note"><div class="head"><div class="dt">Sep 10</div><div class="ty">Discovery Session</div><span class="f-vis shared">👁 Shared</span><span class="ai-badge" style="margin-left:6px;">AI</span></div><div class="txt">Strong interest in Computer Science confirmed; shortlist to focus on UK + Canada.</div></div>
+          <div class="f-note hl"><div class="head"><div class="dt">Sep 10</div><div class="ty">Discovery Session</div><span class="f-vis private">🔒 Counsellor Only</span><span class="ai-badge" style="margin-left:6px;">AI</span></div><div class="txt">Parents pushing hard for Imperial — manage expectations gently over the year.</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan logs the session as two separate notes — one he'll share with Kabir, one observation kept counsellor-only from day one. The small AI badge is permanent — it marks these as clean-up-assisted even after saving, not just "pending review."</div><div class="cap-cite">PRD §4 UC1 — "shared meeting notes... and private counsellor notes, visible only to authorised counsellors"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC2 ============ -->
+<div class="flow-section" id="uc2">
+  <div class="flow-eyebrow">PRD §4 · Use Case 2</div>
+  <h2 class="flow-title">Assigning a Summer Roadmap to a Full Cohort</h2>
+  <p class="flow-prd-quote">"Rohan duplicates the standard summer roadmap template and bulk-assigns it to all 35 of his active students at once, rather than building each one individually."</p>
+  <div class="sub-label">Part A — Assigning the template</div>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Select students</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Students</div>
+          <div class="f-search-pill">Search Students</div>
+          <div class="f-student-grid">
+            <div class="f-student-card hl"><div class="f-checkbox checked"></div><div class="nm">Kabir Singh</div><div class="gr">Grade 11</div><div class="go">Go to Student →</div></div>
+            <div class="f-student-card hl"><div class="f-checkbox checked"></div><div class="nm">Vivaan Reddy</div><div class="gr">Grade 11</div><div class="go">Go to Student →</div></div>
+            <div class="f-student-card"><div class="f-checkbox"></div><div class="nm">Ananya Kapoor</div><div class="gr">Grade 12</div><div class="go">Go to Student →</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rather than opening 34 profiles one at a time, Rohan switches Students into select mode and checks off his Grade 11 caseload.</div><div class="cap-cite">PRD §4 UC2 — "rather than building each one individually"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Assign Roadmap</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Students</div>
+          <div class="f-search-pill">Search Students</div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Assign Roadmap</h4>
+          <div class="f-panel-field"><label>Template</label><div class="v">Grade 11 Summer Roadmap</div></div>
+          <div class="f-panel-field"><label>Students Selected</label><div class="v">34 students</div></div>
+          <div class="f-panel-field"><label>Includes</label><div class="v">Research majors · Build initial list · Begin first essay draft</div></div>
+          <div class="f-panel-save">Assign to 34 Students</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan picks the standard Grade 11 template and assigns it to all 34 selected students in one action.</div><div class="cap-cite">PRD §4 UC2; PRD §8.2 Roadmap &amp; Tasks — "bulk-assign the same roadmap to their entire caseload in one action"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Freshly assigned</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone hl"><div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:0%"></div></div><div class="f-m-pct">0%</div></div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">On Kabir's own Roadmap tab, the milestone now exists at 0% — identical to what every other selected student just received.</div><div class="cap-cite">PRD §4 UC2</div></div>
+    </div>
+  </div>
+
+  <div class="time-jump">Several weeks later</div>
+  <div class="sub-label">Part B — Reviewing progress and adding a task</div>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Progress so far</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11 · Computer Science</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone"><div class="f-m-top"><div class="f-m-title">Profile setup</div><div class="f-m-bar"><div class="f-m-fill" style="width:100%"></div></div><div class="f-m-pct">100%</div></div></div>
+          <div class="f-milestone hl"><div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Even after a break, Rohan returns and immediately sees exactly what was assigned and where Kabir stands — no memory required.</div><div class="cap-cite">PRD §2 — "Even after a two-month break, the counsellor can return... and see exactly what was assigned"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Expanded checklist</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div>
+            <div class="f-task-list">
+              <div class="f-task"><span class="dot progress"></span>Register for December SAT<span class="st">In Progress</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+            </div>
+          </div>
+          <div class="f-add-btn hl">+ Add Task</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Tasks show as a plain checklist. Counsellors can always add more — Rohan taps + Add Task to assign something new.</div><div class="cap-cite">PRD §8.2 Roadmap &amp; Tasks — full edit history stays visible; counsellor edits freely</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 6 · Add Task form</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>+ Add Task</h4>
+          <div class="f-panel-field"><label>Category</label></div>
+          <div class="f-seg"><div class="f-seg-btn active">Academic</div><div class="f-seg-btn">EC</div><div class="f-seg-btn">Essay</div><div class="f-seg-btn">Testing</div></div>
+          <div class="ai-note"><span class="lbl">✨ AI</span><span>PSAT: 1350 (Oct) · SAT planned Dec — per his profile.</span></div>
+          <div class="f-panel-field"><label>Title</label><div class="v">Attend UK university info session</div></div>
+          <div class="f-panel-row"><div class="f-panel-pill">📅 Due Oct 20</div></div>
+          <div class="f-seg"><div class="f-seg-btn active">Kabir (Student)</div><div class="f-seg-btn">Rohan (Self)</div></div>
+          <div class="f-panel-save">Assign Task</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The moment Rohan picks a category, a short reference line grounded in Kabir's own profile appears — informational only, never inserted into the task fields for him. He still writes the task himself.</div><div class="cap-cite">v3 addition — Category-Aware Nudge (AI Integration Flow Plan §4.3)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 7 · Task added</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div>
+            <div class="f-task-list">
+              <div class="f-task"><span class="dot progress"></span>Register for December SAT<span class="st">In Progress</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+              <div class="f-task hl"><span class="dot pending"></span>Attend UK university info session<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir will see this new task on his own dashboard the next time he logs in.</div><div class="cap-cite">PRD §10 Student Workflows</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 8 · Kabir submits a task</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div>
+            <div class="f-task-list">
+              <div class="f-task hl"><span class="dot review"></span>Register for December SAT<span class="st">Pending Review</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+              <div class="f-task"><span class="dot pending"></span>Attend UK university info session<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir has ticked this task and attached his registration confirmation. It doesn't count as done yet — it sits as Pending Review until Rohan checks it.</div><div class="cap-cite">v2 addition — student ticks, counsellor confirms, before a task counts as Complete</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 9 · Confirm completion</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Register for December SAT</h4>
+          <div class="f-evidence-thumb">🖼️</div>
+          <div class="f-evidence-filename">sat_registration_confirmation.jpg</div>
+          <div class="f-panel-desc">Kabir's note: "Registered for Dec 7 test date at the downtown centre!"</div>
+          <div class="f-panel-save">Confirm Complete</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan opens the submission, sees the actual evidence he uploaded rather than a placeholder icon, and confirms it himself.</div><div class="cap-cite">v2 addition — confirmation stays a deliberate counsellor action, not automatic</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 10 · Confirmed complete</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone hl">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:55%"></div></div><div class="f-m-pct">55%</div></div>
+            <div class="f-task-list">
+              <div class="f-task"><span class="dot complete"></span>Register for December SAT<span class="st">Complete</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+              <div class="f-task"><span class="dot pending"></span>Attend UK university info session<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Only now does the milestone bar move and the task show as Complete — on both his and Kabir's screens.</div><div class="cap-cite">v2 addition — same tick-then-confirm pattern applies to every Roadmap/To-Do task</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 11 · A different task stalls</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:55%"></div></div><div class="f-m-pct">55%</div></div>
+            <div class="f-task-list">
+              <div class="f-task"><span class="dot complete"></span>Register for December SAT<span class="st">Complete</span></div>
+              <div class="f-task hl f-stalled"><span class="dot review"></span>Start extracurricular project portfolio<span class="st">Pending Review · 4 days<span class="ai-badge" style="margin-left:6px;">AI</span></span></div>
+              <div class="f-task"><span class="dot pending"></span>Attend UK university info session<span class="st">Not Started</span></div>
+            </div>
+          </div>
+          <div class="f-dismiss-btn">Seen, no action needed</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">A few weeks later, a different task has sat in Pending Review for 4 days with no action from Rohan. It's flagged with a dashed outline rather than waiting for him to notice on his own — he can dismiss it once he's looked, or just go confirm the task itself.</div><div class="cap-cite">v3 addition — Stalled-Task Alert (AI Integration Flow Plan §4.8), 3-business-day default threshold</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC3 ============ -->
+<div class="flow-section" id="uc3">
+  <div class="flow-eyebrow">PRD §4 · Use Case 3</div>
+  <h2 class="flow-title">Recording a Grade Checkpoint</h2>
+  <p class="flow-prd-quote">Checkpoints tracked: Grade 11 HYE, Grade 11 Finals, Grade 12 Mid-Terms, Grade 12 HYE, Grade 12 Mocks, Grade 12 Board Results — grades are manually entered by the counsellor as reported by the student.</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Current standing</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Meera Iyer</h2><div class="sub">Grade 12 · Biology (Pre-Med)</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-card" style="margin-bottom:10px;"><h4>Academic Standing</h4><div style="font-size:18px; font-weight:750;">A- average</div></div>
+          <div class="f-link-btn hl">Update Grades</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Meera has just sat her Grade 12 mocks. She tells Rohan her results in their check-in, and he taps Update Grades.</div><div class="cap-cite">PRD §6 — "grades are manually entered as the student tells the counsellor"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Update Grades</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Meera Iyer</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Update Grades — Grade 12 Mocks</h4>
+          <div class="f-panel-field"><label>Biology (HL)</label><div class="v">B</div></div>
+          <div class="f-panel-field"><label>Chemistry (HL)</label><div class="v">B+</div></div>
+          <div class="f-panel-field"><label>Mathematics (SL)</label><div class="v">B</div></div>
+          <div class="f-panel-save">Save Checkpoint</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan enters her mock results against the Grade 12 Mocks checkpoint — one of six fixed checkpoints tracked across Grade 11 and 12.</div><div class="cap-cite">PRD School Settings — G11 HYE, G11 Finals, G12 Mid-Terms, G12 HYE, G12 Mocks, G12 Boards</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Risk flagged</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Meera Iyer</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-card" style="margin-bottom:10px; background:var(--danger-bg); border-color:#eccccc;"><h4 style="color:var(--danger);">Academic Standing</h4><div style="font-size:16px; font-weight:750;">B+ average (down from A-)</div></div>
+          <div class="f-risk-card"><div class="lbl">⚠ Risk Flag <span class="ai-badge" style="margin-left:6px;">AI</span></div><div style="font-size:11px; color:#7a3a2c;">Grades dropped across two consecutive checkpoints (A- → B+) — worth a closer look at her Reach schools.</div><div class="f-dismiss-btn" style="margin-top:8px;">Seen, no action needed</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Her academic standing updates immediately, and Rohan gets a nudge to look closer — cross-referencing her own checkpoint history, nothing compared against other students. A verdict on what to do stays entirely his.</div><div class="cap-cite">v3 addition — Risk Flagging (AI Integration Flow Plan §4.6); PRD §6 — "if a student is no longer academically competitive... the platform can flag the application"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Reflected in notes</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Meera Iyer</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab active">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-note hl"><div class="head"><div class="dt">Oct 18</div><div class="ty">Check-in</div><span class="f-vis shared">👁 Shared</span></div><div class="txt">Reviewed mock exam results and impact on shortlist.</div></div>
+          <div class="f-note"><div class="head"><div class="dt">Oct 18</div><div class="ty">Check-in</div><span class="f-vis private">🔒 Counsellor Only</span></div><div class="txt">Meera seemed discouraged — keep tone supportive this week.</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan logs the conversation that followed — shared context on the shortlist impact, and a private note on how to support her.</div><div class="cap-cite">PRD §6 Predicted Grades &amp; Academic Review</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC4 ============ -->
+<div class="flow-section" id="uc4">
+  <div class="flow-eyebrow">PRD §4 · Use Case 4</div>
+  <h2 class="flow-title">Building and Evolving a University Shortlist</h2>
+  <p class="flow-prd-quote">"Ananya adds suggestion; Rohan reviews it, categorises it as 'Target,' and later moves it to 'Reach'... Only the new state is retained."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Existing shortlist</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12 · Economics, International Relations</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-add-btn hl">+ Add University</div>
+          <div class="f-uni"><div class="f-uni-top"><div class="f-uni-name">University of Pennsylvania</div><span class="f-pill purple">Reach</span><span class="f-pill ok">Converted</span></div><div class="f-uni-sub">PPE · Early Decision · Nov 1</div></div>
+          <div class="f-uni"><div class="f-uni-top"><div class="f-uni-name">London School of Economics</div><span class="f-pill blue">Target</span><span class="f-pill ok">Approved</span></div><div class="f-uni-sub">BSc International Relations · UCAS · Jan 15</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan can always add another option to Ananya's shortlist — she's just asked him to look into Cornell.</div><div class="cap-cite">PRD §4 UC4; PRD §3</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Her stated priorities</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12 · Economics, International Relations</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-pref-card">
+            <h4>What Ananya Wants Out of Her List</h4>
+            <span class="f-pref-tag">Program Strength: High Priority</span><span class="f-pref-tag">Location: Urban</span><span class="f-pref-tag">Financial Aid Needed</span><span class="f-pref-tag">Campus Culture: Collaborative</span>
+            <div class="f-pref-note-sm">Set by Ananya on her own Shortlist page. Purely informational — Rohan still makes every Reach/Target/Safety call himself.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Before deciding where Cornell fits, Rohan checks the priorities Ananya set for herself — one more input into his judgment call, not a recommendation engine making it for him.</div><div class="cap-cite">v2 addition — structured shortlist preferences captured from the student, no automated matching</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Add University</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>+ Add University</h4>
+          <div class="f-panel-field"><label>University</label><div class="v">Cornell University</div></div>
+          <div class="f-panel-field"><label>Course</label><div class="v">Applied Economics &amp; Management</div></div>
+          <div class="f-panel-row"><div class="f-panel-pill">Country: USA</div><div class="f-panel-pill">Deadline: Jan 2</div></div>
+          <div class="f-panel-save">Add to Shortlist</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Either the student or the counsellor can add a suggestion — Ananya raised it, Rohan enters it.</div><div class="cap-cite">PRD §3 — "The student can suggest universities, while the counsellor can review, approve, categorise"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Added, unreviewed</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-add-btn">+ Add University</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">Cornell University</div><span class="f-pill purple">Reach</span><span class="f-pill gray">Suggested</span></div><div class="f-uni-sub">Applied Economics &amp; Management · USA · Jan 2</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">It appears as "Suggested" — added, but not yet reviewed against her academic standing.</div><div class="cap-cite">PRD §3 — categorisation as reach, target, or safety</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Reviewed &amp; approved</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-add-btn">+ Add University</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">Cornell University</div><span class="f-pill purple">Reach</span><span class="f-pill ok">Approved</span></div><div class="f-uni-sub">Applied Economics &amp; Management · USA · Jan 2</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">After reviewing her eligibility, Rohan approves the entry and confirms Reach as its category. Only this current state is kept.</div><div class="cap-cite">PRD §3 Product Requirements — "only the new state is stored in V1"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC5 ============ -->
+<div class="flow-section" id="uc5">
+  <div class="flow-eyebrow">PRD §4 · Use Case 5</div>
+  <h2 class="flow-title">Promoting a Shortlist Entry to a Live Application</h2>
+  <p class="flow-prd-quote">"Once Ananya decides to apply, she clicks to convert the shortlist entry into a live application in two clicks; the application record pulls its fields from the existing shortlist entry."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Approved &amp; ready</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-add-btn">+ Add University</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">London School of Economics</div><span class="f-pill blue">Target</span><span class="f-pill ok">Approved</span></div><div class="f-uni-sub">BSc International Relations · UCAS · Jan 15</div><div class="f-convert-btn">Convert to Application →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">LSE has been approved by both Ananya and Rohan. He taps Convert to Application.</div><div class="cap-cite">PRD §4 UC5</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Confirm</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab active">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Convert to Application?</h4>
+          <div class="f-confirm-field"><span>University</span><b>London School of Economics</b></div>
+          <div class="f-confirm-field"><span>Course</span><b>BSc International Relations</b></div>
+          <div class="f-confirm-field"><span>Round</span><b>UCAS Round 1</b></div>
+          <div class="f-confirm-field"><span>Deadline</span><b>Jan 15</b></div>
+          <div class="f-confirm-note">Details are carried over automatically — nothing needs to be re-entered.</div>
+          <div class="f-panel-save">Confirm</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">A genuine two-click conversion — the shortlist entry's fields populate the new application directly.</div><div class="cap-cite">PRD §8.5 Applications — "a 2-click flow that pulls existing fields from the shortlist entry"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Live everywhere</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn active">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Applications Centre</div>
+          <div class="f-page-sub">Every live application across the caseload.</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">Ananya Kapoor — London School of Economics</div><span class="f-pill gray">Preparing</span></div><div class="f-uni-sub">BSc International Relations · Deadline Jan 15</div></div>
+          <div class="f-uni"><div class="f-uni-top"><div class="f-uni-name">Diya Sharma — Nanyang Technological University</div><span class="f-pill warn">Awaiting Recommendation</span></div><div class="f-uni-sub">Data Science &amp; AI · Deadline Nov 15</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">It shows up instantly in the Applications Centre too — the cross-caseload view Rohan lives in during application season.</div><div class="cap-cite">PRD §7 Application Rush Management</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Paste requirements</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">London School of Economics — BSc International Relations</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab active">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-link-btn hl">Paste Requirements</div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Paste Requirements</h4>
+          <div class="f-panel-desc" style="min-height:80px;">Personal statement (UCAS, max 4000 characters). One academic reference. Full transcript, Grade 11 &amp; 12. Portfolio not required for this course. Deadline: 15 January.</div>
+          <div class="f-panel-save">Extract Checklist</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rather than re-typing LSE's requirements by hand, Rohan pastes the text straight from the university's own admissions page.</div><div class="cap-cite">v3 addition — Requirement Checklist Extraction (AI Integration Flow Plan §4.10)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Extracted, editable</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Extracted Requirements <span class="ai-badge">AI</span></h4>
+          <div class="f-form-row"><span>📝 Personal Statement</span><span style="margin-left:auto; color:var(--ink-soft); font-size:10px;">4000 char max</span></div>
+          <div class="f-form-row"><span>✉️ Recommendation Letter</span><span style="margin-left:auto; color:var(--ink-soft); font-size:10px;">1 required</span></div>
+          <div class="f-form-row"><span>📄 Transcript</span><span style="margin-left:auto; color:var(--ink-soft); font-size:10px;">G11 &amp; G12</span></div>
+          <div class="f-panel-save">Save Requirements</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The extracted checklist is editable before it's saved — Rohan can remove, add, or correct a row (the AI badge stays even after saving, marking these as AI-extracted).</div><div class="cap-cite">v3 addition — "AI drafts, human confirms" pattern applied to requirement extraction</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 6 · Requirements saved</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">London School of Economics</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab active">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-card">
+            <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:11.5px;"><span>Personal Statement <span class="ai-badge" style="margin-left:6px;">AI</span></span><span class="f-pill warn">Awaiting Student</span></div>
+            <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:11.5px;"><span>Recommendation Letter <span class="ai-badge" style="margin-left:6px;">AI</span></span><span class="f-pill warn">Awaiting Student</span></div>
+            <div style="display:flex; justify-content:space-between; padding:7px 0; font-size:11.5px;"><span>Transcript <span class="ai-badge" style="margin-left:6px;">AI</span></span><span class="f-pill warn">Awaiting Student</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya now sees the same checklist on her own My Application page, ready to work through — this is exactly the requirements list already shown from her side in the student storyboard.</div><div class="cap-cite">Ties directly into SU6 · Tracking My Application (student storyboard)</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC6 ============ -->
+<div class="flow-section" id="uc6">
+  <div class="flow-eyebrow">PRD §4 · Use Case 6</div>
+  <h2 class="flow-title">Reassigning a Caseload</h2>
+  <p class="flow-prd-quote">"If a counsellor leaves or a caseload gets reassigned, how does the full history and context transfer to the new counsellor? ...Arjun reassigns Rohan's students to himself and Simran."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Team view (Head of Counselling)</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn active">Team</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Team</div>
+          <div class="f-page-sub">Arjun Verma is Head of Counselling — his shell includes this extra Team view.</div>
+          <div class="f-team-row hl"><div class="nm">Rohan Mehta</div><div class="bar"><div class="bar-fill" style="width:40%"></div></div><div class="ct">8</div></div>
+          <div class="f-team-row"><div class="nm">Simran Kaur</div><div class="bar"><div class="bar-fill" style="width:70%"></div></div><div class="ct">14</div></div>
+          <div class="f-team-row"><div class="nm">Arjun Verma</div><div class="bar"><div class="bar-fill" style="width:65%"></div></div><div class="ct">13</div></div>
+          <div class="f-link-btn hl" style="margin-top:8px;">Reassign from Rohan Mehta</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan is going on leave. Arjun, as Head of Counselling, opens Team to rebalance two of his students onto Simran.</div><div class="cap-cite">PRD §4 UC6; Head of Counselling shares the counsellor shell with an added Team view</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Reassign panel</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn active">Team</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Team</div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Reassign Students</h4>
+          <div class="f-checklist-row"><div class="cb on"></div>Meera Iyer</div>
+          <div class="f-checklist-row"><div class="cb on"></div>Diya Sharma</div>
+          <div class="f-checklist-row"><div class="cb"></div>Ananya Kapoor</div>
+          <div class="f-panel-field" style="margin-top:10px;"><label>Move To</label><div class="v">Simran Kaur</div></div>
+          <div class="f-panel-save">Confirm Reassignment</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Arjun selects two students and picks Simran Kaur as their new counsellor.</div><div class="cap-cite">PRD §4 UC6</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Caseloads updated</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn active">Team</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Team</div>
+          <div class="f-team-row"><div class="nm">Rohan Mehta</div><div class="bar"><div class="bar-fill" style="width:30%"></div></div><div class="ct">6</div></div>
+          <div class="f-team-row hl"><div class="nm">Simran Kaur</div><div class="bar"><div class="bar-fill" style="width:80%"></div></div><div class="ct">16</div></div>
+          <div class="f-team-row"><div class="nm">Arjun Verma</div><div class="bar"><div class="bar-fill" style="width:65%"></div></div><div class="ct">13</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Caseload counts update immediately across the team.</div><div class="cap-cite">PRD §4 UC6</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Nothing lost</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Meera Iyer</h2><div class="sub">Grade 12 · Assigned to Simran Kaur</div></div>
+          <div class="f-tabs"><div class="f-tab active">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-digest-card" style="border-left-color:#6E62E5;">
+            <div class="hd"><b style="font-size:12px;">Handoff Summary from Rohan Mehta's Caseload</b><span class="ai-badge">AI</span></div>
+            <div class="txt">Grade 12, Biology (Pre-Med) track. Academic standing dropped A- → B+ across the last two checkpoints (flagged, not yet resolved). Shortlist: 2 entries, both Approved. No open applications yet. Last check-in Oct 18 — discussed mock results and shortlist impact; seemed discouraged, keep tone supportive.</div>
+          </div>
+          <div class="f-card"><h4>Roadmap Progress</h4><div style="font-size:18px; font-weight:750;">55%</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Simran opens Meera's workspace and gets a running start instead of reading months of notes cold — every note, task, and shortlist decision Rohan made is still exactly as he left it underneath. This summary card stays here permanently, not just for her first visit.</div><div class="cap-cite">v3 addition — Reassignment Handoff Snapshot (AI Integration Flow Plan §4.7); PRD Risks — "reassigning a student preserves who was responsible for what and when"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC7 ============ -->
+<div class="flow-section" id="uc7">
+  <div class="flow-eyebrow">PRD §4 · Use Case 7</div>
+  <h2 class="flow-title">Document Handoff</h2>
+  <p class="flow-prd-quote">"Ananya uploads her personal statement draft, linked to the school's OneDrive; Rohan reviews it and leaves feedback directly against the roadmap task tied to that document."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Draft uploaded</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab active">Documents</div></div>
+          <div class="f-doc-row hl">📄 Personal Statement — Draft 3.docx<span style="margin-left:auto; color:var(--ink-soft); font-size:10.5px;">Essay</span></div>
+          <div class="f-doc-row">📄 Transcript — Grade 11.pdf<span style="margin-left:auto; color:var(--ink-soft); font-size:10.5px;">Transcript</span></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya has uploaded her third essay draft. Rohan opens it from Documents to review.</div><div class="cap-cite">PRD §4 UC7</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Review &amp; feedback</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab active">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Personal Statement — Draft 3</h4>
+          <div class="f-doc-preview"><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+          <div class="ai-note"><span class="lbl">✨ AI</span><span>First-pass drafted the moment this panel opened — edit freely below.</span></div>
+          <div class="f-panel-desc">Strong opening — tighten the third paragraph and connect it back to your policy fellowship before Friday.</div>
+          <div class="f-panel-save">Save Feedback</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan reviews the draft in place. The feedback text was already there when he opened the panel — an AI first pass on clarity/structure/pacing — and he edits it before saving. Once saved, it reaches Ananya as his feedback with no AI marker on her side; the badge is only visible here, on his own editing screen.</div><div class="cap-cite">v3 addition — Essay Feedback First Pass (AI Integration Flow Plan §4.9); PRD §4 UC7 — "leaves feedback directly against the roadmap task tied to that document"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Status updated</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab active">Documents</div></div>
+          <div class="f-doc-row hl">📄 Personal Statement — Draft 3.docx<span style="margin-left:auto; color:var(--warn); font-size:10.5px; font-weight:700;">Feedback Given</span></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The document's status updates so both Ananya and Rohan can see it's been reviewed.</div><div class="cap-cite">PRD §8.10 Documents — review status visible wherever the document is linked</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Linked task follows up</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab active">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+          <div class="f-milestone">
+            <div class="f-m-top"><div class="f-m-title">Essays &amp; submissions</div><div class="f-m-bar"><div class="f-m-fill" style="width:70%"></div></div><div class="f-m-pct">70%</div></div>
+            <div class="f-task-list">
+              <div class="f-task hl"><span class="dot progress"></span>Submit UPenn essay<span class="st">Needs Revision</span></div>
+              <div class="f-task"><span class="dot pending"></span>Request transcript<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The related task reflects the feedback too — Ananya sees exactly what to fix next, in one place.</div><div class="cap-cite">PRD §8.6 Task Architecture — comments and files attach to the task itself</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Resubmission confirmed</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Ananya Kapoor</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab active">Documents</div></div>
+          <div class="f-doc-row hl">📄 Personal Statement — Draft 4.docx<span style="margin-left:auto; color:var(--teal); font-size:10.5px; font-weight:700;">Submitted — Awaiting Confirmation</span></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Personal Statement — Draft 4</h4>
+          <div class="f-doc-preview"><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+          <div class="f-panel-desc">Ananya's note: "Incorporated your feedback on the third paragraph — connected it back to the policy fellowship."</div>
+          <div class="f-panel-save">Confirm Complete</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya has resubmitted, but the requirement stays "Awaiting Confirmation" until Rohan reviews Draft 4 himself and confirms it — the same tick-then-confirm pattern used for roadmap tasks.</div><div class="cap-cite">v2 addition — student marks upload/submit, counsellor confirms; only the counsellor records external outcomes like interviews or offers</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC8 ============ -->
+<div class="flow-section" id="uc8">
+  <div class="flow-eyebrow">PRD §4 · Use Case 8</div>
+  <h2 class="flow-title">Pilot Rollout</h2>
+  <div class="uc-skip">
+    <div class="lbl">Not shown as a screen sequence</div>
+    <p style="margin:0; color:var(--ink-soft); font-size:13px; line-height:1.55;">The PRD describes this use case as an adoption decision — "a pilot with one counsellor's full caseload at one school" — rather than an on-screen interaction. There's no distinct interface behind it beyond the screens already shown above; it's the scope in which all seven flows above get proven out first, before expanding to the rest of the counselling team.</p>
+  </div>
+</div>
+
+<!-- ============ UC9 (NEW — requested addition, beyond PRD §4's original 8) ============ -->
+<div class="flow-section" id="uc9">
+  <div class="flow-eyebrow">New — Not in PRD §4's Original List</div>
+  <h2 class="flow-title">My Calendar, with Google Calendar Sync</h2>
+  <div class="new-scope-banner">⚠ Scope note: the current PRD (§8.11 Integrations) specifies Microsoft 365 / OneDrive only, and explicitly excludes Google Workspace integration from V1. This use case was requested directly and is shown here as an extension — worth reconciling with §8.11 before this becomes a real commitment, since it's the one place this storyboard adds something the written PRD doesn't yet cover.</div>
+  <p class="flow-desc">Structured after the reference layout supplied — Day/Week/Month toggle, quick-add, a month grid — rebuilt in the product's light visual language and kept deliberately sparse (a chip only on days that actually have something), rather than a chip-packed grid on every day.</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · My Calendar (Month view)</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn active">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-cal-topctrl">
+            <div class="f-cal-seg"><div class="f-cal-seg-btn">Day</div><div class="f-cal-seg-btn">Week</div><div class="f-cal-seg-btn active">Month</div></div>
+            <div class="f-cal-nav"><span class="arrow">‹</span>June 2026<span class="arrow">›</span></div>
+            <div class="f-gcal-link">Connect Google Calendar</div>
+          </div>
+          <div class="f-add-btn" style="margin-bottom:12px;">+ Add Event</div>
+          <div class="f-cal-grid">
+            <div class="f-cal-weekday">Mon</div><div class="f-cal-weekday">Tue</div><div class="f-cal-weekday">Wed</div><div class="f-cal-weekday">Thu</div><div class="f-cal-weekday">Fri</div><div class="f-cal-weekday">Sat</div><div class="f-cal-weekday">Sun</div>
+            <div class="f-cal-day"><div class="f-cal-daynum">1</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">2</div><span class="f-cal-chip native">Check-in · Meera</span></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">3</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">4</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">5</div><span class="f-cal-chip native blue">Deadline · Ananya</span></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">6</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">7</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">8</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">9</div></div>
+            <div class="f-cal-day hl"><div class="f-cal-daynum">10</div><span class="f-cal-chip native">Check-in · Aarav</span></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">11</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">12</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">13</div></div>
+            <div class="f-cal-day"><div class="f-cal-daynum">14</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Meetings and deadlines already logged in Epicenter show up here automatically — but today it only knows about Epicenter. Rohan taps Connect Google Calendar.</div><div class="cap-cite">Extends PRD's "My Calendar" concept; not yet PRD §8.11-compliant (Microsoft-only)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Connect Google Calendar</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn active">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-cal-topctrl"><div class="f-cal-seg"><div class="f-cal-seg-btn">Day</div><div class="f-cal-seg-btn">Week</div><div class="f-cal-seg-btn active">Month</div></div><div class="f-cal-nav">June 2026</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <div class="f-connect-row"><span class="f-gicon"></span>Connect Google Calendar</div>
+          <p style="font-size:11px; color:#ddd6cc; line-height:1.5; margin:0 0 14px;">See Google Calendar events alongside Epicenter meetings, and keep both calendars in sync automatically.</p>
+          <div class="f-panel-save">Connect Account</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">A standard account-connect prompt — this is the one integration point in this storyboard that isn't in the written PRD yet.</div><div class="cap-cite">New — flagged for a PRD §8.11 update</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Sync options</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn active">My Calendar</div></div></div>
+        <div class="f-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <div class="f-connect-row"><span class="f-gicon"></span>Connected</div>
+          <p style="font-size:10.8px; color:#a79f92; margin:0 0 14px;">rohan.mehta@gmail.com</p>
+          <div class="f-toggle-row">Show Google events in My Calendar<div class="f-toggle"></div></div>
+          <div class="f-toggle-row">Add new Epicenter meetings to Google Calendar<div class="f-toggle"></div></div>
+          <div class="f-panel-save" style="margin-top:12px;">Done</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Both directions are explicit, separate toggles — Rohan can see Google events here, and/or push Epicenter meetings out, without one forcing the other.</div><div class="cap-cite">New — two-way sync, consistent with the product's general permission philosophy of explicit, narrow choices</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Merged Week view</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn active">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-cal-topctrl">
+            <div class="f-cal-seg"><div class="f-cal-seg-btn">Day</div><div class="f-cal-seg-btn active">Week</div><div class="f-cal-seg-btn">Month</div></div>
+            <div class="f-cal-nav"><span class="arrow">‹</span>Jun 8 – 14<span class="arrow">›</span></div>
+          </div>
+          <div class="f-week-grid">
+            <div class="f-week-col"><div class="f-week-head">MON<span class="d">8</span></div></div>
+            <div class="f-week-col"><div class="f-week-head">TUE<span class="d">9</span></div><div class="f-week-chip native">10:00 Check-in — Meera</div></div>
+            <div class="f-week-col"><div class="f-week-head">WED<span class="d">10</span></div><div class="f-week-chip native">2:00 Check-in — Aarav</div><div class="f-week-chip google"><span class="g-dot"></span>1:00 Staff Meeting</div></div>
+            <div class="f-week-col"><div class="f-week-head">THU<span class="d">11</span></div></div>
+            <div class="f-week-col"><div class="f-week-head">FRI<span class="d">12</span></div><div class="f-week-chip google"><span class="g-dot"></span>9:00 School Assembly</div></div>
+            <div class="f-week-col"><div class="f-week-head">SAT<span class="d">13</span></div></div>
+            <div class="f-week-col"><div class="f-week-head">SUN<span class="d">14</span></div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Now Rohan sees everything in one glance — his own counselling check-ins alongside the staff meeting and assembly from his personal Google Calendar, with a small marker showing which is which.</div><div class="cap-cite">New — the actual value of the integration: no more switching between two calendars</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Prep Notes before a meeting</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn active">My Calendar</div></div></div>
+        <div class="f-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Check-in — Meera · Tue 10:00</h4>
+          <div class="f-link-btn" style="margin-bottom:12px; display:block; text-align:center;">Prep Notes</div>
+          <div class="ai-note" style="margin-bottom:0;"><span class="lbl">✨ AI</span><span>Academic standing flagged (A- → B+, undismissed). Shortlist unchanged since Oct. No open applications yet. Last note: seemed discouraged — keep tone supportive.</span></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Before walking into the check-in, Rohan taps Prep Notes on the calendar event itself and gets caught up in one glance — recent tasks, notes, and the still-open risk flag from earlier.</div><div class="cap-cite">v3 addition — Meeting Prep Briefing (AI Integration Flow Plan §4.11), pull-based per the PRD's no-notifications scope</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 6 · Logging a meeting now syncs too</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn active">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-ws-header"><h2>Diya Sharma</h2><div class="sub">Grade 12</div></div>
+          <div class="f-tabs"><div class="f-tab">Overview</div><div class="f-tab active">Meeting Notes</div><div class="f-tab">Roadmap</div><div class="f-tab">Shortlist</div><div class="f-tab">Applications</div><div class="f-tab">Documents</div></div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <div class="f-panel-title-input" style="border-bottom:1px solid var(--dark-line); padding-bottom:8px; margin-bottom:12px;">Recommendation follow-up</div>
+          <div class="f-panel-row"><div class="f-panel-pill">📅 Jun 11</div><div class="f-panel-pill">🕐 3:00–3:20pm</div></div>
+          <div class="f-toggle-row"><span><span class="g-dot"></span> Also add to Google Calendar</span><div class="f-toggle"></div></div>
+          <div class="f-panel-save" style="margin-top:12px;">Save Note</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The same Meeting Notes composer from earlier now has one more row — Rohan doesn't have to enter this meeting twice.</div><div class="cap-cite">New — closes the loop with the existing Meeting Notes flow (UC1)</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ UC10 (NEW — requested addition, beyond PRD §4's original 8) ============ -->
+<div class="flow-section" id="uc10">
+  <div class="flow-eyebrow">New — Not in PRD §4's Original List</div>
+  <h2 class="flow-title">Creating a Form for Misc Tasks</h2>
+  <div class="new-scope-banner">⚠ Scope note: forms aren't mentioned in the current PRD at all. Shown here using an embedded Microsoft Forms, which extends the existing Microsoft 365 integration (§8.11) rather than introducing a new vendor the way Google Calendar would — a smaller scope addition, but still one worth confirming before it's treated as committed.</div>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Forms</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn active">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Forms</div>
+          <div class="f-add-btn hl">+ Create Form</div>
+          <div class="f-form-row"><span class="f-ms-icon"></span>Summer Internship Interest Form<span style="margin-left:auto; color:var(--ink-soft); font-size:10.5px;">8 / 12 responded</span></div>
+          <div class="f-form-row"><span class="f-ms-icon"></span>Grade 11 Parent Contact Update<span style="margin-left:auto; color:var(--ink-soft); font-size:10.5px;">Closed</span></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan needs a quick way to collect the same piece of information from several students without a spreadsheet or a chain of emails. He opens Forms.</div><div class="cap-cite">New — for misc tasks that don't fit the Roadmap/Task model</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Create Form</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn active">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Forms</div>
+        </div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>+ Create Form</h4>
+          <div class="f-panel-field"><label>Title</label><div class="v">Summer Internship Interest Form</div></div>
+          <div class="f-panel-field"><label>Question 1 (Multiple Choice)</label><div class="v">Are you interested in a summer internship?</div></div>
+          <div class="f-panel-field"><label>Question 2 (Short Answer)</label><div class="v">What field interests you most?</div></div>
+          <div class="f-seg"><div class="f-seg-btn active">Grade 11 Caseload (34)</div><div class="f-seg-btn">Choose Students</div></div>
+          <div class="f-panel-save">Create &amp; Send</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Built with a small set of question types — short answer, multiple choice, file upload, date — and sent to a whole caseload or a hand-picked group.</div><div class="cap-cite">New — native form builder, no separate Google/Microsoft account setup required for the counsellor to send one</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Sent</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn active">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Forms</div>
+          <div class="f-form-embed">
+            <div class="fh"><span class="f-ms-icon"></span>Summer Internship Interest Form</div>
+            <div class="f-form-q"><div class="ql">Are you interested in a summer internship?</div><div class="f-form-choice"><span class="rb on"></span>Yes</div><div class="f-form-choice"><span class="rb"></span>No</div><div class="f-form-choice"><span class="rb"></span>Not sure yet</div></div>
+            <div class="f-form-q"><div class="ql">What field interests you most?</div></div>
+          </div>
+          <div class="f-pref-note-sm">Sent to 34 students · 0 / 34 responded</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The embedded form is what students actually see and fill out in-app — Rohan can preview exactly that.</div><div class="cap-cite">New — Microsoft Forms embed, styled to match the rest of the product</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Responses</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="f-topbar"><div class="f-logo"><span></span></div><div class="f-search">Search students, universities...</div><div class="f-icons"><div class="f-icon">🔔</div><div class="f-icon">📅</div><div class="f-icon">👤</div></div></div>
+        <div class="f-sidebar"><div class="f-sidegroup"><div class="f-sidebtn">▦ Dashboard</div><div class="f-sidebtn">Students</div></div><div class="f-sidegroup"><div class="f-sidebtn">Applications Centre</div><div class="f-sidebtn">Internal Notes</div><div class="f-sidebtn">Reports</div><div class="f-sidebtn active">Forms</div><div class="f-sidebtn">My Calendar</div></div></div>
+        <div class="f-main">
+          <div class="f-page-title">Summer Internship Interest Form</div>
+          <div class="f-page-sub">8 of 34 responded</div>
+          <div class="f-card" style="margin-bottom:10px;"><h4>Are you interested in a summer internship?</h4><div class="f-pref-note-sm">Yes: 6 · No: 1 · Not sure yet: 1</div></div>
+          <div class="f-card"><h4>Individual Responses</h4><div class="f-pref-note-sm">Kabir Singh — "Yes" — "Software / tech startups"<br>Vivaan Reddy — "Yes" — "Finance"</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Responses land back inside the same student records, without Rohan having to cross-reference a separate spreadsheet export.</div><div class="cap-cite">New — response data stays inside the platform rather than a disconnected export</div></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="closing">
+  <h3>Coverage check</h3>
+  <p>All eight use cases from the PRD's Use Cases section (§4) are covered above, in the order they're written: seven as full screen-by-screen flows, and Pilot Rollout as the adoption note it actually is rather than a forced screen sequence. Use Case 9, Calendar &amp; Google Sync, and Use Case 10, Creating a Form, were both added on request and are clearly marked as sitting outside the original PRD §4 list — the two points in this document where the interface goes further than what §8.11 Integrations currently commits to. Worth a short conversation on whether Google Calendar and Microsoft Forms become real V1 integrations alongside the existing Microsoft 365/OneDrive scope, or stay later additions, before either gets built.</p>
+  <p>Also updated in this v2 pass: every task and application requirement now follows a tick-then-confirm pattern (student marks it done, counsellor confirms before it counts as Complete); student profiles carry two new fields, Extracurriculars &amp; Achievements and Test Scores &amp; Academic History; evidence uploads show an actual thumbnail rather than a generic document placeholder; shortlist entries are paired with a student-set priorities card Rohan can reference (not an automated suggester); and every pop-up now opens centered on screen instead of pinned to the top right.</p>
+</div>
+
+</body>
+</html>

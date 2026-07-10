@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epicenter Education — Full Student Flow Storyboard (PRD Order)</title>
+<style>
+  :root{
+    --bg:#F7F5F0; --panel:#FFFFFF; --ink:#292420; --ink-soft:#8A8378; --line:#E9E4DA;
+    --terracotta:#D8724C; --terracotta-dark:#BD5C39; --terracotta-soft:#FBEAE0;
+    --rose:#E7C7BE; --rose-ink:#8C4232; --teal:#7FA6AC; --gold:#E4B94A; --gold-dark:#5C4813; --gold-soft:#FBF0D2;
+    --dark:#2A2521; --dark-soft:#3B342E; --dark-line:#4B443C;
+    --ok:#4C7A54; --ok-bg:#E7F0E5; --warn:#A97327; --warn-bg:#F7ECDA;
+    --danger:#AA4437; --danger-bg:#F8E7E3; --blue:#476386; --blue-bg:#E9EEF5; --purple:#6C4A8C; --purple-bg:#EFE7F5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink);}
+
+  .doc-header{padding:48px 40px 30px; max-width:920px;}
+  .doc-header .kicker{color:var(--terracotta-dark); font-weight:700; font-size:12.5px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;}
+  .doc-header h1{font-size:28px; margin:0 0 12px;}
+  .doc-header p{color:var(--ink-soft); font-size:14.5px; line-height:1.6; max-width:780px;}
+  .notice{background:#fff; border:1px solid var(--line); border-left:4px solid var(--terracotta); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--ink); margin-top:14px; max-width:780px;}
+  .notice.blue{border-left-color:var(--blue); background:var(--blue-bg);}
+  .toc{position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:14px 40px; z-index:50; display:flex; gap:16px; flex-wrap:wrap;}
+  .toc a{color:var(--ink-soft); text-decoration:none; font-size:12.3px; font-weight:650;}
+  .toc a:hover{color:var(--terracotta-dark);}
+
+  .flow-section{padding:44px 40px 6px; max-width:1600px;}
+  .flow-eyebrow{color:var(--terracotta-dark); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;}
+  .flow-title{font-size:22px; margin:0 0 8px;}
+  .flow-desc{color:var(--ink-soft); font-size:13.6px; max-width:760px; margin-bottom:10px; line-height:1.55;}
+  .flow-prd-quote{background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 16px; font-size:12.6px; color:var(--ink-soft); font-style:italic; max-width:760px; margin-bottom:22px;}
+
+  .flow-row{display:flex; align-items:flex-start; gap:0; overflow-x:auto; padding-bottom:24px;}
+  .flow-step{display:flex; flex-direction:column; align-items:center; flex:none; width:480px;}
+  .step-badge{align-self:flex-start; background:var(--dark); color:#fff; font-size:11px; font-weight:700; padding:4px 11px; border-radius:20px; margin-bottom:10px;}
+  .flow-caption{max-width:460px; margin-top:14px;}
+  .flow-caption .cap-text{font-size:13px; line-height:1.5; color:var(--ink);}
+  .flow-caption .cap-cite{font-size:11px; color:var(--ink-soft); font-style:italic; margin-top:5px;}
+  .flow-arrow{flex:none; width:56px; display:flex; align-items:center; justify-content:center; padding-top:150px; color:#C9C2B4; font-size:26px;}
+
+  .frame-wrapper{width:480px; height:307px; border-radius:14px; border:1px solid var(--line); overflow:hidden; position:relative; background:#fff; box-shadow:0 6px 18px rgba(30,26,22,0.06);}
+  .frame-canvas{width:1000px; height:640px; transform:scale(0.48); transform-origin:top left; position:relative;}
+
+  /* ---------- Student shell: top pill-nav, no sidebar ---------- */
+  .s-topbar{position:absolute; top:0; left:0; right:0; height:64px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; padding:0 26px;}
+  .s-logo{width:30px;height:30px;border-radius:9px; background:var(--dark); display:flex; align-items:center; justify-content:center;}
+  .s-logo span{width:10px;height:10px;border-radius:50%; background:var(--terracotta); display:block;}
+  .s-home-btn{width:34px;height:34px;border-radius:50%; background:var(--dark); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;}
+  .s-navpill{display:flex; background:#F1EEE7; border-radius:22px; padding:4px; gap:2px;}
+  .s-navitem{padding:8px 14px; font-size:11px; font-weight:650; color:var(--ink-soft); border-radius:18px;}
+  .s-navitem.active{background:var(--dark); color:#fff;}
+  .s-search-circle{width:34px;height:34px;border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-soft);}
+  .s-icons{display:flex; gap:8px; margin-left:auto;}
+  .s-icon{width:32px;height:32px; border:1px solid var(--line); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink-soft);}
+
+  .s-main{position:absolute; top:64px; left:0; right:0; bottom:0; padding:22px 28px; overflow:hidden;}
+  .s-page-title{font-size:20px; margin:0 0 4px;}
+  .s-page-sub{color:var(--ink-soft); font-size:12px; margin:0 0 16px;}
+
+  /* dashboard */
+  .s-dash-grid{display:grid; grid-template-columns:1fr 1.25fr 1fr; gap:14px;}
+  .s-hero{background:var(--terracotta); color:#fff; border-radius:16px; padding:20px; margin-bottom:12px; min-height:160px; display:flex; flex-direction:column; justify-content:space-between;}
+  .s-hero h3{font-size:19px; margin:0;}
+  .s-hero-btn{background:#fff; color:var(--terracotta-dark); border-radius:20px; padding:9px 14px; font-size:11.5px; font-weight:700; display:inline-flex; align-items:center; gap:6px;}
+  .s-grade-card{background:var(--gold-soft); border:1px solid #eddca0; border-radius:16px; padding:16px; color:var(--gold-dark);}
+  .s-grade-card h4{font-size:15px; margin:0 0 6px;}
+  .s-grade-card .subs{font-size:10.3px; line-height:1.6; opacity:0.85; margin-bottom:10px;}
+  .s-roadmap-card{background:var(--blue); color:#fff; border-radius:16px; padding:18px; min-height:270px; display:flex; flex-direction:column;}
+  .s-roadmap-card h3{font-size:18px; margin:0 0 6px;}
+  .s-roadmap-card p{font-size:11px; opacity:0.9; line-height:1.5; margin:0 0 12px;}
+  .s-illustration{background:rgba(255,255,255,0.14); border-radius:12px; flex:1; display:flex; align-items:center; justify-content:center; font-size:34px; margin-bottom:12px;}
+  .s-roadmap-btn{background:#fff; color:var(--blue); border-radius:20px; padding:9px 14px; font-size:11.5px; font-weight:700; align-self:flex-start;}
+  .s-todo-panel{background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px;}
+  .s-todo-panel h4{font-size:14.5px; margin:0 0 12px;}
+  .s-task-card{background:#F7F5F0; border-radius:10px; padding:10px 12px; margin-bottom:8px;}
+  .s-task-card .meta{display:flex; justify-content:space-between; font-size:8.3px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.2px; margin-bottom:4px;}
+  .s-task-card .title{font-size:11.3px; font-weight:650;}
+  .s-viewall{text-align:center; font-size:11px; color:var(--ink-soft); font-weight:650;}
+  .s-fab{position:absolute; bottom:20px; right:26px; width:42px;height:42px; border-radius:50%; background:var(--dark); color:#fff; display:flex; align-items:center; justify-content:center; font-size:19px;}
+
+  .s-ws-header h2{font-size:19px; margin:0;}
+  .s-ws-header .sub{color:var(--ink-soft); font-size:11.5px; margin-top:2px;}
+
+  /* reused component classes (same visual language as counsellor storyboard) */
+  .f-add-btn{background:var(--dark); color:#fff; border-radius:16px; padding:8px 14px; font-size:11.3px; font-weight:650; display:inline-block; margin-bottom:14px;}
+  .f-add-btn.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-link-btn{background:#fff; border:1px solid var(--line); color:var(--ink); border-radius:16px; padding:7px 13px; font-size:10.8px; font-weight:650; display:inline-block;}
+  .f-card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px;}
+  .f-card h4{font-size:14.5px; margin:0 0 10px;}
+
+  .f-note{background:#fff; border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-bottom:10px;}
+  .f-note .head{display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+  .f-note .dt{font-weight:700; font-size:12px;}
+  .f-note .ty{color:var(--ink-soft); font-size:10.8px;}
+  .f-vis{margin-left:auto; font-size:9.5px; font-weight:700; padding:3px 9px; border-radius:16px;}
+  .f-vis.shared{background:var(--blue-bg); color:var(--blue);}
+  .f-vis.update{background:var(--ok-bg); color:var(--ok);}
+  .f-note .txt{font-size:11.8px; line-height:1.45;}
+  .f-note.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-note.empty-slot{border:1px dashed var(--line); background:transparent; color:var(--ink-soft); font-size:10.8px; text-align:center; padding:18px;}
+
+  .f-milestone{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-milestone.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-m-top{display:flex; align-items:center; gap:10px;}
+  .f-m-title{font-weight:650; font-size:12.6px; flex:1;}
+  .f-m-bar{width:80px; height:6px; background:#EDE9E0; border-radius:4px; overflow:hidden;}
+  .f-m-fill{height:100%; background:var(--terracotta);}
+  .f-m-pct{font-size:10.5px; color:var(--ink-soft); width:28px; text-align:right;}
+  .f-task-list{margin-top:10px; padding-top:10px; border-top:1px solid var(--line);}
+  .f-task{display:flex; align-items:center; gap:8px; padding:5px 0; font-size:11.5px;}
+  .f-task .dot{width:7px;height:7px;border-radius:50%; flex:none;}
+  .f-task .dot.complete{background:var(--ok);} .f-task .dot.progress{background:var(--warn);} .f-task .dot.pending{background:#cfc9bc;}
+  .f-task .st{margin-left:auto; color:var(--ink-soft); font-size:10px;}
+  .f-task.hl{background:var(--terracotta-soft); border-radius:8px; padding:5px 8px; margin:2px -8px;}
+
+  .f-uni{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-uni.hl{outline:3px solid var(--terracotta); outline-offset:2px;}
+  .f-uni-top{display:flex; align-items:center; gap:8px;}
+  .f-uni-name{font-weight:750; font-size:13px; flex:1;}
+  .f-uni-sub{color:var(--ink-soft); font-size:10.8px; margin-top:2px;}
+  .f-pill{display:inline-block; padding:3px 9px; border-radius:16px; font-size:9.8px; font-weight:700;}
+  .f-pill.ok{background:var(--ok-bg); color:var(--ok);} .f-pill.warn{background:var(--warn-bg); color:var(--warn);}
+  .f-pill.blue{background:var(--blue-bg); color:var(--blue);} .f-pill.purple{background:var(--purple-bg); color:var(--purple);}
+  .f-pill.gray{background:#EDEAE3; color:var(--ink-soft);} .f-pill.danger{background:var(--danger-bg); color:var(--danger);}
+  .f-pref-note{background:#F7F5F0; border-radius:8px; padding:8px 10px; font-size:10.3px; color:var(--ink-soft); margin-top:8px;}
+
+  .f-doc-preview{background:#F1EEE7; border-radius:10px; padding:14px; margin-bottom:12px;}
+  .f-doc-preview .ln{height:6px; background:#dcd6c9; border-radius:3px; margin-bottom:6px;}
+  .f-doc-preview .ln:nth-child(2){width:80%;} .f-doc-preview .ln:nth-child(3){width:60%;}
+
+  .f-dim{position:absolute; top:64px; left:0; right:0; bottom:0; background:rgba(30,26,22,0.32);}
+  .f-panel{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:300px; background:var(--dark); border-radius:16px; padding:18px 18px 16px; color:#fff; box-shadow:0 14px 34px rgba(0,0,0,0.3);}
+  .f-panel h4{font-size:14.5px; margin:0 0 12px;}
+  .f-panel-row{display:flex; gap:7px; margin-bottom:10px;}
+  .f-panel-pill{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:16px; padding:7px 10px; font-size:10.3px; color:#ddd6cc; flex:1; text-align:center;}
+  .f-panel-field{margin-bottom:10px;}
+  .f-panel-field label{display:block; font-size:9.8px; color:#a79f92; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px;}
+  .f-panel-field .v{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:9px; padding:8px 10px; font-size:11.5px; color:#fff;}
+  .f-panel-desc{background:var(--dark-soft); border:1px solid var(--dark-line); border-radius:10px; padding:10px; font-size:11px; color:#ddd6cc; min-height:52px; margin-bottom:12px; line-height:1.4;}
+  .f-panel-save{background:var(--terracotta); color:#fff; border-radius:12px; padding:9px; font-size:11.5px; font-weight:700; text-align:center;}
+  .f-seg{display:flex; background:var(--dark-soft); border-radius:16px; padding:3px; margin-bottom:11px;}
+  .f-seg-btn{flex:1; text-align:center; font-size:10.3px; font-weight:650; padding:7px 4px; border-radius:13px; color:#c9c1b5;}
+  .f-seg-btn.active{background:#fff; color:var(--dark);}
+
+  .closing{padding:30px 40px 70px; max-width:900px;}
+  .closing h3{font-size:17px; margin-bottom:10px;}
+  .closing p{color:var(--ink-soft); font-size:13.4px; line-height:1.6;}
+  .closing ul{color:var(--ink-soft); font-size:13.2px; line-height:1.7; padding-left:20px;}
+
+  /* ---------- v2 additions: pending-review states, evidence visuals, forms, shortlist priorities ---------- */
+  .f-pill.review{background:#E4EEEF; color:#2F5A61;}
+  .f-task .dot.review{background:var(--teal);}
+  .f-evidence-thumb{background:linear-gradient(135deg, var(--terracotta-soft), var(--rose)); border-radius:10px; height:88px; display:flex; align-items:center; justify-content:center; font-size:32px; margin-bottom:8px; border:1px solid var(--line);}
+  .f-evidence-filename{font-size:10px; color:var(--ink-soft); margin-bottom:10px; text-align:center;}
+  .f-confirm-banner{background:var(--teal); color:#fff; border-radius:10px; padding:9px 12px; font-size:11px; font-weight:650; margin-bottom:10px; display:flex; align-items:center; gap:7px;}
+  .f-pref-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:10px;}
+  .f-pref-card h4{font-size:13.5px; margin:0 0 9px;}
+  .f-pref-tag{display:inline-block; background:var(--terracotta-soft); color:var(--terracotta-dark); font-size:9.8px; font-weight:650; padding:4px 10px; border-radius:14px; margin:0 5px 6px 0;}
+  .f-pref-note-sm{font-size:10.3px; color:var(--ink-soft); margin-top:6px; line-height:1.4;}
+  .f-ms-icon{width:16px;height:16px;border-radius:4px; background:#5C2D91; display:inline-block; margin-right:7px; vertical-align:middle;}
+  .f-form-embed{background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:10px;}
+  .f-form-embed .fh{display:flex; align-items:center; font-size:11.8px; font-weight:700; color:#5C2D91; margin-bottom:10px;}
+  .f-form-q{background:#F7F5F0; border-radius:8px; padding:9px 11px; font-size:10.8px; margin-bottom:7px;}
+  .f-form-q .ql{font-weight:650; margin-bottom:5px; color:var(--ink);}
+  .f-form-choice{display:flex; align-items:center; gap:6px; font-size:10.3px; color:var(--ink-soft); padding:3px 0;}
+  .f-form-choice .rb{width:11px;height:11px;border-radius:50%; border:2px solid var(--line); flex:none;}
+  .f-form-choice .rb.on{border-color:var(--terracotta); background:radial-gradient(circle, var(--terracotta) 40%, transparent 46%);}
+  .f-form-row{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:11.8px;}
+  .f-form-row.hl{background:var(--terracotta-soft); border-radius:8px; padding:11px 10px; margin:0 -10px; border-bottom:none;}
+
+  /* ---------- v3 additions: AI visual marker + onboarding wizard shell ---------- */
+  :root{}
+  .ai-badge{display:inline-flex; align-items:center; gap:4px; background:#EFEBFC; color:#5B4FC7; font-size:9px; font-weight:750; padding:3px 8px; border-radius:12px;}
+  .ai-badge::before{content:"\2728";}
+  .ai-note{background:#EFEBFC; border:1px solid #D9D1F5; border-radius:8px; padding:8px 10px; font-size:10px; color:#5B4FC7; margin-bottom:8px; display:flex; align-items:flex-start; gap:6px;}
+  .ai-note .lbl{font-weight:750; flex:none;}
+  .ai-inline{color:#5B4FC7; font-weight:750;}
+  .f-dismiss-btn{background:#fff; border:1px solid var(--line); color:var(--ink-soft); border-radius:14px; padding:5px 10px; font-size:9.5px; font-weight:650; display:inline-block;}
+  .f-risk-card{background:#FDECE9; border:1px solid #f3c9c1; border-radius:14px; padding:12px 14px; margin-bottom:10px;}
+  .f-risk-card .lbl{color:#A33F2E; font-weight:750; font-size:11.5px; margin-bottom:4px;}
+  .f-stalled{outline:2px dashed #C77B3E !important;}
+  .f-digest-card{background:#fff; border:1px solid #D9D1F5; border-left:4px solid #6E62E5; border-radius:14px; padding:14px 16px; margin-bottom:14px;}
+  .f-digest-card .hd{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .f-digest-card .txt{font-size:11.5px; line-height:1.5; color:var(--ink);}
+  .onb-shell{position:absolute; inset:0; background:#fff; display:flex; flex-direction:column; align-items:center; padding:36px 40px;}
+  .onb-progress{width:360px; height:6px; background:#EDE9E0; border-radius:4px; overflow:hidden; margin-bottom:28px;}
+  .onb-progress-fill{height:100%; background:var(--terracotta);}
+  .onb-step-label{font-size:11px; color:var(--ink-soft); font-weight:650; margin-bottom:10px;}
+  .onb-question{font-size:19px; font-weight:700; margin-bottom:18px; text-align:center; max-width:380px;}
+  .onb-input{width:340px; background:#F7F5F0; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--ink); margin-bottom:16px;}
+  .onb-chipwrap{width:340px; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+  .onb-chip{background:var(--terracotta-soft); color:var(--terracotta-dark); font-size:10.5px; font-weight:650; padding:5px 11px; border-radius:14px; display:inline-flex; align-items:center; gap:5px;}
+  .onb-chip .x{opacity:0.6;}
+  .onb-nav{width:340px; display:flex; justify-content:space-between; align-items:center; margin-top:6px;}
+  .onb-btn{background:var(--terracotta); color:#fff; border-radius:10px; padding:10px 22px; font-size:12px; font-weight:700;}
+  .onb-skip{color:var(--ink-soft); font-size:11px; font-weight:650;}
+  .onb-back{color:var(--ink-soft); font-size:12px; font-weight:650;}
+  .onb-confirm-row{width:340px; background:#F7F5F0; border-radius:10px; padding:10px 12px; font-size:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="kicker">Epicenter Education · Student Flows</div>
+  <h1>Full Student Flow Storyboard — In PRD Order</h1>
+  <p>The counterpart to the counsellor storyboard, from the student's side of the same product. Static screens only — nothing here is clickable or functional. Visual language inspired by the reference dashboard supplied, adapted into the product's established light theme rather than copied directly.</p>
+  <div class="notice">📌 The PRD's numbered Use Cases (§4) are written from the counsellor's point of view — there's no equivalent numbered list for the student. This storyboard's ordering is derived instead from PRD §3 Users, §5 User Stories, and the Permissions detail throughout §8 Product Requirements, arranged into the same chronological arc the counsellor journey follows.</div>
+  <div class="notice blue">Where a screen here is the other side of a counsellor screen already shown (Kabir's onboarding, Ananya's shortlist suggestion, Ananya's essay feedback), the same student and situation is reused on purpose, so the two documents read as one consistent product.</div>
+  <div class="notice">✨ v3 update: a full 6-step onboarding wizard (age, grade, subjects, hobbies, major, EC list) is now woven into SU1, between first login and the first Home dashboard view — with AI extracting structured tags from free-text answers. AI note clean-up (lighter version) was added to SU5. "Send to Rohan" is now "Send to Counsellor" throughout. Look for the small <span class="ai-badge">AI</span> badge.</div>
+</div>
+
+<div class="toc">
+  <a href="#su1">SU1 · My Home</a>
+  <a href="#su2">SU2 · My Profile</a>
+  <a href="#su3">SU3 · My Roadmap</a>
+  <a href="#su4">SU4 · College Shortlist</a>
+  <a href="#su5">SU5 · Notes</a>
+  <a href="#su6">SU6 · My Application</a>
+  <a href="#su7">SU7 · Offer &amp; Decision</a>
+  <a href="#su8">SU8 · Responding to a Form <span style="color:var(--blue);">(new)</span></a>
+</div>
+
+<!-- ============ SU1 ============ -->
+<div class="flow-section" id="su1">
+  <div class="flow-eyebrow">Student Journey · 1</div>
+  <h2 class="flow-title">My Home — What's Next For Me</h2>
+  <p class="flow-prd-quote">"The student can see their upcoming work, completed tasks, deadlines, counsellor feedback, and application status from their own dashboard." — PRD §4 (Ongoing Check-ins); PRD §5 User Story, Student, After</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Log in (first time)</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div style="display:flex; width:1000px; height:640px;">
+          <div style="width:45%; background:var(--terracotta); display:flex; align-items:center; justify-content:center;">
+            <svg width="240" height="240" viewBox="0 0 400 400">
+              <g stroke="#F2C9AF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M55 130 l16 26 l26 -58 h32"/>
+                <path d="M300 70 L345 45 M300 70 L352 82"/>
+                <circle cx="86" cy="270" r="30"/>
+              </g>
+              <path d="M86 270 L86 240 A30 30 0 0 1 110 285 Z" fill="#F2C9AF"/>
+              <ellipse cx="205" cy="235" rx="72" ry="82" fill="#FBE9DE" stroke="#8C4020" stroke-width="4"/>
+              <path d="M143 190 q62 -62 124 0" stroke="#8C4020" stroke-width="5" fill="none"/>
+              <circle cx="141" cy="202" r="15" fill="#8C4020"/><circle cx="269" cy="202" r="15" fill="#8C4020"/>
+              <circle cx="180" cy="215" r="7" fill="#8C4020"/><circle cx="230" cy="215" r="7" fill="#8C4020"/>
+              <path d="M180 252 q25 16 50 0" stroke="#8C4020" stroke-width="5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div style="flex:1; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <h2 style="font-size:24px; margin:0 0 4px;">Log In</h2>
+            <div style="color:var(--ink-soft); font-size:12.5px; margin-bottom:22px;">Log in with School Id</div>
+            <div style="width:230px; margin-bottom:13px;"><label style="display:block; font-size:11px; font-weight:650; margin-bottom:5px;">Email</label><div style="background:#faf9f6; border:1px solid var(--line); border-radius:8px; padding:9px 11px; color:var(--ink-soft); font-size:12px;">kabir.singh@student.greenwood.edu</div></div>
+            <div style="width:230px; margin-bottom:13px;"><label style="display:block; font-size:11px; font-weight:650; margin-bottom:5px;">Password</label><div style="background:#faf9f6; border:1px solid var(--line); border-radius:8px; padding:9px 11px; color:var(--ink-soft); font-size:12px;">••••••••</div></div>
+            <div style="width:230px; background:var(--terracotta); color:#fff; text-align:center; border-radius:10px; padding:11px; font-size:12.5px; font-weight:700; margin-top:6px;">Log In</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir logs in for the very first time, right after the Administrator created his account — same school-issued credentials his counsellor uses, on a laptop (the PRD scopes V1 to desktop/laptop only).</div><div class="cap-cite">PRD School Settings; Student role</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Onboarding, step 1 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 1 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:16%"></div></div>
+          <div class="onb-question">How old are you?</div>
+          <div class="onb-input">16</div>
+          <div class="onb-nav"><span class="onb-skip">Skip for now</span><div class="onb-btn">Next →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Instead of a counsellor typing this in later, Kabir answers directly — the first of six short questions, one per screen, with a progress bar. He can skip and finish later from My Profile at any point.</div><div class="cap-cite">v3 addition — Student Onboarding Questionnaire (AI Integration Flow Plan §5)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Onboarding, step 2 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 2 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:33%"></div></div>
+          <div class="onb-question">What grade are you in?</div>
+          <div class="onb-confirm-row"><span>We have you down as:</span><b>Grade 11</b></div>
+          <div class="onb-nav"><span class="onb-back">← Back</span><div class="onb-btn">Confirm →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Grade is pre-filled from the Administrator's record — Kabir confirms rather than being asked cold, since it's already known.</div><div class="cap-cite">v3 addition — pre-filled to stay consistent with PRD §4 UC1 (Administrator creates the record first)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Onboarding, step 3 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 3 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:50%"></div></div>
+          <div class="onb-question">What subjects do you take?</div>
+          <div class="onb-chipwrap"><span class="onb-chip">Computer Science HL</span><span class="onb-chip">Mathematics HL</span><span class="onb-chip">Physics SL</span><span class="onb-chip">English SL</span></div>
+          <div class="onb-nav"><span class="onb-back">← Back</span><div class="onb-btn">Confirm →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Same pattern as grade — pre-filled from the Administrator's record, confirm or edit rather than starting blank.</div><div class="cap-cite">v3 addition</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Onboarding, step 4 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 4 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:66%"></div></div>
+          <div class="onb-question">What hobbies or interests do you have?</div>
+          <div class="onb-input" style="min-height:50px;">I really like building small robots and I've been in the school robotics club since grade 9. Also play chess and do debate.</div>
+          <div class="ai-note" style="width:340px;"><span class="lbl">✨ AI</span><span>Suggested tags — remove or add before continuing:</span></div>
+          <div class="onb-chipwrap"><span class="onb-chip">Robotics <span class="x">✕</span></span><span class="onb-chip">Chess <span class="x">✕</span></span><span class="onb-chip">Debate <span class="x">✕</span></span></div>
+          <div class="onb-nav"><span class="onb-back">← Back</span><div class="onb-btn">Next →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir answers in his own words; AI extracts tags from the free text rather than making him fill in a rigid field. He can remove or add before moving on — nothing saves silently.</div><div class="cap-cite">v3 addition — Conversational Extraction (AI Integration Flow Plan §5, step 4)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 6 · Onboarding, step 5 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 5 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:83%"></div></div>
+          <div class="onb-question">What's your intended major?</div>
+          <div class="onb-input">wanna do something with computers, maybe start my own company one day</div>
+          <div class="ai-note" style="width:340px;"><span class="lbl">✨ AI</span><span>Suggested tags — remove or add before continuing:</span></div>
+          <div class="onb-chipwrap"><span class="onb-chip">Computer Science <span class="x">✕</span></span><span class="onb-chip">Entrepreneurship <span class="x">✕</span></span></div>
+          <div class="onb-nav"><span class="onb-back">← Back</span><div class="onb-btn">Next →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Free text for every student — no preset list of majors to pick from. AI normalizes it into tags the same way, reviewable before saving.</div><div class="cap-cite">v3 addition — free-text major, per the approved plan</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 7 · Onboarding, step 6 of 6</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div class="onb-step-label">Step 6 of 6</div>
+          <div class="onb-progress"><div class="onb-progress-fill" style="width:100%"></div></div>
+          <div class="onb-question">What does your EC list look like?</div>
+          <div class="onb-input" style="min-height:60px;">I'm team lead of the robotics club, been on the school debate team for 2 years, and I qualified for the regional Math Olympiad last year.</div>
+          <div class="ai-note" style="width:340px;"><span class="lbl">✨ AI</span><span>Extracted — remove or add before continuing:</span></div>
+          <div class="onb-chipwrap"><span class="onb-chip">Robotics Club — Team Lead <span class="x">✕</span></span><span class="onb-chip">Debate Team — 2 yrs <span class="x">✕</span></span><span class="onb-chip">Math Olympiad — Regional Qualifier <span class="x">✕</span></span></div>
+          <div class="onb-nav"><span class="onb-back">← Back</span><div class="onb-btn">Finish →</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">More to extract here than hobbies, so the structure is richer — activity, role, duration — but the pattern is identical: his words, AI-structured, his final say before it saves.</div><div class="cap-cite">v3 addition — Conversational Extraction (AI Integration Flow Plan §5, step 6)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 8 · Onboarding complete</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="onb-shell">
+          <div style="font-size:34px; margin-bottom:10px;">🎉</div>
+          <div class="onb-question">You're all set, Kabir!</div>
+          <div style="width:360px; background:#F7F5F0; border-radius:12px; padding:14px 16px; font-size:11.5px; color:var(--ink-soft); margin-bottom:20px; line-height:1.7;">
+            Grade 11 · Computer Science HL, Mathematics HL, Physics SL, English SL<br>
+            Interests: Robotics, Chess, Debate <span class="ai-badge" style="margin-left:4px;">AI</span><br>
+            Intended major: Computer Science, Entrepreneurship <span class="ai-badge" style="margin-left:4px;">AI</span><br>
+            ECs: Robotics Club (Team Lead), Debate Team (2 yrs), Math Olympiad (Regional) <span class="ai-badge" style="margin-left:4px;">AI</span>
+          </div>
+          <div class="onb-btn">Take me to my dashboard →</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">A last look at everything captured, with the AI badge visible on exactly the fields that went through extraction (steps 4–6) versus what he entered or confirmed directly.</div><div class="cap-cite">v3 addition — completion screen, AI Integration Flow Plan §5</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 9 · A brand-new dashboard</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar">
+          <div class="s-logo"><span></span></div>
+          <div class="s-home-btn">⌂</div>
+          <div class="s-navpill">
+            <div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div>
+          </div>
+          <div class="s-search-circle">⚲</div>
+          <div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div>
+        </div>
+        <div class="s-main">
+          <div class="s-dash-grid">
+            <div>
+              <div class="s-hero"><h3>Welcome,<br>Kabir</h3><div class="s-hero-btn">Go to My Profile ↗</div></div>
+              <div class="s-grade-card"><h4>Grade 11</h4><div class="subs">Computer Science HL · Mathematics HL · Physics SL · English SL</div></div>
+            </div>
+            <div class="s-roadmap-card">
+              <h3>Your Roadmap</h3>
+              <p>Nothing assigned yet — your counsellor will set this up after your first meeting.</p>
+              <div class="s-illustration">🗺️</div>
+            </div>
+            <div class="s-todo-panel">
+              <h4>To Do</h4>
+              <div style="font-size:11px; color:var(--ink-soft); text-align:center; padding:24px 0;">Nothing yet — check back after your first meeting with your counsellor.</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Genuinely sparse, and that's correct — Kabir's Roadmap and tasks don't exist until Rohan assigns them (PRD §4 UC1/UC2). Onboarding fills in who he is, not what he's supposed to do.</div><div class="cap-cite">v3 addition — first real dashboard after onboarding</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 10 · For comparison — an established dashboard</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar">
+          <div class="s-logo"><span></span></div>
+          <div class="s-home-btn">⌂</div>
+          <div class="s-navpill">
+            <div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div>
+          </div>
+          <div class="s-search-circle">⚲</div>
+          <div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div>
+        </div>
+        <div class="s-main">
+          <div class="s-dash-grid">
+            <div>
+              <div class="s-hero"><h3>Welcome back,<br>Ananya</h3><div class="s-hero-btn">Go to College Shortlist ↗</div></div>
+              <div class="s-grade-card"><h4>Grade 12</h4><div class="subs">Economics HL · Lang Lit HL · Maths SL · History HL</div><div class="f-link-btn">My Profile ↗</div></div>
+            </div>
+            <div class="s-roadmap-card">
+              <h3>Jump to Roadmap</h3>
+              <p>Let's pick up where you left off — keep going and get today's essay draft done.</p>
+              <div class="s-illustration">🗺️</div>
+              <div class="s-roadmap-btn">Go to Roadmap →</div>
+            </div>
+            <div class="s-todo-panel">
+              <h4>To Do</h4>
+              <div class="s-task-card"><div class="meta"><span>Task</span><span>Due today</span></div><div class="title">Finalise UPenn essay draft</div></div>
+              <div class="s-task-card"><div class="meta"><span>Task</span><span>Due in 3 days</span></div><div class="title">Complete UPenn supplements</div></div>
+              <div class="s-task-card"><div class="meta"><span>Task</span><span>Due in 8 days</span></div><div class="title">LSE scholarship form</div></div>
+              <div class="s-viewall">View all</div>
+            </div>
+          </div>
+          <div class="s-fab">+</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">One calm screen answers "what do I need to do next" — no separate spreadsheet or app to check. The + button adds a quick update for her counsellor. Shown here for comparison: Ananya, months into the same product, once a Roadmap and applications actually exist.</div><div class="cap-cite">PRD §5 User Story, Student — "sees her assigned tasks and deadlines whenever she wants"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 11 · If onboarding was skipped</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar">
+          <div class="s-logo"><span></span></div>
+          <div class="s-home-btn">⌂</div>
+          <div class="s-navpill">
+            <div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div>
+          </div>
+          <div class="s-search-circle">⚲</div>
+          <div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div>
+        </div>
+        <div class="s-main">
+          <div style="background:var(--terracotta-soft); border-radius:12px; padding:12px 16px; margin-bottom:14px; font-size:11.5px; color:var(--terracotta-dark); display:flex; justify-content:space-between; align-items:center;">
+            <span>Finish setting up your profile — 3 of 6 done</span><span style="font-weight:700;">Continue →</span>
+          </div>
+          <div class="s-dash-grid">
+            <div>
+              <div class="s-hero"><h3>Welcome,<br>Kabir</h3><div class="s-hero-btn">Go to My Profile ↗</div></div>
+              <div class="s-grade-card"><h4>Grade 11</h4><div class="subs">Computer Science HL · Mathematics HL · Physics SL · English SL</div></div>
+            </div>
+            <div class="s-roadmap-card">
+              <h3>Your Roadmap</h3>
+              <p>Nothing assigned yet — your counsellor will set this up after your first meeting.</p>
+              <div class="s-illustration">🗺️</div>
+            </div>
+            <div class="s-todo-panel">
+              <h4>To Do</h4>
+              <div style="font-size:11px; color:var(--ink-soft); text-align:center; padding:24px 0;">Nothing yet.</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">If Kabir had tapped "Skip for now" partway through instead, Home shows a banner rather than blocking him from anything — tapping Continue drops him back into the wizard at step 4, right where he left off.</div><div class="cap-cite">v3 addition — skippable/resumable onboarding, per the approved plan</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU2 ============ -->
+<div class="flow-section" id="su2">
+  <div class="flow-eyebrow">Student Journey · 2</div>
+  <h2 class="flow-title">Completing My Profile After the Discovery Session</h2>
+  <p class="flow-prd-quote">"The student notes or updates, which the student can add for the counsellor to review." Profile fields are "editable by both the assigned counsellor and the student, including historical fields."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · My Profile, after onboarding</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem active">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11 · Computer Science</div></div>
+          <div class="f-card" style="margin-top:14px;"><h4>Preferences</h4><div style="font-size:11px; color:var(--ink-soft);">Intended major and ECs already here from onboarding <span class="ai-badge" style="margin-left:4px;">AI</span> — preferred countries and career interest still open, waiting on the discovery meeting with Rohan.</div></div>
+          <div class="f-link-btn hl" style="margin-top:12px;">Edit My Preferences</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Onboarding already got the basics in (SU1); what's left is what only comes out in an actual conversation with a counsellor. He taps Edit My Preferences to add that after the meeting.</div><div class="cap-cite">PRD §8.1 Student Profile — student can edit own fields, including at first setup; v3 update — onboarding now covers major/EC/hobbies first</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Edit preferences</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem active">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Edit My Preferences</h4>
+          <div class="f-panel-field"><label>Intended Major <span class="ai-badge" style="margin-left:4px;">AI</span></label><div class="v">Computer Science, Entrepreneurship</div></div>
+          <div class="f-panel-field"><label>Extracurriculars &amp; Achievements <span class="ai-badge" style="margin-left:4px;">AI</span></label><div class="v">Robotics Club (Team Lead) · Debate Team (2 yrs) · Math Olympiad (Regional)</div></div>
+          <div class="f-panel-field"><label>Preferred Countries</label><div class="v">United Kingdom, Canada</div></div>
+          <div class="f-panel-field"><label>Career Interest</label><div class="v">Software engineering / entrepreneurship</div></div>
+          <div class="f-panel-field"><label>Test Scores &amp; Academic History</label><div class="v">PSAT: 1350 (Oct) · No SAT/ACT sat yet</div></div>
+          <div class="f-panel-save">Save</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Major and ECs are already there from onboarding (still editable, AI badge intact) — Preferred Countries, Career Interest, and Test Scores are what Kabir adds now, straight from what came up in the actual meeting.</div><div class="cap-cite">PRD §3 Users — Student "self-serves heavily"; v2/v3 addition — expanded profile fields, now split between onboarding and post-discovery-session</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Profile filled in</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem active">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>Kabir Singh</h2><div class="sub">Grade 11 · Computer Science · UK, Canada</div></div>
+          <div class="f-card" style="margin-top:14px;"><h4>Preferences</h4><div style="font-size:11px; color:var(--ink-soft);">Career interest: Software engineering / entrepreneurship</div></div>
+          <div class="f-card" style="margin-top:10px;"><h4>Extracurriculars &amp; Test Scores</h4><div class="f-pref-note-sm"><b>Extracurriculars:</b> Robotics club (Lead), debate team, Math Olympiad qualifier<br><b>Test Scores:</b> PSAT 1350 (Oct) · SAT planned Dec</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">His profile now reflects what he actually cares about — the same record Rohan sees on his side.</div><div class="cap-cite">PRD §4 UC1 — one shared workspace, not two separate copies</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Adding my own update</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem active">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>Notes</h2><div class="sub">Shared with Rohan Mehta</div></div>
+          <div class="f-note"><div class="head"><div class="dt">Sep 10</div><div class="ty">Discovery Session</div><span class="f-vis shared">👁 From Rohan</span></div><div class="txt">Strong interest in Computer Science confirmed; shortlist to focus on UK + Canada.</div></div>
+          <div class="f-note hl"><div class="head"><div class="dt">Today</div><div class="ty">My Update</div><span class="f-vis update">📝 My Update</span></div><div class="txt">Just found out about a robotics summer camp in Toronto — wanted to flag it for our next chat!</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir adds his own note between meetings — visible to Rohan the moment he next opens the profile, no separate email needed.</div><div class="cap-cite">Original brief §1 — "student notes or updates, which the student can add for the counsellor to review"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU3 ============ -->
+<div class="flow-section" id="su3">
+  <div class="flow-eyebrow">Student Journey · 3</div>
+  <h2 class="flow-title">Viewing My Roadmap &amp; Completing a Task</h2>
+  <p class="flow-prd-quote">"The student can mark tasks as started or completed, add comments, and upload drafts or evidence of completion."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · My Roadmap</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem active">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Roadmap</h2><div class="sub">Grade 11 · Summer</div></div>
+          <div class="f-milestone" style="margin-top:12px;"><div class="f-m-top"><div class="f-m-title">Profile setup</div><div class="f-m-bar"><div class="f-m-fill" style="width:100%"></div></div><div class="f-m-pct">100%</div></div></div>
+          <div class="f-milestone hl"><div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir sees exactly what Rohan assigned him — no "+ Add" button here; creating roadmap work stays a counsellor action.</div><div class="cap-cite">PRD §13 Permissions — Student: V, E (own progress), Co, U on Roadmap &amp; Tasks — not Create</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Task detail</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem active">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Roadmap</h2><div class="sub">Summer roadmap: research &amp; test prep</div></div>
+          <div class="f-milestone" style="margin-top:12px;">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div>
+            <div class="f-task-list">
+              <div class="f-task hl"><span class="dot progress"></span>Register for December SAT<span class="st">In Progress</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">He's just registered for the test and wants to mark it done. He opens the task to attach proof.</div><div class="cap-cite">PRD §8.2 Roadmap &amp; Tasks</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Upload evidence</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem active">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Register for December SAT</h4>
+          <div class="f-evidence-thumb">🖼️</div>
+          <div class="f-evidence-filename">sat_registration_confirmation.jpg</div>
+          <div class="f-panel-desc">Registered for Dec 7 test date at the downtown centre!</div>
+          <div class="f-seg"><div class="f-seg-btn">In Progress</div><div class="f-seg-btn active">Submit for Review</div></div>
+          <div class="f-panel-save">Submit</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">He attaches a real photo of his registration confirmation — not a placeholder — adds a comment, and submits it as done.</div><div class="cap-cite">PRD §2 Summer Roadmap — "upload drafts or evidence of completion"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Pending review</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem active">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Roadmap</h2><div class="sub">Summer roadmap: research &amp; test prep</div></div>
+          <div class="f-milestone" style="margin-top:12px;">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:40%"></div></div><div class="f-m-pct">40%</div></div>
+            <div class="f-task-list">
+              <div class="f-task hl"><span class="dot review"></span>Register for December SAT<span class="st">Pending Review</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">The task doesn't jump straight to Complete. It sits as Pending Review — Kabir's part is done, but it's Rohan's confirmation that closes it out.</div><div class="cap-cite">v2 addition — student ticks, counsellor confirms</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Confirmed by Rohan</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem active">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Roadmap</h2><div class="sub">Summer roadmap: research &amp; test prep</div></div>
+          <div class="f-confirm-banner">✓ Rohan confirmed "Register for December SAT" today</div>
+          <div class="f-milestone hl">
+            <div class="f-m-top"><div class="f-m-title">Summer roadmap: research &amp; test prep</div><div class="f-m-bar"><div class="f-m-fill" style="width:55%"></div></div><div class="f-m-pct">55%</div></div>
+            <div class="f-task-list">
+              <div class="f-task"><span class="dot complete"></span>Register for December SAT<span class="st">Complete</span></div>
+              <div class="f-task"><span class="dot pending"></span>Start extracurricular project portfolio<span class="st">Not Started</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Only after Rohan confirms does the milestone bar move and the task show Complete — nothing to relay in person, but nothing self-certified either.</div><div class="cap-cite">PRD §2 — "the counsellor can review submissions, provide feedback"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU4 ============ -->
+<div class="flow-section" id="su4">
+  <div class="flow-eyebrow">Student Journey · 4</div>
+  <h2 class="flow-title">Suggesting a University for My College Shortlist</h2>
+  <p class="flow-prd-quote">"The student can suggest universities, while the counsellor can review, approve, categorise, or flag concerns."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · College Shortlist</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem active">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>College Shortlist</h2><div class="sub">Ananya Kapoor</div></div>
+          <div class="f-add-btn hl" style="margin-top:12px;">+ Suggest a University</div>
+          <div class="f-uni"><div class="f-uni-top"><div class="f-uni-name">University of Pennsylvania</div><span class="f-pill purple">Reach</span><span class="f-pill ok">Converted</span></div><div class="f-uni-sub">PPE · Early Decision · Nov 1</div></div>
+          <div class="f-uni"><div class="f-uni-top"><div class="f-uni-name">London School of Economics</div><span class="f-pill blue">Target</span><span class="f-pill ok">Approved</span></div><div class="f-uni-sub">BSc International Relations · UCAS · Jan 15</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya read about Cornell's economics programme and wants to add it herself, rather than waiting for her next meeting with Rohan.</div><div class="cap-cite">PRD §4 UC4; PRD §3</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Suggest a University</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem active">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Suggest a University</h4>
+          <div class="f-panel-field"><label>University</label><div class="v">Cornell University</div></div>
+          <div class="f-panel-field"><label>Course</label><div class="v">Applied Economics &amp; Management</div></div>
+          <div class="f-panel-field"><label>Why I'm interested</label><div class="v">Great agricultural economics track, and closer to my cousin in NY.</div></div>
+          <div class="f-panel-save">Send to Counsellor</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Notice there's no Reach/Target/Safety selector here — that judgement call stays with Rohan, based on her academic standing.</div><div class="cap-cite">PRD §3 Product Requirements — "reach/target/safety... judgments are made entirely by the counsellor"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Awaiting review</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem active">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>College Shortlist</h2><div class="sub">Ananya Kapoor</div></div>
+          <div class="f-add-btn" style="margin-top:12px;">+ Suggest a University</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">Cornell University</div><span class="f-pill gray">Awaiting Review</span></div><div class="f-uni-sub">Applied Economics &amp; Management</div><div class="f-pref-note">Your note: "Great agricultural economics track, and closer to my cousin in NY."</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Her suggestion sits clearly as "Awaiting Review" — visible to her, but not yet categorised.</div><div class="cap-cite">PRD §8 Product Requirements — Shortlist Entry status lifecycle</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Rohan responds</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem active">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>College Shortlist</h2><div class="sub">Ananya Kapoor</div></div>
+          <div class="f-add-btn" style="margin-top:12px;">+ Suggest a University</div>
+          <div class="f-uni hl"><div class="f-uni-top"><div class="f-uni-name">Cornell University</div><span class="f-pill purple">Reach</span><span class="f-pill ok">Approved</span></div><div class="f-uni-sub">Applied Economics &amp; Management · USA · Jan 2</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">A day later, Rohan has reviewed it and confirmed it as a Reach option — the same screen, updated, no separate approval email.</div><div class="cap-cite">Mirrors the counsellor-side view of this exact moment shown in Use Case 4 of the counsellor storyboard</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Setting my priorities</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem active">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>What Do I Want Out of My List?</h4>
+          <div class="f-panel-field"><label>Top Priority</label><div class="v">Program strength</div></div>
+          <div class="f-panel-field"><label>Location</label><div class="v">Urban</div></div>
+          <div class="f-panel-field"><label>Financial Aid</label><div class="v">Needed</div></div>
+          <div class="f-panel-field"><label>Campus Culture</label><div class="v">Collaborative, not overly competitive</div></div>
+          <div class="f-panel-save">Save My Priorities</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">This is a preferences worksheet, not a suggester — Ananya records what matters to her, and Rohan still makes every Reach/Target/Safety call himself.</div><div class="cap-cite">v2 addition — structured shortlist preferences, no automated university matching</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU5 ============ -->
+<div class="flow-section" id="su5">
+  <div class="flow-eyebrow">Student Journey · 5</div>
+  <h2 class="flow-title">Checking In With My Counsellor</h2>
+  <p class="flow-prd-quote">Private counsellor notes stay "visible only to authorised counsellors." Shared meeting notes are "visible to both the counsellor and student."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Notes — shared only</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem active">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>Notes</h2><div class="sub">Meera Iyer · Shared with Rohan Mehta</div></div>
+          <div class="f-note" style="margin-top:12px;"><div class="head"><div class="dt">Oct 18</div><div class="ty">Check-in</div><span class="f-vis shared">👁 From Rohan</span></div><div class="txt">Reviewed mock exam results and impact on shortlist.</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Meera sees exactly one note from that day. Rohan's private observation about her mood exists — she simply never sees it; it isn't hidden behind a lock icon, it just isn't part of her view at all.</div><div class="cap-cite">PRD §13 Permissions — private notes are a field/record-level restriction, invisible on the student's own record</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Adding my own update</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem active">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>+ Add an Update</h4>
+          <div class="f-panel-desc">started revising for finals, chem feels better now than it did. can we look at my umass essay again this week??</div>
+          <div class="f-panel-row"><div class="f-panel-pill">Clean Up with AI</div></div>
+          <div class="f-panel-save">Send to Counsellor</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Meera writes an update in her own words instead of waiting for the next scheduled meeting. Clean-up is available here too, sized lighter than the counsellor's version since this isn't a formal meeting record.</div><div class="cap-cite">Original brief §1 — student updates "for the counsellor to review"; v3 addition — AI Note Clean-Up, student side (AI Integration Flow Plan §5, item 2.5)</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Cleaned up, ready to send</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem active">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>+ Add an Update</h4>
+          <div class="ai-note"><span class="lbl">✨ AI</span><span>Cleaned up — Undo</span></div>
+          <div class="f-panel-desc">I've started revising for finals and feel more confident about Chemistry now. Could we look at my UMass essay again this week?</div>
+          <div class="f-panel-save">Send to Counsellor</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Just a grammar/clarity tidy-up — not restructured into a formal note layout, since this is her own casual update, not a meeting record. Still editable, still her call to send.</div><div class="cap-cite">v3 addition — lighter version of the same preview-then-approve workflow</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Sent</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem active">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>Notes</h2><div class="sub">Meera Iyer · Shared with Rohan Mehta</div></div>
+          <div class="f-note" style="margin-top:12px;"><div class="head"><div class="dt">Oct 18</div><div class="ty">Check-in</div><span class="f-vis shared">👁 From Rohan</span></div><div class="txt">Reviewed mock exam results and impact on shortlist.</div></div>
+          <div class="f-note hl"><div class="head"><div class="dt">Today</div><div class="ty">My Update</div><span class="f-vis update">📝 My Update</span><span class="ai-badge" style="margin-left:6px;">AI</span></div><div class="txt">I've started revising for finals and feel more confident about Chemistry now. Could we look at my UMass essay again this week?</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Her update sits in the same shared timeline Rohan already checks — no separate inbox for either of them. The AI badge stays visible here too, same permanence rule as everywhere else.</div><div class="cap-cite">PRD §9 Notes &amp; Communication Architecture</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU6 ============ -->
+<div class="flow-section" id="su6">
+  <div class="flow-eyebrow">Student Journey · 6</div>
+  <h2 class="flow-title">Tracking My Application &amp; Responding to Feedback</h2>
+  <p class="flow-prd-quote">"Ananya uploads her personal statement draft... Rohan reviews it and leaves feedback directly against the roadmap task tied to that document."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · My Application</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Application</h2><div class="sub">Ananya Kapoor</div></div>
+          <div class="f-uni hl" style="margin-top:12px;"><div class="f-uni-top"><div class="f-uni-name">University of Pennsylvania</div><span class="f-pill warn">Awaiting Me</span></div><div class="f-uni-sub">PPE · Early Decision · Deadline Nov 1</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya can see exactly what's blocking submission — it's on her, not a mystery.</div><div class="cap-cite">PRD §13 Permissions — Student: V,C,Co,U on Applications</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Requirement needs revision</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>University of Pennsylvania</h2><div class="sub">PPE · Early Decision</div></div>
+          <div class="f-card" style="margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:11.5px;"><span>Personal Essay</span><span class="f-pill warn">Needs Revision</span></div>
+            <div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:11.5px;"><span>Transcript</span><span class="f-pill ok">Complete</span></div>
+            <div style="display:flex; justify-content:space-between; padding:7px 0; font-size:11.5px;"><span>Recommendation Letter</span><span class="f-pill ok">Complete</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Her essay needs another pass. She can see the recommendation is already in, without being able to open the letter itself.</div><div class="cap-cite">PRD §13 — recommendation final letter stays invisible to the student even while status is visible</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Re-upload</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Personal Essay — Requirement</h4>
+          <div class="f-doc-preview"><div class="ln"></div><div class="ln"></div><div class="ln"></div></div>
+          <div class="f-panel-desc">Incorporated your feedback on the third paragraph — connected it back to the policy fellowship like you suggested!</div>
+          <div class="f-panel-save">Submit Draft 4 for Review</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Ananya replies to the exact feedback she received, on the exact requirement it applies to.</div><div class="cap-cite">PRD §8.6 Task/Document Architecture — comments and feedback attach to the specific item</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Awaiting confirmation</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>University of Pennsylvania</h2><div class="sub">PPE · Early Decision</div></div>
+          <div class="f-card" style="margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; padding:7px 0; font-size:11.5px;"><span>Personal Essay</span><span class="f-pill review">Submitted — Awaiting Confirmation</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Her draft is back with Rohan, marked submitted on her end — but it stays in this state until he actually confirms it, not the moment she uploads it.</div><div class="cap-cite">v2 addition — student marks upload/submit, counsellor confirms + sets outcomes</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 5 · Confirmed complete</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>University of Pennsylvania</h2><div class="sub">PPE · Early Decision</div></div>
+          <div class="f-confirm-banner">✓ Rohan confirmed your Personal Essay today</div>
+          <div class="f-card">
+            <div style="display:flex; justify-content:space-between; padding:7px 0; font-size:11.5px;"><span>Personal Essay</span><span class="f-pill ok">Complete</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">She'll see the moment he confirms it — this requirement is done, and the application moves closer to ready-to-submit.</div><div class="cap-cite">PRD §4 UC7 Document Handoff, from the student's side of the same moment</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU7 ============ -->
+<div class="flow-section" id="su7">
+  <div class="flow-eyebrow">Student Journey · 7</div>
+  <h2 class="flow-title">Offer Received &amp; Recording My Decision</h2>
+  <p class="flow-prd-quote">From the original product brief — application outcome tracking continues "through interview preparation... offer conditions, deposits, final decisions."</p>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · Offer received</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Application</h2><div class="sub">Zara Khan</div></div>
+          <div class="f-uni hl" style="margin-top:12px;"><div class="f-uni-top"><div class="f-uni-name">University of Oxford</div><span class="f-pill ok">Offer Received</span></div><div class="f-uni-sub">Law (Jurisprudence)</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">After her interview, Zara's application has moved to Offer Received — she opens it to see the details.</div><div class="cap-cite">Continues her Interview Requested state from the counsellor storyboard</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Offer details</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Oxford — Offer Details</h4>
+          <div class="f-panel-field"><label>Conditions</label><div class="v">A*AA required at final results</div></div>
+          <div class="f-panel-field"><label>Deposit Deadline</label><div class="v">Jan 10</div></div>
+          <div class="f-panel-save">Record My Decision</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Conditions and the deposit deadline are right there — nothing to dig up in a separate offer letter PDF.</div><div class="cap-cite">Original brief §9 — "offer conditions, deposits, final decisions"</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Accept</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <h4>Record My Decision</h4>
+          <div class="f-seg"><div class="f-seg-btn active">Accept</div><div class="f-seg-btn">Decline</div></div>
+          <div class="f-panel-save">Confirm</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Zara records her own decision — a clear, deliberate action rather than an inferred status.</div><div class="cap-cite">PRD §8 Product Requirements — Offer &amp; Final Decision objects</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 4 · Confirmed</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem active">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-ws-header"><h2>My Application</h2><div class="sub">Zara Khan</div></div>
+          <div class="f-uni hl" style="margin-top:12px;"><div class="f-uni-top"><div class="f-uni-name">University of Oxford</div><span class="f-pill ok">Offer Accepted</span></div><div class="f-uni-sub">Law (Jurisprudence)</div></div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Rohan sees the same confirmed state instantly, without a phone call or a forwarded email.</div><div class="cap-cite">Closes the loop with the counsellor's Applications Centre view</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SU8 (NEW — requested addition, beyond the derived student journey) ============ -->
+<div class="flow-section" id="su8">
+  <div class="flow-eyebrow">New — Not Derived From the PRD</div>
+  <h2 class="flow-title">Responding to a Form</h2>
+  <div class="new-scope-banner">⚠ Scope note: forms aren't in the PRD. Shown as a to-do item on Home rather than a new nav tab, since the reference dashboard's nav has no Forms item — this keeps it contextual, the same way Documents stayed contextual rather than becoming its own tab.</div>
+  <div class="flow-row">
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 1 · A form appears on Home</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-todo-panel" style="max-width:340px; margin-top:20px;">
+            <h4>To Do</h4>
+            <div class="s-task-card"><div class="meta"><span><span class="f-ms-icon"></span>Form</span><span>New</span></div><div class="title">Summer Internship Interest Form</div></div>
+            <div class="s-task-card"><div class="meta"><span>Task</span><span>Due today</span></div><div class="title">Finalise UPenn essay draft</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir sees Rohan's form sitting alongside his other to-dos — one place to check, not a separate email with a link.</div><div class="cap-cite">New — forms surface as a to-do item rather than a new nav tab</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 2 · Filling it out</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main"></div>
+        <div class="f-dim"></div>
+        <div class="f-panel">
+          <div class="f-form-embed" style="background:var(--dark-soft); border-color:var(--dark-line);">
+            <div class="fh" style="color:#c7b8e0;"><span class="f-ms-icon"></span>Summer Internship Interest Form</div>
+            <div class="f-form-q" style="background:var(--dark-line);"><div class="ql" style="color:#fff;">Are you interested in a summer internship?</div><div class="f-form-choice" style="color:#ddd6cc;"><span class="rb on"></span>Yes</div><div class="f-form-choice" style="color:#ddd6cc;"><span class="rb"></span>No</div><div class="f-form-choice" style="color:#ddd6cc;"><span class="rb"></span>Not sure yet</div></div>
+          </div>
+          <div class="f-panel-desc">Software / tech startups — would love something hands-on.</div>
+          <div class="f-panel-save">Submit</div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">Kabir fills it out right inside the app — no separate account or external site to log into.</div><div class="cap-cite">New — Microsoft Forms embed, same form Rohan built in the counsellor view</div></div>
+    </div>
+
+    <div class="flow-arrow">→</div>
+
+    <div class="flow-step">
+      <div class="step-badge">Screen 3 · Submitted</div>
+      <div class="frame-wrapper"><div class="frame-canvas">
+        <div class="s-topbar"><div class="s-logo"><span></span></div><div class="s-home-btn">⌂</div><div class="s-navpill"><div class="s-navitem">Notes</div><div class="s-navitem">College Shortlist</div><div class="s-navitem">My Application</div><div class="s-navitem">Roadmap</div><div class="s-navitem">My Profile</div></div><div class="s-search-circle">⚲</div><div class="s-icons"><div class="s-icon">📅</div><div class="s-icon">👤</div></div></div>
+        <div class="s-main">
+          <div class="s-todo-panel" style="max-width:340px; margin-top:20px;">
+            <h4>To Do</h4>
+            <div class="s-task-card"><div class="meta"><span><span class="f-ms-icon"></span>Form</span><span class="f-pill ok" style="margin:0;">Complete</span></div><div class="title">Summer Internship Interest Form</div></div>
+            <div class="s-task-card"><div class="meta"><span>Task</span><span>Due today</span></div><div class="title">Finalise UPenn essay draft</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="flow-caption"><div class="cap-text">It drops off his active to-do list and Rohan sees the response land against Kabir's record on his side.</div><div class="cap-cite">New — response data stays inside the platform, no separate export for the counsellor to chase</div></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="closing">
+  <h3>Design choices worth flagging</h3>
+  <ul>
+    <li><b>Tick-then-confirm everywhere.</b> Roadmap/To-Do tasks and application requirements now follow the same pattern: the student marks something done or submitted, and it only counts as Complete once the counsellor confirms it.</li>
+    <li><b>Expanded profile.</b> Extracurriculars &amp; Achievements and Test Scores &amp; Academic History are now part of both the student's own profile editing and the counsellor's view of it.</li>
+    <li><b>Evidence uploads show a real visual.</b> Roadmap task evidence now previews as an actual thumbnail rather than a generic document placeholder.</li>
+    <li><b>Shortlist priorities, not a suggester.</b> Ananya can record what she wants out of her university list; it's a reference card for Rohan, not an automated recommendation engine.</li>
+    <li><b>Pop-ups now open centered.</b> Every panel in this document opens in the middle of the screen instead of pinned to the top right.</li>
+    <li><b>Forms stay contextual.</b> A new form shows up as a to-do item on Home, the same way Documents live inside Roadmap/Application context rather than getting their own nav tab.</li>
+    <li><b>No separate Documents page.</b> The reference nav has no "Documents" item, and neither does this storyboard — uploads happen contextually inside Roadmap tasks and Application requirements, matching the counsellor document's stance that documents belong to what they support, not to a standalone tab.</li>
+    <li><b>Gamification omitted.</b> The reference dashboard's streak and points icons aren't a described PRD feature, so they were left out rather than invented. Everything shown ties back to a real requirement.</li>
+    <li><b>Recommendations stay status-only.</b> The PRD marks the full recommendation module (questionnaire, teacher portal) Post-MVP — students see a status pill inside My Application (as shown in Student Journey 6), not a brag-sheet flow, consistent with that scoping.</li>
+    <li><b>Onboarding replaces cold profile fields, not the discovery conversation.</b> SU1's wizard captures age/grade/subjects/hobbies/major/EC list on day one; SU2 is now specifically what only comes out of an actual meeting with a counsellor (preferred countries, career interest, test scores) — the two no longer ask for the same thing twice.</li>
+    <li><b>AI badge is permanent, not a "needs review" flag.</b> Once a cleaned note, an extracted onboarding tag, or a normalized major is saved, the small <span class="ai-badge">AI</span> marker stays — it's a provenance record, not a to-do.</li>
+    <li><b>Four screens double as both sides of the same moment.</b> Suggesting Cornell, and the essay feedback loop, are the same events already shown from Rohan's side in the counsellor storyboard — shown here from Ananya's side, on purpose, so the two documents describe one product rather than two.</li>
+  </ul>
+</div>
+
+</body>
+</html>

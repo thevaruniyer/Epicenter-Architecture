@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Test / coverage artifacts
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel
+
+# Local tool/machine config (never commit)
+*.local.json
+.turbo/
+
+# OS / editor
+.DS_Store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.idea/
+.vscode/

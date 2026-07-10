@@ -1,0 +1,2495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Epicenter Education — UI/UX Doctrine V1</title>
+<style>
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,900&display=swap');
+:root{
+  --yellow:#EDC001; --paper:#FDFDFD; --ink:#000000; --muted:#5F5F59; --tertiary:#85857E;
+  --surface:#FFFFFF; --soft:#F5F5F2; --subtle:#FAFAF7; --line:#E8E8E2; --line-strong:#D7D7CF;
+  --complete-bg:#EAF2E9; --complete-border:#C9DDC8; --complete-ink:#49684D;
+  --overdue-bg:#F8E9E7; --overdue-border:#E8C4C0; --overdue-ink:#8A413B;
+  --pending-bg:#F1E9E9; --pending-border:#DDCECF; --pending-ink:#73595C;
+  --reach-bg:#FFF5C7; --reach-border:#ECD978; --reach-ink:#695600;
+  --target-bg:#EAF1F8; --target-border:#C8D8E8; --target-ink:#365A79;
+  --safety-bg:#EAF2E9; --safety-border:#C9DDC8; --safety-ink:#45664A;
+  --error-bg:#F8E7E5; --error-border:#E5B8B3; --error-ink:#8D352E;
+  --glass:rgba(255,255,255,.72); --glass-heavy:rgba(255,255,255,.84);
+  --shadow:0 14px 48px rgba(0,0,0,.055); --shadow-float:0 18px 60px rgba(0,0,0,.08);
+  --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:26px; --sidebar:316px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--paper)}
+body{margin:0;color:var(--ink);font-family:'Satoshi','Helvetica Neue',Arial,sans-serif;line-height:1.55;background:
+  radial-gradient(circle at 70% 0%,rgba(237,192,1,.12),transparent 25rem),
+  linear-gradient(180deg,#FDFDFD 0%,#FAFAF7 100%);text-rendering:optimizeLegibility}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+::selection{background:var(--yellow);color:#000}
+.app-shell{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:100vh}
+.sidebar-wrap{position:relative;padding:16px 0 16px 16px}
+.sidebar{position:sticky;top:16px;height:calc(100vh - 32px);overflow:auto;padding:24px 18px;border:1px solid rgba(0,0,0,.08);border-radius:var(--r-xl);background:rgba(253,253,253,.76);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow)}
+.brand-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}.brand-row strong{font-size:15px;letter-spacing:-.02em}.brand-row span{font-size:11px;font-weight:700;background:var(--yellow);padding:6px 9px;border-radius:999px}
+.sidebar h1{margin:0;font-size:28px;line-height:1.02;letter-spacing:-.045em}.sidebar .meta{margin:10px 0 22px;color:var(--muted);font-size:13px}
+.sidebar-rule{height:1px;background:var(--line);margin:0 0 18px}
+.nav-part{margin:0 0 16px}.nav-part-title{margin:0 8px 6px;color:var(--tertiary);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.nav-part a{display:block;margin:2px 0;padding:8px 10px;border:1px solid transparent;border-radius:12px;color:var(--muted);font-size:12px;text-decoration:none;transition:background 160ms ease,border-color 160ms ease,color 160ms ease,transform 160ms ease}
+.nav-part a:hover,.nav-part a:focus-visible{color:#000;background:rgba(255,255,255,.74);border-color:rgba(0,0,0,.06);outline:none}
+.nav-part a.active{color:#000;font-weight:700;background:rgba(255,255,255,.82);border-color:rgba(0,0,0,.08);box-shadow:0 8px 24px rgba(0,0,0,.04);position:relative}
+.nav-part a.active:before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:4px;border-radius:999px;background:var(--yellow)}
+.main{min-width:0;padding:16px 16px 80px 20px}.main-inner{max-width:1420px;margin:0 auto}
+.hero{position:relative;overflow:hidden;min-height:470px;padding:48px clamp(32px,5vw,74px);border:1px solid rgba(0,0,0,.08);border-radius:32px;background:rgba(255,255,255,.72);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:var(--shadow)}
+.hero-copy{position:relative;z-index:2;max-width:920px}.eyebrow{font-size:11px;font-weight:700;letter-spacing:.095em;text-transform:uppercase;color:var(--muted)}
+.hero h2{margin:22px 0 0;font-size:clamp(58px,7.5vw,112px);line-height:.89;letter-spacing:-.07em;font-weight:600;max-width:1000px}.hero p{max-width:760px;margin:30px 0 0;color:var(--muted);font-size:19px;line-height:1.55}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}.hero-meta span{padding:10px 14px;border:1px solid rgba(0,0,0,.08);border-radius:999px;background:rgba(255,255,255,.66);backdrop-filter:blur(12px);font-size:12px;font-weight:600}
+.hero-cards{position:absolute;right:52px;top:48px;z-index:3;display:grid;grid-template-columns:repeat(2,160px);gap:12px}.hero-card{min-height:124px;padding:18px;border:1px solid rgba(0,0,0,.08);border-radius:20px;background:rgba(255,255,255,.66);backdrop-filter:blur(18px);box-shadow:0 10px 32px rgba(0,0,0,.045);display:flex;align-items:flex-end;position:relative}.hero-card:after{content:'';position:absolute;left:18px;right:18px;bottom:12px;height:4px;border-radius:999px;background:var(--yellow)}.hero-card strong{font-size:20px;line-height:1.05;letter-spacing:-.03em;margin-bottom:12px}
+.practice{margin:18px 0;padding:36px;border:1px solid rgba(0,0,0,.08);border-radius:30px;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);box-shadow:var(--shadow)}
+.practice-head{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:48px;align-items:end}.practice h2{margin:10px 0 0;font-size:clamp(38px,4.5vw,64px);line-height:.98;letter-spacing:-.055em}.practice-head p{margin:0;color:var(--muted);font-size:16px}
+.practice-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:30px}.principle-card{min-height:160px;padding:20px;border:1px solid var(--line);border-radius:20px;background:#fff;display:flex;flex-direction:column;justify-content:space-between}.principle-card span{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted)}.principle-card strong{font-size:18px;line-height:1.15}.glass-principle{background:rgba(255,255,255,.64);backdrop-filter:blur(14px);box-shadow:var(--shadow)}
+.part-block{margin-top:54px}.part-header{position:sticky;top:16px;z-index:10;margin:0 0 14px;padding:13px 18px;border:1px solid rgba(0,0,0,.08);border-radius:999px;background:rgba(253,253,253,.82);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(0,0,0,.04);width:max-content;max-width:100%}.part-header span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.doctrine-section{margin:14px 0;padding:clamp(26px,4vw,54px);border:1px solid rgba(0,0,0,.08);border-radius:28px;background:rgba(255,255,255,.76);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:var(--shadow);scroll-margin-top:90px}
+.section-heading{margin-bottom:24px}.section-heading h2{margin:0;font-size:clamp(32px,4.3vw,58px);line-height:.98;letter-spacing:-.055em;font-weight:600;max-width:900px}
+.section-copy{max-width:960px}.section-copy h3{margin:38px 0 12px;font-size:24px;letter-spacing:-.025em}.section-copy h4{margin:28px 0 8px;font-size:17px}.section-copy p{max-width:850px;margin:0 0 14px;color:#242424;font-size:15.5px}.section-copy ul,.section-copy ol{max-width:850px;padding-left:22px;margin:12px 0 24px}.section-copy li{margin:7px 0}.section-copy strong{font-weight:700}.section-copy blockquote{margin:22px 0;padding:18px 20px;border-left:4px solid var(--yellow);border-radius:0 16px 16px 0;background:var(--soft)}.section-copy code{padding:2px 6px;border-radius:6px;background:var(--soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}.section-copy pre{overflow:auto;padding:18px;border-radius:16px;background:#111;color:#fff}.section-copy table{width:100%;border-collapse:separate;border-spacing:0;margin:20px 0 28px;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;font-size:13.5px}.section-copy th,.section-copy td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}.section-copy th:last-child,.section-copy td:last-child{border-right:0}.section-copy tr:last-child td{border-bottom:0}.section-copy th{background:var(--soft);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.specimen{margin:0 0 30px;padding:22px;border:1px solid rgba(0,0,0,.08);border-radius:22px;background:rgba(250,250,247,.82)}
+.specimen-colours{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.swatch{min-height:190px;padding:20px;border-radius:18px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}.swatch span{font-size:12px;font-weight:600}.swatch strong{font-size:19px;letter-spacing:-.025em}.swatch-yellow{background:var(--yellow)}.swatch-white{background:#FDFDFD}.swatch-black{background:#000;color:#fff}
+.status-line{display:flex;gap:8px;flex-wrap:wrap}.status{display:inline-flex;align-items:center;min-height:30px;padding:5px 10px;border-radius:999px;border:1px solid;font-size:11px;font-weight:700;white-space:nowrap}.complete,.safety{background:var(--complete-bg);border-color:var(--complete-border);color:var(--complete-ink)}.overdue{background:var(--overdue-bg);border-color:var(--overdue-border);color:var(--overdue-ink)}.pending{background:var(--pending-bg);border-color:var(--pending-border);color:var(--pending-ink)}.reach{background:var(--reach-bg);border-color:var(--reach-border);color:var(--reach-ink)}.target{background:var(--target-bg);border-color:var(--target-border);color:var(--target-ink)}
+.progress-example{margin-top:24px;padding:18px;border-radius:16px;background:#fff;border:1px solid var(--line)}.progress-copy{display:flex;justify-content:space-between;gap:16px;margin-bottom:12px}.progress-copy span{color:var(--muted);font-size:13px}.progress-track{height:8px;border-radius:999px;background:#EAEAE4;overflow:hidden}.progress-track>div{height:100%;border-radius:inherit;background:var(--yellow)}.progress-track.large{height:12px;margin:18px 0}
+.specimen-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.button{min-height:42px;padding:10px 16px;border-radius:12px;border:1px solid transparent;font-weight:700;font-size:13px;transition:transform 160ms ease,box-shadow 160ms ease,background 160ms ease}.button:hover{transform:translateY(-1px)}.button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}.button.primary{background:var(--yellow);color:#000}.button.secondary{background:#FFF8D2;border-color:#E6CF5A;color:#000}.button.tertiary{background:#fff;border-color:var(--line);color:#000}.button.destructive{background:var(--error-bg);border-color:var(--error-border);color:var(--error-ink)}.button.small{min-height:34px;padding:7px 11px;font-size:11px}
+.type-specimen>*{margin:8px 0}.type-display{font-size:52px;line-height:.98;letter-spacing:-.055em;font-weight:600}.type-title{font-size:34px;letter-spacing:-.04em;font-weight:600}.type-heading{font-size:22px;font-weight:600}.type-body{font-size:16px}.type-meta{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.spacing-specimen{display:flex;flex-wrap:wrap;gap:22px;align-items:end}.spacing-specimen div{display:flex;flex-direction:column;gap:8px;align-items:center;color:var(--muted);font-size:11px}.spacing-specimen i{display:block;height:52px;border-radius:6px;background:var(--yellow)}
+.surface-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:linear-gradient(130deg,rgba(237,192,1,.18),rgba(255,255,255,.8))}.surface{min-height:150px;padding:18px;border-radius:18px;display:flex;flex-direction:column;justify-content:space-between}.surface span{font-size:11px;color:var(--muted)}.surface strong{font-size:19px}.surface.flat{background:var(--surface);border:1px solid var(--line)}.surface.raised{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.surface.glass{background:rgba(255,255,255,.62);border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(18px);box-shadow:var(--shadow-float)}
+.glass-stage{position:relative;overflow:hidden;min-height:390px;padding:26px;background:radial-gradient(circle at 90% 10%,rgba(237,192,1,.42),transparent 14rem),linear-gradient(145deg,#F4F4EF,#FDFDFD)}.glass-stage:after{content:'';position:absolute;width:260px;height:260px;right:-80px;bottom:-100px;border:58px solid rgba(0,0,0,.05);border-radius:50%}.glass-nav{position:relative;z-index:2;display:flex;gap:6px;width:max-content;max-width:100%;padding:6px;border:1px solid rgba(0,0,0,.08);border-radius:999px;background:rgba(255,255,255,.62);backdrop-filter:blur(16px)}.glass-nav span{padding:8px 13px;border-radius:999px;font-size:12px}.glass-nav .active{background:rgba(255,255,255,.82);box-shadow:0 6px 18px rgba(0,0,0,.05);font-weight:700;position:relative}.glass-nav .active:after{content:'';position:absolute;left:18px;right:18px;bottom:3px;height:3px;border-radius:999px;background:var(--yellow)}.glass-card{position:relative;z-index:2;width:min(420px,100%);margin:82px 0 0 14%;padding:24px;border:1px solid rgba(0,0,0,.08);border-radius:22px;background:rgba(255,255,255,.62);backdrop-filter:blur(20px);box-shadow:var(--shadow-float)}.glass-card strong{display:block;margin:8px 0;font-size:25px}.glass-card p{color:var(--muted)}
+.motion-stage{display:grid;grid-template-columns:minmax(260px,.8fr) 1fr;gap:24px;align-items:center}.motion-card{min-height:160px;padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;transition:transform 180ms ease,box-shadow 180ms ease,border-color 180ms ease}.motion-card:hover,.motion-card:focus-within{transform:translateY(-4px);border-color:#D7C661;box-shadow:0 18px 44px rgba(0,0,0,.08)}.motion-card span{font-size:11px;color:var(--muted)}.motion-card strong{font-size:21px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.role-card{padding:24px;border:1px solid var(--line);border-radius:20px;background:#fff}.role-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted)}.role-card h4{font-size:24px;line-height:1.05;margin:14px 0 24px}.mini-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:13px}.student{background:linear-gradient(155deg,#fff,#FFF9DA)}.student-progress{display:flex;justify-content:space-between;margin-bottom:12px}.todo-mini{padding:16px;border:1px solid rgba(0,0,0,.08);border-radius:16px;background:rgba(255,255,255,.7);display:flex;flex-direction:column;gap:4px}.todo-mini small{color:var(--muted)}
+.mini-app{overflow:hidden;padding:0;background:#fff}.mini-sidebar{width:170px;flex:0 0 auto;padding:18px;background:#F7F7F2;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.mini-sidebar strong{margin-bottom:16px}.mini-sidebar span,.vertical-nav span{padding:8px 10px;border-radius:10px;font-size:11px}.mini-sidebar .selected,.vertical-nav .selected,.student-topbar .selected,.horizontal-nav .selected{background:rgba(255,255,255,.78);box-shadow:0 6px 18px rgba(0,0,0,.04);font-weight:700;border:1px solid rgba(0,0,0,.06);position:relative}.mini-sidebar .selected:before,.vertical-nav .selected:before{content:'';position:absolute;left:-1px;top:8px;bottom:8px;width:3px;background:var(--yellow);border-radius:999px}.counsellor-app{display:flex;min-height:390px}.mini-main{flex:1;padding:22px}.mini-top{display:flex;justify-content:space-between;align-items:flex-start}.mini-top div{display:flex;flex-direction:column}.mini-top span{font-size:11px;color:var(--muted)}.mini-top strong{font-size:22px}.counsellor-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-top:28px}.mini-panel{min-height:190px;padding:18px;border:1px solid var(--line);border-radius:18px;background:#fff}.mini-panel span{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--muted)}.mini-panel strong{display:block;margin:14px 0;font-size:21px}.mini-panel p{font-size:12px;color:var(--muted)}.calendar-panel{background:linear-gradient(150deg,#FFFBE6,#fff)}
+.student-app{min-height:390px}.student-topbar{display:flex;gap:8px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.74);backdrop-filter:blur(14px)}.student-topbar strong{margin-right:auto}.student-topbar span{padding:8px 11px;border-radius:999px;font-size:11px}.student-main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;padding:22px;background:linear-gradient(145deg,#FDFDFD,#FFFBE8)}.student-overview,.student-todo{padding:22px;border:1px solid rgba(0,0,0,.08);border-radius:20px;background:rgba(255,255,255,.72);backdrop-filter:blur(14px)}.student-overview h4{font-size:32px;line-height:1.02;margin:14px 0}.student-overview p{color:var(--muted)}.todo-item{padding:14px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}.todo-item:last-child{border-bottom:0}.todo-item small{color:var(--muted)}.todo-item.muted{opacity:.72}
+.admin-specimen{max-width:760px}.admin-row{display:grid;grid-template-columns:220px 1fr;padding:14px 0;border-bottom:1px solid var(--line)}.admin-row span{color:var(--muted)}.admin-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.nav-comparison{display:grid;grid-template-columns:1fr 1fr;gap:14px}.nav-demo{min-height:280px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}.professional{display:flex}.vertical-nav{width:140px;padding:16px;background:#F7F7F2;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.vertical-nav strong{margin-bottom:14px}.guided{display:flex;flex-direction:column}.horizontal-nav{display:flex;align-items:center;gap:6px;padding:14px;border-bottom:1px solid var(--line)}.horizontal-nav strong{margin-right:auto}.horizontal-nav span{padding:7px 10px;border-radius:999px;font-size:11px}.nav-content{flex:1;padding:22px;display:flex;flex-direction:column;justify-content:flex-end}.nav-content span{color:var(--muted);font-size:11px}.nav-content strong{font-size:24px}
+.anatomy{padding:0;overflow:hidden;background:#fff}.anatomy-head{padding:20px;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)}.anatomy-head div{display:flex;flex-direction:column}.anatomy-head span{font-size:11px;color:var(--muted)}.anatomy-head strong{font-size:23px}.anatomy-summary{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}.anatomy-summary div{padding:18px;border-right:1px solid var(--line);display:flex;flex-direction:column}.anatomy-summary div:last-child{border-right:0}.anatomy-summary span{font-size:10px;color:var(--muted)}.anatomy-work{padding:18px}.table-head,.table-row{display:grid;grid-template-columns:1.5fr .5fr .7fr;gap:12px;align-items:center;padding:12px;border-bottom:1px solid var(--line);font-size:12px}.table-head{color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.06em}
+.dashboard-principle{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.queue-card{min-height:190px;padding:20px;border:1px solid var(--line);border-radius:18px;background:#fff;display:flex;flex-direction:column}.queue-card span{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--muted)}.queue-card strong{font-size:28px;margin:18px 0}.queue-card p{margin-top:auto;color:var(--muted);font-size:13px}
+.editing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.editing-card{padding:18px;border:1px solid var(--line);border-radius:18px;background:#fff}.editing-card>span{font-size:10px;font-weight:700;color:var(--muted)}.editing-card label{display:flex;flex-direction:column;gap:8px;margin-top:18px;font-size:12px}.editing-card textarea{min-height:100px}.editing-card button{margin-top:12px}
+.confirmation-stage{display:grid;place-items:center;min-height:360px;background:linear-gradient(145deg,#F1F1EC,#FCFCF9)}.confirmation-card{width:min(520px,100%);padding:26px;border:1px solid rgba(0,0,0,.08);border-radius:22px;background:rgba(255,255,255,.78);backdrop-filter:blur(18px);box-shadow:var(--shadow-float)}.confirmation-card h4{font-size:28px;margin:14px 0}.confirmation-card p{color:var(--muted)}.confirmation-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:26px}
+.workflow-card{background:#fff}.workflow-title{display:flex;justify-content:space-between;gap:20px;align-items:start}.workflow-title div{display:flex;flex-direction:column}.workflow-title div span{font-size:10px;color:var(--muted);font-weight:700}.workflow-title strong{font-size:24px}.workflow-grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid var(--line);border-radius:16px;overflow:hidden}.workflow-grid div{padding:16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:5px}.workflow-grid div:nth-child(3n){border-right:0}.workflow-grid div:nth-last-child(-n+3){border-bottom:0}.workflow-grid span{font-size:10px;color:var(--muted)}.workflow-grid strong{font-size:13px}
+.form-specimen{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:#fff}.form-specimen label,.accessibility-stage label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600}.form-specimen .full{grid-column:1/-1}.form-actions{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center}.form-actions span{font-size:12px;color:var(--muted)}
+input,textarea,select{width:100%;border:1px solid var(--line-strong);border-radius:12px;background:#fff;color:#000;padding:11px 12px;outline:none}textarea{resize:vertical;min-height:110px}
+.task-specimen{padding:0;overflow:hidden;background:#fff}.task-row,.document-row{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}.task-row:last-child,.document-row:last-child{border-bottom:0}.task-row div,.document-row div{display:flex;flex-direction:column;gap:4px}.task-row div span,.document-row div span{font-size:9px;font-weight:700;letter-spacing:.07em;color:var(--muted)}.task-row small,.document-row small{color:var(--muted)}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.note-card{min-height:240px;padding:22px;border-radius:18px;background:#fff;display:flex;flex-direction:column}.note-card>span{font-size:10px;font-weight:700;letter-spacing:.07em}.note-card strong{font-size:22px;line-height:1.1;margin:20px 0 10px}.note-card p{color:var(--muted)}.note-card small{margin-top:auto;color:var(--muted)}.note-card.private{border:1.5px solid #000}.note-card.shared{border:1px solid var(--line)}
+.document-list{padding:0;overflow:hidden;background:#fff}
+.state-card{max-width:680px}.state-card h4{font-size:28px;margin:12px 0}.state-card p{color:var(--muted)}
+.loading-card{display:flex;flex-direction:column;gap:11px}.loading-card p{color:var(--muted);font-size:12px;margin:4px 0 0}.skeleton{display:block;height:14px;border-radius:999px;background:linear-gradient(90deg,#ECECE7,#F8F8F5,#ECECE7);background-size:220% 100%;animation:loading 1.4s linear infinite}.skeleton.wide{width:100%}.skeleton.medium{width:66%}.skeleton.short{width:38%}@keyframes loading{to{background-position:-220% 0}}
+.feedback{display:flex;align-items:center;gap:12px}.feedback strong{font-size:16px}.feedback span{color:var(--muted)}.feedback button{margin-left:auto}.success-feedback{background:var(--complete-bg);border-color:var(--complete-border)}.error-feedback{background:var(--error-bg);border-color:var(--error-border);color:var(--error-ink)}.error-feedback span{color:var(--error-ink)}
+.privacy-stage{min-height:330px;display:grid;place-items:center;background:linear-gradient(140deg,#F1F1EC,#fff)}.privacy-card{width:min(620px,100%);padding:28px;border:1.5px solid #000;border-radius:20px;background:rgba(255,255,255,.82);backdrop-filter:blur(16px)}.privacy-card>span{font-size:10px;font-weight:700;letter-spacing:.08em}.privacy-card h4{font-size:28px;margin:16px 0}.privacy-card p{color:var(--muted)}
+.ai-stage{background:#fff}.ai-review-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:18px}.ai-review-head>span:last-child{color:var(--muted);font-size:12px}.ai-label,.privacy-label,.glass-chip{display:inline-flex;width:max-content;padding:6px 9px;border-radius:999px;background:#000;color:#fff;font-size:10px;font-weight:700;letter-spacing:.065em}.ai-columns{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden}.ai-columns>div{padding:20px}.ai-columns>div:first-child{border-right:1px solid var(--line);background:var(--soft)}.ai-columns span{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--muted)}.ai-columns p{font-size:14px}.ai-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.accessibility-stage{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;align-items:center}.focus-demo{outline:3px solid var(--yellow);outline-offset:4px}.accessible-status{display:flex;align-items:center;gap:10px}.accessible-status strong{font-size:13px}
+.desktop-stage{display:grid;grid-template-columns:minmax(0,1.4fr) .6fr;gap:26px;align-items:center}.desktop-frame{aspect-ratio:16/9;border:8px solid #111;border-radius:18px;overflow:hidden;background:#fff;display:flex;box-shadow:var(--shadow-float)}.desktop-sidebar{width:22%;padding:16px;background:#F4F4EF;border-right:1px solid var(--line)}.desktop-sidebar span{display:block;height:10px;margin:0 0 12px;border-radius:999px;background:#D8D8D1}.desktop-content{flex:1;padding:18px}.desktop-content .bar{display:block;width:44%;height:16px;border-radius:999px;background:#111}.desktop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.desktop-grid span{height:90px;border-radius:12px;background:#F2F2ED;border:1px solid var(--line)}.table-line{display:block;height:14px;margin:9px 0;border-radius:999px;background:#ECECE7}.table-line.short{width:68%}.desktop-stage p{color:var(--muted)}
+.copy-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.copy-card{padding:22px;border-radius:18px;background:#fff}.copy-card>span{font-size:10px;font-weight:700;letter-spacing:.08em}.copy-card strong{display:block;margin:15px 0 8px;font-size:22px}.copy-card p{color:var(--muted)}.copy-card.preferred{border:1px solid var(--complete-border)}.copy-card.avoid{border:1px solid var(--error-border);opacity:.72}
+.component-board{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:#fff}.component-board input{width:190px}.glass-chip{background:rgba(255,255,255,.74);color:#000;border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(12px);box-shadow:0 6px 18px rgba(0,0,0,.04)}.privacy-label{background:#000}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;padding:1px;background:var(--line)}.review-grid div{min-height:110px;padding:18px;background:#fff;display:flex;flex-direction:column;justify-content:space-between}.review-grid span{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.07em}.review-grid strong{font-size:17px}
+@media(max-width:1180px){:root{--sidebar:270px}.hero-cards{display:none}.practice-grid{grid-template-columns:repeat(2,1fr)}.counsellor-grid,.dashboard-principle,.editing-grid{grid-template-columns:1fr}.student-main{grid-template-columns:1fr}.student-todo{order:-1}.accessibility-stage{grid-template-columns:1fr}.desktop-stage{grid-template-columns:1fr}.workflow-grid{grid-template-columns:1fr 1fr}.workflow-grid div{border-bottom:1px solid var(--line)!important}.workflow-grid div:nth-child(2n){border-right:0}.workflow-grid div:nth-child(3n){border-right:1px solid var(--line)}}
+@media(max-width:900px){.app-shell{display:block}.sidebar-wrap{padding:12px}.sidebar{position:relative;top:0;height:auto}.nav-part{display:none}.main{padding:0 12px 50px}.hero{min-height:auto;padding:36px 26px}.hero h2{font-size:58px}.practice-head{grid-template-columns:1fr}.role-grid,.nav-comparison,.notes-grid,.copy-grid,.surface-grid,.specimen-colours,.anatomy-summary{grid-template-columns:1fr}.professional{display:block}.vertical-nav{width:auto;flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.mini-app.counsellor-app{display:block}.mini-sidebar{width:auto;flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.section-heading{display:block}.ai-columns{grid-template-columns:1fr}.ai-columns>div:first-child{border-right:0;border-bottom:1px solid var(--line)}.form-specimen{grid-template-columns:1fr}.form-specimen .full,.form-actions{grid-column:auto}.practice-grid{grid-template-columns:1fr}.workflow-grid{grid-template-columns:1fr}.workflow-grid div{border-right:0!important}.review-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.hero h2{font-size:46px}.doctrine-section{padding:24px 18px}.practice{padding:26px 18px}.section-heading h2{font-size:34px}.type-display{font-size:38px}.student-topbar span:not(.selected){display:none}.student-main{padding:14px}.anatomy-head{display:block}.anatomy-head button{margin-top:16px}.table-head,.table-row{grid-template-columns:1fr}.status-line{align-items:flex-start}.review-grid{grid-template-columns:1fr}.workflow-title{display:block}.workflow-title>.status{margin-top:12px}.feedback{align-items:flex-start;flex-direction:column}.feedback button{margin-left:0}.desktop-frame{border-width:5px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+@media print{body{background:#fff}.sidebar-wrap,.practice,.specimen{display:none}.app-shell{display:block}.main{padding:0}.hero,.doctrine-section{border:0;box-shadow:none;background:#fff;backdrop-filter:none}.part-header{position:static;border:0;box-shadow:none;padding-left:0}.doctrine-section{break-inside:avoid-page}.hero:after{display:none}}
+
+.specimen{margin:18px 0 24px}
+.glass-panel{
+  padding:24px;
+  border:1px solid rgba(0,0,0,.09);
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.58));
+  box-shadow:0 14px 40px rgba(0,0,0,.055);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.glass-panel h4{margin:6px 0 10px;font-size:22px;line-height:1.18;letter-spacing:-.025em}
+.glass-panel p{margin-bottom:0}
+.specimen-kicker{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#5f5f59}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar-wrap">
+    <aside class="sidebar" aria-label="Doctrine navigation">
+      <div class="brand-row"><strong>EPICENTER.</strong><span>V1</span></div>
+      <h1>UI/UX<br>Doctrine</h1>
+      <p class="meta">Single-school pilot · Administrator, Counsellor, Student</p>
+      <div class="sidebar-rule"></div>
+      <nav><div class="nav-part"><div class="nav-part-title">FOUNDATION</div><a href="#1-purpose">1. Purpose</a><a href="#2-v1-product-boundary">2. V1 Product Boundary</a><a href="#3-source-of-truth-hierarchy">3. Source-of-Truth Hierarchy</a><a href="#4-product-experience-statement">4. Product Experience Statement</a><a href="#5-foundational-ux-principles">5. Foundational UX Principles</a></div><div class="nav-part"><div class="nav-part-title">PART I — VISUAL IDENTITY</div><a href="#6-core-colour-system">6. Core Colour System</a><a href="#7-semantic-colour-system">7. Semantic Colour System</a><a href="#8-action-colour-hierarchy">8. Action Colour Hierarchy</a><a href="#9-typography-doctrine">9. Typography Doctrine</a><a href="#10-spacing-and-layout">10. Spacing and Layout</a><a href="#11-shape-and-surface-language">11. Shape and Surface Language</a><a href="#12-glassmorphism-doctrine">12. Glassmorphism Doctrine</a><a href="#13-motion-doctrine">13. Motion Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART II — ROLE-SPECIFIC EXPERIENCE</div><a href="#14-shared-identity-different-character">14. Shared Identity, Different Character</a><a href="#15-counsellor-experience-doctrine">15. Counsellor Experience Doctrine</a><a href="#16-student-experience-doctrine">16. Student Experience Doctrine</a><a href="#17-administrator-experience-doctrine">17. Administrator Experience Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART III — NAVIGATION DOCTRINE</div><a href="#18-navigation-is-fixed-for-v1">18. Navigation Is Fixed for V1</a></div><div class="nav-part"><div class="nav-part-title">PART IV — PAGE AND CONTENT HIERARCHY</div><a href="#19-standard-page-anatomy">19. Standard Page Anatomy</a><a href="#20-dashboard-doctrine">20. Dashboard Doctrine</a><a href="#21-data-density-doctrine">21. Data Density Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART V — INTERACTION DOCTRINE</div><a href="#22-editing-model">22. Editing Model</a><a href="#23-confirmation-doctrine">23. Confirmation Doctrine</a><a href="#24-workflow-transparency">24. Workflow Transparency</a><a href="#25-form-doctrine">25. Form Doctrine</a><a href="#26-task-interaction-doctrine">26. Task Interaction Doctrine</a><a href="#27-notes-and-communication-doctrine">27. Notes and Communication Doctrine</a><a href="#28-document-interaction-doctrine">28. Document Interaction Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART VI — STATUS AND FEEDBACK</div><a href="#29-status-doctrine">29. Status Doctrine</a><a href="#30-empty-states">30. Empty States</a><a href="#31-loading-states">31. Loading States</a><a href="#32-success-feedback">32. Success Feedback</a><a href="#33-error-doctrine">33. Error Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART VII — PRIVACY AND TRUST</div><a href="#34-privacy-doctrine">34. Privacy Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART VIII — AI EXPERIENCE</div><a href="#35-core-ai-principle">35. Core AI Principle</a></div><div class="nav-part"><div class="nav-part-title">PART IX — ACCESSIBILITY</div><a href="#36-accessibility-standard">36. Accessibility Standard</a></div><div class="nav-part"><div class="nav-part-title">PART X — DESKTOP AND RESPONSIVE BEHAVIOUR</div><a href="#37-v1-desktop-doctrine">37. V1 Desktop Doctrine</a></div><div class="nav-part"><div class="nav-part-title">PART XI — UX WRITING</div><a href="#38-voice">38. Voice</a></div><div class="nav-part"><div class="nav-part-title">PART XII — COMPONENT SYSTEM</div><a href="#39-shared-design-system">39. Shared Design System</a></div><div class="nav-part"><div class="nav-part-title">PART XIII — GOVERNANCE</div><a href="#40-doctrine-authority">40. Doctrine Authority</a><a href="#41-doctrine-versioning">41. Doctrine Versioning</a><a href="#42-exception-process">42. Exception Process</a><a href="#43-mandatory-screen-review">43. Mandatory Screen Review</a></div><div class="nav-part"><div class="nav-part-title">PART XIV — DESIGN REVIEW CHECKLIST</div><a href="#44-purpose">44. Purpose</a><a href="#45-hierarchy">45. Hierarchy</a><a href="#46-role-fit">46. Role fit</a><a href="#47-navigation">47. Navigation</a><a href="#48-actions">48. Actions</a><a href="#49-workflow">49. Workflow</a><a href="#50-privacy">50. Privacy</a><a href="#51-ai">51. AI</a><a href="#52-accessibility">52. Accessibility</a><a href="#53-states">53. States</a><a href="#54-system-consistency">54. System consistency</a><a href="#55-final-decision-priority">55. Final Decision Priority</a><a href="#56-definition-of-done-for-v1-ui-ux">56. Definition of Done for V1 UI/UX</a><a href="#57-v1-design-summary">57. V1 Design Summary</a></div></nav>
+    </aside>
+  </div>
+  <main class="main">
+    <div class="main-inner">
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">ACTIVE SOURCE OF TRUTH · 9 JULY 2026</span>
+          <h2>Epicenter Education<br>UI/UX Doctrine.</h2>
+          <p>This doctrine defines the mandatory UI and UX principles for every Epicenter Education V1 screen, component, workflow, state, and frontend implementation.</p>
+          <div class="hero-meta"><span>#EDC001</span><span>#FDFDFD</span><span>#000000</span><span>Satoshi</span><span>Desktop + Laptop</span></div>
+        </div>
+        <div class="hero-cards" aria-label="Experience qualities">
+          <div class="hero-card"><strong>Calm</strong></div>
+          <div class="hero-card"><strong>Intelligent</strong></div>
+          <div class="hero-card"><strong>Aspirational</strong></div>
+          <div class="hero-card"><strong>Trustworthy</strong></div>
+        </div>
+      </header>
+      
+<section class="practice" aria-labelledby="practice-title">
+  <div class="practice-head">
+    <div><span class="eyebrow">THE DOCTRINE IN PRACTICE</span><h2 id="practice-title">Calm, intelligent, aspirational, trustworthy.</h2></div>
+    <p>The interface should reduce anxiety while increasing clarity. Counsellors, students, and administrators share one visual identity while receiving role-appropriate experiences.</p>
+  </div>
+  <div class="practice-grid">
+    <div class="principle-card"><span>VISUAL CHARACTER</span><strong>Calm, intelligent, aspirational, trustworthy.</strong></div>
+    <div class="principle-card glass-principle"><span>SURFACE LANGUAGE</span><strong>Rounded containers, soft borders, restrained glassmorphism.</strong></div>
+    <div class="principle-card"><span>ACTION HIERARCHY</span><strong>One primary action and up to two secondary actions.</strong></div><div class="principle-card glass-principle"><span>MANDATORY VISUAL REFERENCE</span><strong>Open and compare against the UI Inspiration folder before and during every screen build.</strong></div>
+    <div class="principle-card"><span>WORKFLOW</span><strong>Owner, status, due date, and next action remain visible.</strong></div>
+  </div>
+</section>
+
+      
+    <div class="part-block" id="foundation">
+      <div class="part-header"><span>FOUNDATION</span></div>
+      
+        <section class="doctrine-section" id="1-purpose">
+          <div class="section-heading"><h2>1. Purpose</h2></div>
+          
+          <div class="section-copy"><p>This doctrine defines the mandatory UI and UX principles for Epicenter Education V1.</p><p>It governs every V1:</p><ul>
+<li>Screen</li>
+<li>Page</li>
+<li>Dashboard</li>
+<li>User flow</li>
+<li>Navigation pattern</li>
+<li>Form</li>
+<li>Component</li>
+<li>Interaction</li>
+<li>Status</li>
+<li>Message</li>
+<li>Empty state</li>
+<li>Loading state</li>
+<li>Error state</li>
+<li>AI-assisted experience</li>
+<li>Counsellor experience</li>
+<li>Student experience</li>
+<li>Administrator experience</li>
+</ul><p>This is not an inspiration document. It is the design decision system for the product.</p><p>All frontend work must follow it. A visually attractive screen that violates this doctrine is not an approved Epicenter Education screen.</p><p>When a design decision is unclear, use this doctrine before:</p><ul>
+<li>Personal taste</li>
+<li>Default component-library styling</li>
+<li>An older storyboard treatment</li>
+<li>Developer convenience</li>
+<li>A generic SaaS convention</li>
+<li>A pattern copied from another school product</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="2-v1-product-boundary">
+          <div class="section-heading"><h2>2. V1 Product Boundary</h2></div>
+          
+          <div class="section-copy"><p>Epicenter Education V1 is a shared workspace for one school’s college counselling team and its Grade 11 and Grade 12 students.</p><p>V1 has three active roles:</p><ol type="1">
+<li>Administrator</li>
+<li>Counsellor</li>
+<li>Student</li>
+</ol><p>The product is designed around a continuously updated student workspace containing the student’s profile, roadmap, tasks, shortlist, applications, documents, notes, academic history, deadlines, and progress.</p><p>The Student is the primary product object.</p><p>Every task, note, roadmap milestone, university choice, application, document, risk, and update must remain connected to the relevant student.</p><p>The product must not become a collection of disconnected modules.</p><h3 id="21-v1-design-boundary">2.1 V1 design boundary</h3><p>This doctrine applies only to screens and flows approved for V1.</p><p>It does not authorise a designer or developer to introduce a new:</p><ul>
+<li>User role</li>
+<li>Navigation area</li>
+<li>Dashboard</li>
+<li>Workflow</li>
+<li>Integration</li>
+<li>Reporting surface</li>
+<li>Communication channel</li>
+<li>Mobile experience</li>
+<li>Feature module</li>
+</ul><p>A new feature requires an approved product-scope change before it receives a UI.</p><h3 id="22-v1-device-boundary">2.2 V1 device boundary</h3><p>V1 is designed for laptop and desktop browsers.</p><p>No dedicated mobile or tablet interface is required in V1.</p><p>The product must still remain usable at 200% browser zoom and at common laptop resolutions.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="3-source-of-truth-hierarchy">
+          <div class="section-heading"><h2>3. Source-of-Truth Hierarchy</h2></div>
+          
+          <div class="section-copy"><p>When project documents conflict, use the following order:</p><ol type="1">
+<li><strong>Epicenter Education PRD V1</strong> defines the problem, V1 roles, permissions, product scope, goals, and non-goals.</li>
+<li><strong>V3 Counsellor and Student Flow Storyboards</strong> define approved screen structure, fields, flow sequence, and role-specific journeys.</li>
+<li><strong>AI Integrations Specification and AI Integration Flow Plan</strong> define approved AI behaviour, triggers, review rules, visibility, and provenance.</li>
+<li><strong>This UI/UX Doctrine</strong> defines visual identity, hierarchy, interaction quality, accessibility, component behaviour, and state communication.</li>
+<li><strong>The <code>UI Inspiration</code> folder</strong> is the mandatory visual reference library for translating the approved flows and this doctrine into real screens.</li>
+<li><strong>The shared design system</strong> implements the doctrine through tokens and reusable components.</li>
+<li><strong>Individual screen files and frontend code</strong> must comply with all layers above.</li>
+</ol><h3 id="31-conflict-rules">3.1 Conflict rules</h3><ul>
+<li>If this doctrine conflicts with an old storyboard’s colours, typography, spacing, surfaces, or interaction styling, this doctrine wins.</li>
+<li>If this doctrine conflicts with the approved order or purpose of a V3 flow, the V3 flow wins unless the Product Owner changes that flow.</li>
+<li>The <code>UI Inspiration</code> folder guides visual execution but does not override the PRD, approved V3 flows, permissions, accessibility requirements, or this doctrine.</li>
+<li>If a proposed screen is absent from the approved V1 flows, it is not added merely because it may be useful later.</li>
+<li>A component-library default never overrides the Epicenter design system.</li>
+</ul>
+<h3 id="32-mandatory-ui-inspiration-reference">3.2 Mandatory <code>UI Inspiration</code> reference</h3>
+<div class="specimen glass-panel">
+  <div class="specimen-kicker">CLAUDE CODE BUILD RULE</div>
+  <h4>Do not design a screen from memory or from generic SaaS defaults.</h4>
+  <p>Before building or revising any frontend screen, open the <code>UI Inspiration</code> folder, identify the closest relevant example, and compare the implementation against that example throughout the build.</p>
+</div>
+<p>Claude Code must treat the <code>UI Inspiration</code> folder as an active working reference, not as a folder that is reviewed once and then ignored.</p>
+<p>For every screen or flow, Claude Code must:</p>
+<ol type="1">
+<li>Open the relevant files in <code>UI Inspiration</code> before writing the screen.</li>
+<li>Identify which example most closely matches the page type, user role, and interaction being built.</li>
+<li>Use the example to guide composition, page proportions, spacing, typography scale, field placement, card treatment, glassmorphic surfaces, navigation behaviour, interaction rhythm, and visual density.</li>
+<li>Translate the reference into Epicenter Education using the colours, Satoshi typography, semantic states, accessibility rules, and component rules in this doctrine.</li>
+<li>Re-open the reference after the first implementation pass and compare the screen side by side before considering it complete.</li>
+<li>Name the reference file or files used in the implementation notes or pull-request summary.</li>
+</ol>
+<h4>Login and onboarding are fidelity-reference pages</h4>
+<p>The Login and Student Onboarding experiences must be built directly from the closest approved examples stored in <code>UI Inspiration</code>.</p>
+<p>For these pages, “reference” means close visual and interaction replication of the approved example’s:</p>
+<ul>
+<li>Overall composition and alignment</li>
+<li>Content hierarchy</li>
+<li>Field and control placement</li>
+<li>Step progression and progress treatment</li>
+<li>Spacing and negative space</li>
+<li>Card and glass-surface proportions</li>
+<li>Typography scale and visual rhythm</li>
+<li>Primary-action placement</li>
+<li>Transition behaviour</li>
+</ul>
+<p>Claude Code should not merely create a generic login page or a generic onboarding wizard that happens to use Epicenter colours. It must begin with the approved visual example and adapt it faithfully to Epicenter Education’s product copy, flows, data, and doctrine.</p>
+<h4>What must not be copied</h4>
+<p>Do not copy:</p>
+<ul>
+<li>Unrelated product features</li>
+<li>External brand names or logos</li>
+<li>Incorrect copy or data</li>
+<li>Decorative assets that are not approved for Epicenter Education V1</li>
+<li>Interaction patterns that conflict with the approved flow, privacy rules, or accessibility standards</li>
+</ul>
+<p>If several UI examples conflict, use the example closest to the exact screen type and approved V1 flow. If the correct interpretation remains unclear, stop and ask the Product Owner rather than inventing a new pattern.</p>
+<hr/></div>
+        </section>
+        <section class="doctrine-section" id="4-product-experience-statement">
+          <div class="section-heading"><h2>4. Product Experience Statement</h2></div>
+          
+          <div class="section-copy"><p>Epicenter Education should feel:</p><ul>
+<li>Calm</li>
+<li>Intelligent</li>
+<li>Aspirational</li>
+<li>Trustworthy</li>
+<li>Minimal</li>
+<li>Premium</li>
+<li>Human</li>
+<li>Purposeful</li>
+</ul><p>Epicenter Education must never feel:</p><ul>
+<li>Corporate</li>
+<li>Bureaucratic</li>
+<li>Institutional</li>
+<li>Childish</li>
+<li>Overly gamified</li>
+<li>Visually loud</li>
+<li>Mechanically cold</li>
+<li>Like a generic school ERP</li>
+<li>Like a spreadsheet placed inside cards</li>
+<li>Like an analytics dashboard with no clear action</li>
+</ul><p>The interface should reduce anxiety while increasing clarity.</p><p>The user should feel that the product understands the complexity of university applications without transferring that complexity into the interface.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="5-foundational-ux-principles">
+          <div class="section-heading"><h2>5. Foundational UX Principles</h2></div>
+          
+          <div class="section-copy"><h3 id="51-student-journey-first">5.1 Student journey first</h3><p>The student journey is the central organising principle.</p><p>Information should be found in one of two ways:</p><ol type="1">
+<li>By entering an individual student workspace</li>
+<li>By querying across students from a counsellor portfolio view</li>
+</ol><p>Do not create isolated feature areas that require the user to reconstruct student context manually.</p><h3 id="52-calm-through-prioritisation">5.2 Calm through prioritisation</h3><p>Calm does not mean hiding work.</p><p>Calm is created by:</p><ul>
+<li>Clear hierarchy</li>
+<li>Meaningful grouping</li>
+<li>Restrained colour</li>
+<li>Progressive disclosure</li>
+<li>Limited competing actions</li>
+<li>Explicit ownership</li>
+<li>Clear next steps</li>
+</ul><p>A calm screen may still contain significant information, but it must never feel uncontrolled.</p><h3 id="53-action-before-analytics">5.3 Action before analytics</h3><p>Every operational screen must help the user act.</p><p>Prioritise:</p><ul>
+<li>Students needing attention</li>
+<li>Work awaiting review</li>
+<li>Overdue work</li>
+<li>Upcoming deadlines</li>
+<li>Blocked progress</li>
+<li>Current ownership</li>
+<li>Clear next actions</li>
+</ul><p>Charts are permitted only when they support a specific decision.</p><p>Decorative charts are prohibited.</p><h3 id="54-next-action-clarity">5.4 Next action clarity</h3><p>Every major object should make the next action understandable.</p><p>The user should not need to infer the next step by combining several statuses.</p><p>Where relevant, display:</p><ul>
+<li>Current status</li>
+<li>Current owner</li>
+<li>Who acts next</li>
+<li>Due date</li>
+<li>Blocking issue</li>
+<li>Expected outcome after completion</li>
+</ul><h3 id="55-progressive-disclosure">5.5 Progressive disclosure</h3><p>Show the most decision-relevant information first.</p><p>Reveal secondary detail through:</p><ul>
+<li>Tabs</li>
+<li>Expandable sections</li>
+<li>Side drawers</li>
+<li>Detail pages</li>
+<li>Context panels</li>
+<li>Tooltips for clarification only</li>
+</ul><p>Do not place every available field on the initial screen.</p><h3 id="56-context-over-navigation">5.6 Context over navigation</h3><p>Actions should happen close to the object they affect.</p><p>Examples:</p><ul>
+<li>Document feedback belongs with the document or task it supports.</li>
+<li>Application requirements belong within the relevant application.</li>
+<li>Notes belong in the relevant student and meeting context.</li>
+<li>Task comments belong with the task.</li>
+<li>Shortlist decisions belong with the university-course entry.</li>
+</ul><p>Do not create a permanent top-level navigation item for every object type.</p><h3 id="57-preserve-history">5.7 Preserve history</h3><p>The product exists partly to replace unreliable memory.</p><p>Important changes must not silently erase the previous state.</p><p>History is required for:</p><ul>
+<li>Notes</li>
+<li>Grades and predicted grades</li>
+<li>Roadmaps</li>
+<li>Task status</li>
+<li>Shortlist category</li>
+<li>Application status</li>
+<li>Documents and submitted evidence</li>
+<li>Counsellor assignment</li>
+<li>AI-assisted consequential content</li>
+</ul><h3 id="58-privacy-is-visible">5.8 Privacy is visible</h3><p>Privacy must be enforced technically and communicated visually.</p><p>The user must know who can see what they are entering before they save it.</p><h3 id="59-accessibility-is-a-product-requirement">5.9 Accessibility is a product requirement</h3><p>Accessibility is not a final-stage visual check.</p><p>A screen that cannot be operated with a keyboard, understood without colour, or used at 200% zoom is incomplete.</p><h3 id="510-one-system-role-appropriate-experiences">5.10 One system, role-appropriate experiences</h3><p>Counsellors, students, and administrators use the same visual identity and component system.</p><p>Their interfaces differ in:</p><ul>
+<li>Density</li>
+<li>Navigation shell</li>
+<li>Language</li>
+<li>Information priority</li>
+<li>Level of guidance</li>
+</ul><p>They must not feel like unrelated products.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-i-visual-identity">
+      <div class="part-header"><span>PART I — VISUAL IDENTITY</span></div>
+      
+        <section class="doctrine-section" id="6-core-colour-system">
+          <div class="section-heading"><h2>6. Core Colour System</h2></div>
+          
+    <div class="specimen specimen-colours" aria-label="Core colour system example">
+      <div class="swatch swatch-yellow"><span>#EDC001</span><strong>Epicenter Yellow</strong></div>
+      <div class="swatch swatch-white"><span>#FDFDFD</span><strong>Primary Surface</strong></div>
+      <div class="swatch swatch-black"><span>#000000</span><strong>Primary Ink</strong></div>
+    </div>
+          <div class="section-copy"><h3 id="61-brand-foundation">6.1 Brand foundation</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+<th>Primary use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>brand-yellow</code></td>
+<td style="text-align: right;"><code>#EDC001</code></td>
+<td>Primary actions, selected emphasis, progress, important highlights</td>
+</tr>
+<tr class="even">
+<td><code>surface-primary</code></td>
+<td style="text-align: right;"><code>#FDFDFD</code></td>
+<td>Main application background</td>
+</tr>
+<tr class="odd">
+<td><code>ink-primary</code></td>
+<td style="text-align: right;"><code>#000000</code></td>
+<td>Primary text, icons, strong contrast, secondary brand colour</td>
+</tr>
+</tbody>
+</table><p>These three colours are the visual foundation of Epicenter Education V1.</p><h3 id="62-supporting-neutrals">6.2 Supporting neutrals</h3><p>The following are the initial V1 token values.</p><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>surface-raised</code></td>
+<td style="text-align: right;"><code>#FFFFFF</code></td>
+<td>Raised cards, menus, drawers, modal surfaces</td>
+</tr>
+<tr class="even">
+<td><code>surface-muted</code></td>
+<td style="text-align: right;"><code>#F5F5F2</code></td>
+<td>Secondary sections, neutral callouts, input backgrounds</td>
+</tr>
+<tr class="odd">
+<td><code>surface-subtle</code></td>
+<td style="text-align: right;"><code>#FAFAF7</code></td>
+<td>Very light grouping surface</td>
+</tr>
+<tr class="even">
+<td><code>border-soft</code></td>
+<td style="text-align: right;"><code>#E8E8E2</code></td>
+<td>Default borders and dividers</td>
+</tr>
+<tr class="odd">
+<td><code>border-strong</code></td>
+<td style="text-align: right;"><code>#D7D7CF</code></td>
+<td>Active or structural boundaries</td>
+</tr>
+<tr class="even">
+<td><code>ink-secondary</code></td>
+<td style="text-align: right;"><code>#5F5F59</code></td>
+<td>Secondary body text</td>
+</tr>
+<tr class="odd">
+<td><code>ink-tertiary</code></td>
+<td style="text-align: right;"><code>#85857E</code></td>
+<td>Metadata and low-priority labels</td>
+</tr>
+<tr class="even">
+<td><code>disabled-surface</code></td>
+<td style="text-align: right;"><code>#F0F0EC</code></td>
+<td>Disabled controls</td>
+</tr>
+<tr class="odd">
+<td><code>disabled-ink</code></td>
+<td style="text-align: right;"><code>#9A9A94</code></td>
+<td>Disabled text</td>
+</tr>
+</tbody>
+</table><p>Neutral tokens should retain a slightly warm character rather than feeling blue-grey or clinical.</p><h3 id="63-yellow-usage-rule">6.3 Yellow usage rule</h3><p>Epicenter Yellow is a high-attention colour.</p><p>Use it for:</p><ul>
+<li>The primary action</li>
+<li>Selected emphasis</li>
+<li>Student progress</li>
+<li>Key milestones</li>
+<li>Important active indicators</li>
+<li>Focused highlights</li>
+</ul><p>Do not use it for:</p><ul>
+<li>Large page backgrounds</li>
+<li>Every card</li>
+<li>Long text blocks</li>
+<li>Destructive actions</li>
+<li>Errors</li>
+<li>Decorative saturation</li>
+<li>Several competing actions on the same screen</li>
+</ul><p>Yellow should guide attention, not dominate it.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="7-semantic-colour-system">
+          <div class="section-heading"><h2>7. Semantic Colour System</h2></div>
+          
+    <div class="specimen">
+      <div class="status-line">
+        <span class="status complete">Completed</span>
+        <span class="status overdue">3 days overdue</span>
+        <span class="status pending">Pending review</span>
+        <span class="status reach">Reach</span>
+        <span class="status target">Target</span>
+        <span class="status safety">Safety</span>
+      </div>
+      <div class="progress-example">
+        <div class="progress-copy"><strong>Student progress</strong><span>6 of 10 milestones complete</span></div>
+        <div class="progress-track"><div style="width:60%"></div></div>
+      </div>
+    </div>
+          <div class="section-copy"><p>Semantic colours communicate state. They must remain calm, muted, and readable.</p><p>Colour is never the sole state indicator.</p><h3 id="71-completed-work">7.1 Completed work</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>complete-bg</code></td>
+<td style="text-align: right;"><code>#EAF2E9</code></td>
+</tr>
+<tr class="even">
+<td><code>complete-border</code></td>
+<td style="text-align: right;"><code>#C9DDC8</code></td>
+</tr>
+<tr class="odd">
+<td><code>complete-ink</code></td>
+<td style="text-align: right;"><code>#49684D</code></td>
+</tr>
+</tbody>
+</table><p>Use with:</p><ul>
+<li>Check icon</li>
+<li>“Completed” or equivalent label</li>
+<li>Completion date where relevant</li>
+</ul><h3 id="72-overdue-work">7.2 Overdue work</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>overdue-bg</code></td>
+<td style="text-align: right;"><code>#F8E9E7</code></td>
+</tr>
+<tr class="even">
+<td><code>overdue-border</code></td>
+<td style="text-align: right;"><code>#E8C4C0</code></td>
+</tr>
+<tr class="odd">
+<td><code>overdue-ink</code></td>
+<td style="text-align: right;"><code>#8A413B</code></td>
+</tr>
+</tbody>
+</table><p>Use a calm red rather than a bright alarm red.</p><p>The interface should communicate urgency without creating panic.</p><h3 id="73-pending-review">7.3 Pending review</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pending-bg</code></td>
+<td style="text-align: right;"><code>#F1E9E9</code></td>
+</tr>
+<tr class="even">
+<td><code>pending-border</code></td>
+<td style="text-align: right;"><code>#DDCECF</code></td>
+</tr>
+<tr class="odd">
+<td><code>pending-ink</code></td>
+<td style="text-align: right;"><code>#73595C</code></td>
+</tr>
+</tbody>
+</table><p>Pending review should feel unresolved, not dangerous.</p><h3 id="74-reach-university">7.4 Reach university</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>reach-bg</code></td>
+<td style="text-align: right;"><code>#FFF5C7</code></td>
+</tr>
+<tr class="even">
+<td><code>reach-border</code></td>
+<td style="text-align: right;"><code>#ECD978</code></td>
+</tr>
+<tr class="odd">
+<td><code>reach-ink</code></td>
+<td style="text-align: right;"><code>#695600</code></td>
+</tr>
+</tbody>
+</table><p>Reach uses a calm yellow family distinct from the stronger action yellow.</p><h3 id="75-target-university">7.5 Target university</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>target-bg</code></td>
+<td style="text-align: right;"><code>#EAF1F8</code></td>
+</tr>
+<tr class="even">
+<td><code>target-border</code></td>
+<td style="text-align: right;"><code>#C8D8E8</code></td>
+</tr>
+<tr class="odd">
+<td><code>target-ink</code></td>
+<td style="text-align: right;"><code>#365A79</code></td>
+</tr>
+</tbody>
+</table><h3 id="76-safety-university">7.6 Safety university</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>safety-bg</code></td>
+<td style="text-align: right;"><code>#EAF2E9</code></td>
+</tr>
+<tr class="even">
+<td><code>safety-border</code></td>
+<td style="text-align: right;"><code>#C9DDC8</code></td>
+</tr>
+<tr class="odd">
+<td><code>safety-ink</code></td>
+<td style="text-align: right;"><code>#45664A</code></td>
+</tr>
+</tbody>
+</table><p>Reach, Target, and Safety must always be written as text.</p><p>Colour alone is insufficient.</p><h3 id="77-student-progress">7.7 Student progress</h3><p>Use <code>brand-yellow</code> for progress fills and active milestone indicators.</p><p>Progress tracks should use a neutral background.</p><p>Progress must be paired with:</p><ul>
+<li>A percentage</li>
+<li>A completed/total count</li>
+<li>A milestone label</li>
+<li>Or an equivalent text explanation</li>
+</ul><h3 id="78-private-information">7.8 Private information</h3><p>Private information uses black as its semantic anchor.</p><p>Use:</p><ul>
+<li>Black lock icon</li>
+<li>Explicit audience label</li>
+<li>Neutral surface</li>
+<li>Black or dark border accent</li>
+<li>Clear privacy statement</li>
+</ul><p>Example:</p><blockquote>
+<p>Private note · Visible only to authorised counsellors</p>
+</blockquote><p>Do not rely on a colour tint alone.</p><h3 id="79-shared-information">7.9 Shared information</h3><p>Shared information uses black text on a neutral surface.</p><p>It must include a clear audience statement where confusion is possible.</p><p>Example:</p><blockquote>
+<p>Shared with student</p>
+</blockquote><h3 id="710-ai-assisted-content">7.10 AI-assisted content</h3><p>AI-assisted content uses black as the primary semantic treatment.</p><p>Use:</p><ul>
+<li>Minimal sparkle icon</li>
+<li>“AI-assisted” or “AI-generated” label</li>
+<li>Neutral surface</li>
+<li>Visible review state where relevant</li>
+<li>Permanent internal provenance record</li>
+</ul><p>Do not use a magical gradient, neon accent, or promotional visual language.</p><h3 id="711-informational-messages">7.11 Informational messages</h3><p>Informational messages use black text and neutral or lightly tinted surfaces.</p><p>They must not resemble:</p><ul>
+<li>Errors</li>
+<li>Warnings</li>
+<li>Destructive confirmations</li>
+</ul><h3 id="712-error-colour">7.12 Error colour</h3><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>error-bg</code></td>
+<td style="text-align: right;"><code>#F8E7E5</code></td>
+</tr>
+<tr class="even">
+<td><code>error-border</code></td>
+<td style="text-align: right;"><code>#E5B8B3</code></td>
+</tr>
+<tr class="odd">
+<td><code>error-ink</code></td>
+<td style="text-align: right;"><code>#8D352E</code></td>
+</tr>
+</tbody>
+</table><p>Errors use explicit text, an error icon, and recovery guidance.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="8-action-colour-hierarchy">
+          <div class="section-heading"><h2>8. Action Colour Hierarchy</h2></div>
+          
+    <div class="specimen specimen-actions">
+      <button class="button primary" type="button">Assign Roadmap</button>
+      <button class="button secondary" type="button">Add Task</button>
+      <button class="button tertiary" type="button">View History</button>
+      <button class="button destructive" type="button">Delete Note</button>
+    </div>
+          <div class="section-copy"><p>Both primary and secondary actions use the yellow brand family, but they must not have equal visual weight.</p><h3 id="81-primary-action">8.1 Primary action</h3><p>Use:</p><ul>
+<li>Filled <code>#EDC001</code> background</li>
+<li>Black label</li>
+<li>Medium or bold Satoshi</li>
+<li>Strongest action prominence on the page</li>
+</ul><p>Examples:</p><ul>
+<li>Add Student</li>
+<li>Assign Roadmap</li>
+<li>Save Application</li>
+<li>Submit Evidence</li>
+<li>Create Task</li>
+<li>Confirm Shortlist</li>
+<li>Save Note</li>
+</ul><p>There should normally be one primary action per screen or major working context.</p><h3 id="82-secondary-action">8.2 Secondary action</h3><p>Use one of:</p><ul>
+<li>Pale yellow surface with black label</li>
+<li>Yellow outline with black label</li>
+<li>Text action with a yellow hover/focus treatment</li>
+</ul><p>Secondary actions support the primary action but must not compete with it.</p><p>There may be up to two secondary actions in a major screen context.</p><h3 id="83-tertiary-action">8.3 Tertiary action</h3><p>Use:</p><ul>
+<li>Black text button</li>
+<li>Neutral icon button</li>
+<li>Context menu item</li>
+<li>Overflow menu</li>
+</ul><h3 id="84-destructive-action">8.4 Destructive action</h3><p>Destructive actions never use yellow.</p><p>Use calm error-red styling and explicit wording.</p><p>Destructive actions should normally be separated from the primary action area.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="9-typography-doctrine">
+          <div class="section-heading"><h2>9. Typography Doctrine</h2></div>
+          
+    <div class="specimen type-specimen">
+      <div class="type-display">Every student journey in one place.</div>
+      <div class="type-title">Student workspace</div>
+      <div class="type-heading">Upcoming deadlines</div>
+      <div class="type-body">Clear ownership, calm hierarchy, and a visible next action.</div>
+      <div class="type-meta">UPDATED 2 HOURS AGO</div>
+    </div>
+          <div class="section-copy"><h3 id="91-typeface">9.1 Typeface</h3><p>Satoshi is the mandatory V1 interface typeface.</p><p>All product UI uses Satoshi.</p><p>Permitted variations include:</p><ul>
+<li>Regular</li>
+<li>Medium</li>
+<li>Bold</li>
+<li>Italic</li>
+<li>Approved differences in font size</li>
+<li>Approved differences in line height</li>
+<li>Approved differences in letter spacing</li>
+</ul><p>Do not introduce another visual typeface into V1.</p><p>A system fallback may exist only as a technical failure fallback. It is not part of the intended design.</p><h3 id="92-typography-character">9.2 Typography character</h3><p>Typography should feel:</p><ul>
+<li>Clear</li>
+<li>Contemporary</li>
+<li>Intelligent</li>
+<li>Premium</li>
+<li>Calm</li>
+<li>Human</li>
+<li>Highly readable during long working sessions</li>
+</ul><h3 id="93-type-hierarchy">9.3 Type hierarchy</h3><p>Use size and weight before colour to create hierarchy.</p><table>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Recommended treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Page title</td>
+<td>28–36px, Medium or Bold</td>
+</tr>
+<tr class="even">
+<td>Student name/workspace title</td>
+<td>24–32px, Medium or Bold</td>
+</tr>
+<tr class="odd">
+<td>Section heading</td>
+<td>20–24px, Medium</td>
+</tr>
+<tr class="even">
+<td>Card heading</td>
+<td>16–18px, Medium</td>
+</tr>
+<tr class="odd">
+<td>Default body</td>
+<td>16px, Regular</td>
+</tr>
+<tr class="even">
+<td>Dense table text</td>
+<td>14px minimum</td>
+</tr>
+<tr class="odd">
+<td>Button label</td>
+<td>14–16px, Medium</td>
+</tr>
+<tr class="even">
+<td>Form label</td>
+<td>14px, Medium</td>
+</tr>
+<tr class="odd">
+<td>Metadata</td>
+<td>12–14px, Regular</td>
+</tr>
+<tr class="even">
+<td>Badge/status</td>
+<td>12–13px, Medium</td>
+</tr>
+</tbody>
+</table><h3 id="94-typography-rules">9.4 Typography rules</h3><ul>
+<li>Default body text is 16px.</li>
+<li>Essential student instructions should normally be 16px or larger.</li>
+<li>Dense counsellor tables may use 14px.</li>
+<li>Critical labels must not be below 14px.</li>
+<li>Non-critical metadata may use 12px.</li>
+<li>Avoid excessive bolding.</li>
+<li>Avoid long uppercase text.</li>
+<li>Uppercase is permitted only for short metadata or eyebrow labels.</li>
+<li>Italics are used sparingly for reflective prompts, supporting context, or quoted content.</li>
+<li>Long text should use comfortable line height between 1.45 and 1.65.</li>
+<li>Avoid overly wide text measures. Long-form content should generally stay within 60–80 characters per line.</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="10-spacing-and-layout">
+          <div class="section-heading"><h2>10. Spacing and Layout</h2></div>
+          
+    <div class="specimen spacing-specimen">
+      <div><span>8</span><i style="width:8px"></i></div>
+      <div><span>16</span><i style="width:16px"></i></div>
+      <div><span>24</span><i style="width:24px"></i></div>
+      <div><span>32</span><i style="width:32px"></i></div>
+      <div><span>48</span><i style="width:48px"></i></div>
+      <div><span>64</span><i style="width:64px"></i></div>
+    </div>
+          <div class="section-copy"><h3 id="101-base-spacing-system">10.1 Base spacing system</h3><p>Use a 4px base spacing unit.</p><p>Preferred increments:</p><ul>
+<li>4px</li>
+<li>8px</li>
+<li>12px</li>
+<li>16px</li>
+<li>20px</li>
+<li>24px</li>
+<li>32px</li>
+<li>40px</li>
+<li>48px</li>
+<li>64px</li>
+</ul><p>Avoid arbitrary spacing values unless required by a specific optical correction.</p><h3 id="102-layout-character">10.2 Layout character</h3><p>The product should feel spacious, but not empty.</p><p>Use whitespace to:</p><ul>
+<li>Separate unrelated information</li>
+<li>Establish hierarchy</li>
+<li>Create reading rhythm</li>
+<li>Reduce cognitive load</li>
+<li>Preserve calm</li>
+</ul><p>Do not use excessive whitespace that forces operational users to scroll unnecessarily.</p><h3 id="103-page-width">10.3 Page width</h3><ul>
+<li>Counsellor pages may use broad layouts suitable for working tables and queues.</li>
+<li>Student pages should use more controlled content widths and stronger visual focus.</li>
+<li>Form content should not stretch unnecessarily across the full viewport.</li>
+<li>Long-form editing should use a readable column width.</li>
+</ul><h3 id="104-grid">10.4 Grid</h3><p>Use a consistent 12-column desktop grid or an equivalent documented layout system.</p><p>Common patterns:</p><ul>
+<li>Counsellor dashboard: 3-column operational grid</li>
+<li>Student dashboard: main overview plus fixed right-side To-Do region</li>
+<li>Detail pages: primary content plus contextual side panel</li>
+<li>Forms: single focused column or grouped 2-column layout where comparison is useful</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="11-shape-and-surface-language">
+          <div class="section-heading"><h2>11. Shape and Surface Language</h2></div>
+          
+    <div class="specimen surface-grid">
+      <div class="surface flat"><span>Standard surface</span><strong>Roadmap progress</strong></div>
+      <div class="surface raised"><span>Raised surface</span><strong>Awaiting review</strong></div>
+      <div class="surface glass"><span>Glass surface</span><strong>Selected context</strong></div>
+    </div>
+          <div class="section-copy"><h3 id="111-corners">11.1 Corners</h3><p>Use rounded corners throughout V1.</p><p>Recommended radius scale:</p><table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th style="text-align: right;">Value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>radius-sm</code></td>
+<td style="text-align: right;">8px</td>
+<td>Compact controls, chips</td>
+</tr>
+<tr class="even">
+<td><code>radius-md</code></td>
+<td style="text-align: right;">12px</td>
+<td>Inputs, buttons, standard cards</td>
+</tr>
+<tr class="odd">
+<td><code>radius-lg</code></td>
+<td style="text-align: right;">16px</td>
+<td>Main cards, panels</td>
+</tr>
+<tr class="even">
+<td><code>radius-xl</code></td>
+<td style="text-align: right;">24px</td>
+<td>Large summary surfaces</td>
+</tr>
+<tr class="odd">
+<td><code>radius-pill</code></td>
+<td style="text-align: right;">999px</td>
+<td>Pills, tabs, compact statuses</td>
+</tr>
+</tbody>
+</table><p>Rounded corners should feel refined, not toy-like.</p><h3 id="112-containers">11.2 Containers</h3><p>Frequent containers are part of the visual identity.</p><p>Use containers to group information with a common purpose.</p><p>Do not:</p><ul>
+<li>Put every line inside a card</li>
+<li>Nest several cards without clear hierarchy</li>
+<li>Use cards to fill visual space</li>
+<li>Split one workflow into unrelated floating boxes</li>
+</ul><h3 id="113-borders">11.3 Borders</h3><p>Borders create soft surface separation.</p><p>Default borders should be:</p><ul>
+<li>Thin</li>
+<li>Low contrast</li>
+<li>Warm neutral</li>
+<li>Consistent</li>
+</ul><p>Strong black borders are reserved for:</p><ul>
+<li>Privacy emphasis</li>
+<li>Focus states</li>
+<li>High-importance selected objects</li>
+<li>Specific black semantic treatments</li>
+</ul><h3 id="114-shadows">11.4 Shadows</h3><p>Shadows must be subtle.</p><p>Default cards should rely primarily on:</p><ul>
+<li>Surface difference</li>
+<li>Border</li>
+<li>Spacing</li>
+</ul><p>Use shadows for:</p><ul>
+<li>Floating menus</li>
+<li>Modals</li>
+<li>Drawers</li>
+<li>Drag states</li>
+<li>Elevated glass surfaces</li>
+<li>Temporary overlays</li>
+</ul><p>Avoid deep, dramatic, or coloured shadows.</p><h3 id="115-icons">11.5 Icons</h3><p>Icons must be:</p><ul>
+<li>Minimal</li>
+<li>Consistent</li>
+<li>Recognisable</li>
+<li>Optically balanced</li>
+<li>Accessible</li>
+</ul><p>Use one icon family throughout V1.</p><p>Pair icons with text when the meaning is not universally obvious.</p><p>Icons are not decoration.</p><h3 id="116-illustrations">11.6 Illustrations</h3><p>Illustrations are not part of V1.</p><p>Do not introduce decorative illustrations, mascots, or character art.</p><p>Use typography, surfaces, data, and restrained iconography to create visual interest.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="12-glassmorphism-doctrine">
+          <div class="section-heading"><h2>12. Glassmorphism Doctrine</h2></div>
+          
+    <div class="specimen glass-stage">
+      <div class="glass-nav" role="navigation" aria-label="Glass navigation example">
+        <span>Home</span><span class="active">Students</span><span>Applications</span><span>Calendar</span>
+      </div>
+      <div class="glass-card">
+        <span class="eyebrow">STUDENT NEEDING ATTENTION</span>
+        <strong>Ananya Kapoor</strong>
+        <p>Common App essay is due Friday. Student action required.</p>
+        <button class="button primary small" type="button">Open Student</button>
+      </div>
+    </div>
+          <div class="section-copy"><p>Glassmorphism is a controlled part of the Epicenter Education visual language.</p><p>It should communicate selected state, layering, or premium focus.</p><h3 id="121-approved-uses">12.1 Approved uses</h3><p>Use glassmorphism for:</p><ul>
+<li>Selected navigation</li>
+<li>Floating utility controls</li>
+<li>Context panels</li>
+<li>Command overlays</li>
+<li>Important summary surfaces</li>
+<li>Modal or drawer surfaces</li>
+<li>Focused dashboard highlights</li>
+</ul><h3 id="122-base-glass-token">12.2 Base glass token</h3><p>A typical V1 glass surface may use:</p><ul>
+<li>Background: <code>rgba(255, 255, 255, 0.72)</code></li>
+<li>Backdrop blur: <code>12px–18px</code></li>
+<li>Border: <code>1px solid rgba(0, 0, 0, 0.08)</code></li>
+<li>Shadow: <code>0 8px 30px rgba(0, 0, 0, 0.06)</code></li>
+<li>Black text</li>
+<li>Yellow selected indicator where appropriate</li>
+</ul><p>These are starting values and should be implemented as shared tokens.</p><h3 id="123-selected-navigation">12.3 Selected navigation</h3><p>Selected navigation uses:</p><ul>
+<li>Glass surface</li>
+<li>Black text</li>
+<li>Stronger font weight</li>
+<li>Yellow indicator, underline, dot, or edge accent</li>
+<li>Clear focus state</li>
+<li>Sufficient contrast without blur</li>
+</ul><h3 id="124-restrictions">12.4 Restrictions</h3><p>Glassmorphism must not:</p><ul>
+<li>Be used on every card</li>
+<li>Reduce text contrast</li>
+<li>Sit over visually noisy backgrounds</li>
+<li>Make active and inactive states ambiguous</li>
+<li>Obscure keyboard focus</li>
+<li>Replace structural hierarchy</li>
+<li>Become decorative spectacle</li>
+</ul><p>Where blur is unsupported or accessibility suffers, use an opaque fallback with the same hierarchy.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="13-motion-doctrine">
+          <div class="section-heading"><h2>13. Motion Doctrine</h2></div>
+          
+    <div class="specimen motion-stage">
+      <div class="motion-card"><span>Hover or focus</span><strong>Subtle functional transition</strong></div>
+      <p>Motion clarifies state and preserves context. It does not decorate the workflow.</p>
+    </div>
+          <div class="section-copy"><p>Motion is subtle and functional.</p><h3 id="131-approved-motion">13.1 Approved motion</h3><p>Use motion for:</p><ul>
+<li>Drawer opening and closing</li>
+<li>Accordion expansion</li>
+<li>Tab changes</li>
+<li>Status transitions</li>
+<li>Progress changes</li>
+<li>Save confirmation</li>
+<li>Hover and focus feedback</li>
+<li>Context-preserving page transitions</li>
+<li>Reordering where the movement communicates the new state</li>
+</ul><h3 id="132-motion-timing">13.2 Motion timing</h3><table>
+<thead>
+<tr class="header">
+<th>Interaction</th>
+<th style="text-align: right;">Duration</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Micro-interaction</td>
+<td style="text-align: right;">120–180ms</td>
+</tr>
+<tr class="even">
+<td>Tab or compact panel</td>
+<td style="text-align: right;">160–220ms</td>
+</tr>
+<tr class="odd">
+<td>Drawer or modal</td>
+<td style="text-align: right;">180–240ms</td>
+</tr>
+<tr class="even">
+<td>Page-level transition</td>
+<td style="text-align: right;">Maximum 300ms</td>
+</tr>
+</tbody>
+</table><p>Use natural easing.</p><h3 id="133-motion-restrictions">13.3 Motion restrictions</h3><p>Do not use:</p><ul>
+<li>Bounce effects</li>
+<li>Large-scale parallax</li>
+<li>Decorative looping animation</li>
+<li>Delayed animation that blocks action</li>
+<li>Celebration confetti</li>
+<li>Motion that makes professional work feel playful</li>
+<li>Animation that causes layout shift</li>
+</ul><p>Respect <code>prefers-reduced-motion</code>.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-ii-role-specific-experience">
+      <div class="part-header"><span>PART II — ROLE-SPECIFIC EXPERIENCE</span></div>
+      
+        <section class="doctrine-section" id="14-shared-identity-different-character">
+          <div class="section-heading"><h2>14. Shared Identity, Different Character</h2></div>
+          
+    <div class="specimen role-grid">
+      <div class="role-card counsellor">
+        <div class="role-label">COUNSELLOR</div>
+        <h4>Calm professional command centre</h4>
+        <div class="mini-row"><span>Today</span><strong>3 meetings</strong></div>
+        <div class="mini-row"><span>Students needing attention</span><strong>6</strong></div>
+        <div class="mini-row"><span>Awaiting review</span><strong>8</strong></div>
+      </div>
+      <div class="role-card student">
+        <div class="role-label">STUDENT</div>
+        <h4>Guided and slightly more playful</h4>
+        <div class="student-progress"><span>Journey progress</span><strong>60%</strong></div>
+        <div class="todo-mini"><span>Next step</span><strong>Complete essay draft</strong><small>Due Friday</small></div>
+      </div>
+    </div>
+          <div class="section-copy"><p>All roles share:</p><ul>
+<li>Satoshi typography</li>
+<li>Core colour system</li>
+<li>Component library</li>
+<li>Semantic states</li>
+<li>Rounded surface language</li>
+<li>Accessibility rules</li>
+<li>Interaction logic</li>
+<li>Status language</li>
+</ul><p>The experiences differ according to the user’s cognitive needs.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="15-counsellor-experience-doctrine">
+          <div class="section-heading"><h2>15. Counsellor Experience Doctrine</h2></div>
+          
+    <div class="specimen mini-app counsellor-app">
+      <div class="mini-sidebar">
+        <strong>EPICENTER.</strong>
+        <span class="selected">Home</span><span>Students</span><span>Applications</span><span>Calendar</span>
+      </div>
+      <div class="mini-main">
+        <div class="mini-top"><div><span>Thursday, 9 July</span><strong>Good afternoon, Rohan.</strong></div><button class="button primary small">Add Task</button></div>
+        <div class="counsellor-grid">
+          <div class="mini-panel calendar-panel"><span>Today</span><strong>3 counselling meetings</strong><p>11:00 Ananya Kapoor<br>13:30 Kabir Singh<br>15:00 Simran Mehta</p></div>
+          <div class="mini-panel"><span>Students needing attention</span><strong>6 students</strong><p>Prioritised by risk, overdue work, and stalled progress.</p></div>
+          <div class="mini-panel"><span>Awaiting your review</span><strong>8 submissions</strong><p>Open the exact document, task, or shortlist change.</p></div>
+        </div>
+      </div>
+    </div>
+          <div class="section-copy"><h3 id="151-desired-character">15.1 Desired character</h3><p>The counsellor experience should feel:</p><ul>
+<li>Calm</li>
+<li>Professional</li>
+<li>Intelligent</li>
+<li>Controlled</li>
+<li>Spacious</li>
+<li>Context-rich</li>
+<li>Efficient</li>
+<li>Trustworthy</li>
+</ul><p>It should not feel:</p><ul>
+<li>Like a crowded control room</li>
+<li>Like a CRM sales dashboard</li>
+<li>Like an endless spreadsheet</li>
+<li>Like an analytics report</li>
+<li>Like a colourful student portal</li>
+</ul><h3 id="152-first-ten-seconds">15.2 First ten seconds</h3><p>Within ten seconds of logging in, a counsellor should understand:</p><ol type="1">
+<li>What is on today</li>
+<li>Which students need attention</li>
+<li>Which student work is overdue</li>
+<li>What is waiting for counsellor review</li>
+<li>What meaningful progress has happened</li>
+</ol><p>The interface should include the approved V1 calendar or today-schedule surface without implying unapproved external functionality.</p><h3 id="153-dashboard-hierarchy">15.3 Dashboard hierarchy</h3><p>The counsellor dashboard should prioritise:</p><ol type="1">
+<li><p><strong>Today / Calendar</strong></p>
+<ul>
+<li>Meetings today</li>
+<li>Relevant deadlines</li>
+<li>Time-sensitive work</li>
+</ul></li>
+<li><p><strong>Students needing attention</strong></p>
+<ul>
+<li>Risk or stalled progress</li>
+<li>No recent activity</li>
+<li>Meaningful exceptions</li>
+</ul></li>
+<li><p><strong>Overdue student work</strong></p>
+<ul>
+<li>Student</li>
+<li>Task</li>
+<li>How overdue</li>
+<li>Current owner</li>
+<li>Direct action</li>
+</ul></li>
+<li><p><strong>Awaiting counsellor review</strong></p>
+<ul>
+<li>Evidence</li>
+<li>Documents</li>
+<li>Notes</li>
+<li>Shortlist changes</li>
+<li>Application work</li>
+</ul></li>
+<li><p><strong>Progress overview</strong></p>
+<ul>
+<li>High-level cohort or caseload progress</li>
+<li>No decorative charts</li>
+<li>Every summary should link to the relevant records</li>
+</ul></li>
+</ol><h3 id="154-dashboard-behaviour">15.4 Dashboard behaviour</h3><p>Dashboard items must be actionable.</p><p>Each item should deep-link to the exact:</p><ul>
+<li>Student</li>
+<li>Task</li>
+<li>Document</li>
+<li>Application</li>
+<li>Note</li>
+<li>Review panel</li>
+<li>Calendar item</li>
+</ul><p>Do not link every alert merely to the student overview.</p><h3 id="155-counsellor-density">15.5 Counsellor density</h3><p>The counsellor interface uses a calm, spacious layout with progressive disclosure.</p><p>It should support professional information density through:</p><ul>
+<li>Tables</li>
+<li>Compact rows</li>
+<li>Filters</li>
+<li>Saved views where approved</li>
+<li>Bulk selection where approved</li>
+<li>Side drawers</li>
+<li>Expandable detail</li>
+<li>Sticky headers</li>
+</ul><p>It must not display all details simultaneously.</p><h3 id="156-counsellor-language">15.6 Counsellor language</h3><p>Use concise, professional language.</p><p>Examples:</p><ul>
+<li>Awaiting your review</li>
+<li>3 days overdue</li>
+<li>Student action required</li>
+<li>Updated 2 hours ago</li>
+<li>Review submission</li>
+<li>View student context</li>
+</ul><p>Avoid:</p><ul>
+<li>Fun slogans</li>
+<li>Excessive encouragement</li>
+<li>Gamified wording</li>
+<li>Unclear status language</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="16-student-experience-doctrine">
+          <div class="section-heading"><h2>16. Student Experience Doctrine</h2></div>
+          
+    <div class="specimen mini-app student-app">
+      <div class="student-topbar"><strong>EPICENTER.</strong><span class="selected">Overview</span><span>Roadmap</span><span>Applications</span><span>Documents</span></div>
+      <div class="student-main">
+        <div class="student-overview">
+          <span class="eyebrow">GRADE 12 JOURNEY</span>
+          <h4>Your next step is clear.</h4>
+          <div class="progress-track large"><div style="width:60%"></div></div>
+          <p>6 of 10 milestones complete. Your next application deadline is in 5 days.</p>
+        </div>
+        <div class="student-todo">
+          <span class="eyebrow">TO-DO</span>
+          <div class="todo-item"><strong>Complete essay draft</strong><small>Due Friday · Student action</small></div>
+          <div class="todo-item"><strong>Upload activity list</strong><small>Due Monday · Student action</small></div>
+          <div class="todo-item muted"><strong>Shortlist feedback</strong><small>Waiting for counsellor</small></div>
+        </div>
+      </div>
+    </div>
+          <div class="section-copy"><h3 id="161-desired-character">16.1 Desired character</h3><p>The student experience should feel:</p><ul>
+<li>Calm</li>
+<li>Guided</li>
+<li>Slightly playful</li>
+<li>Aspirational</li>
+<li>Encouraging</li>
+<li>Clear</li>
+<li>Personal</li>
+<li>Less dense than the counsellor interface</li>
+</ul><p>It must not feel childish.</p><h3 id="162-first-ten-seconds">16.2 First ten seconds</h3><p>Within ten seconds of logging in, a student should understand:</p><ol type="1">
+<li>What they need to do next</li>
+<li>What is overdue</li>
+<li>What is due soon</li>
+<li>What their counsellor has reviewed</li>
+<li>How their overall journey is progressing</li>
+</ol><h3 id="163-dashboard-composition">16.3 Dashboard composition</h3><p>The student dashboard must include:</p><ul>
+<li>A strong journey overview</li>
+<li>Roadmap or milestone progress</li>
+<li>Upcoming deadlines</li>
+<li>Recent approved feedback</li>
+<li>Current application progress</li>
+<li>A prominent To-Do List on the right side</li>
+</ul><p>The right-side To-Do List is a fixed V1 experience principle.</p><p>It may aggregate work from:</p><ul>
+<li>Roadmap tasks</li>
+<li>Shared meeting follow-ups</li>
+<li>Counsellor-assigned actions</li>
+<li>Application requirements</li>
+<li>Forms included in the approved V1 flow</li>
+<li>Document submission requests</li>
+</ul><p>The student should not need to inspect multiple sections to understand what they need to do next.</p><h3 id="164-student-motivation">16.4 Student motivation</h3><p>Motivate through:</p><ul>
+<li>Clear deadlines</li>
+<li>Explicit ownership</li>
+<li>Visible progress</li>
+<li>Calm encouragement</li>
+<li>Meaningful milestone completion</li>
+<li>Clear counsellor feedback</li>
+</ul><p>Do not use:</p><ul>
+<li>Points</li>
+<li>Streaks</li>
+<li>Leaderboards</li>
+<li>Competitive ranking</li>
+<li>Artificial rewards</li>
+<li>Confetti</li>
+<li>Excessive celebration</li>
+</ul><h3 id="165-student-language">16.5 Student language</h3><p>Student language may be warmer than counsellor language.</p><p>Prefer:</p><ul>
+<li>Your next step</li>
+<li>Due Friday</li>
+<li>Send to your counsellor</li>
+<li>Changes requested</li>
+<li>Your counsellor reviewed this</li>
+<li>Continue where you left off</li>
+</ul><p>Avoid patronising language.</p><h3 id="166-student-disclosure">16.6 Student disclosure</h3><p>Students should see:</p><ul>
+<li>Their own profile</li>
+<li>Their roadmap and tasks</li>
+<li>Shared notes</li>
+<li>Their updates</li>
+<li>Their shortlist</li>
+<li>Their applications</li>
+<li>Their documents</li>
+<li>Approved counsellor feedback</li>
+<li>Relevant history</li>
+</ul><p>Students must not see:</p><ul>
+<li>Private counsellor notes</li>
+<li>Internal counsellor risk analysis</li>
+<li>Unapproved AI drafts</li>
+<li>Internal operational discussion</li>
+<li>Hidden placeholders indicating that private content exists</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="17-administrator-experience-doctrine">
+          <div class="section-heading"><h2>17. Administrator Experience Doctrine</h2></div>
+          
+    <div class="specimen admin-specimen">
+      <div class="admin-row"><span>Student name</span><strong>Ananya Kapoor</strong></div>
+      <div class="admin-row"><span>Grade</span><strong>Grade 12</strong></div>
+      <div class="admin-row"><span>Assigned counsellor</span><strong>Rohan Mehta</strong></div>
+      <div class="admin-actions"><button class="button secondary">Save Draft</button><button class="button primary">Create Student</button></div>
+    </div>
+          <div class="section-copy"><h3 id="171-desired-character">17.1 Desired character</h3><p>The administrator experience should feel:</p><ul>
+<li>Functional</li>
+<li>Restrained</li>
+<li>Clear</li>
+<li>Professional</li>
+<li>Low-friction</li>
+</ul><p>It reuses the counsellor design system rather than introducing a separate identity.</p><h3 id="172-administrator-priorities">17.2 Administrator priorities</h3><p>V1 administrator flows should prioritise:</p><ul>
+<li>Creating student records</li>
+<li>Entering base information</li>
+<li>Managing approved users</li>
+<li>Assigning counsellors</li>
+<li>Reviewing data ownership actions</li>
+<li>Accessing approved settings</li>
+</ul><h3 id="173-administrator-layout">17.3 Administrator layout</h3><p>Use:</p><ul>
+<li>Clear forms</li>
+<li>Tables where comparison matters</li>
+<li>Explicit save states</li>
+<li>Strong permission messaging</li>
+<li>Confirmation for consequential changes</li>
+</ul><p>Avoid:</p><ul>
+<li>Aspirational dashboard cards</li>
+<li>Decorative analytics</li>
+<li>Unnecessary visual richness</li>
+<li>Deep customisation interfaces not required by V1</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-iii-navigation-doctrine">
+      <div class="part-header"><span>PART III — NAVIGATION DOCTRINE</span></div>
+      
+        <section class="doctrine-section" id="18-navigation-is-fixed-for-v1">
+          <div class="section-heading"><h2>18. Navigation Is Fixed for V1</h2></div>
+          
+    <div class="specimen nav-comparison">
+      <div class="nav-demo professional">
+        <div class="vertical-nav"><strong>EPICENTER.</strong><span class="selected">Home</span><span>Students</span><span>Applications</span><span>Calendar</span></div>
+        <div class="nav-content"><span>Persistent counsellor shell</span><strong>Portfolio view</strong></div>
+      </div>
+      <div class="nav-demo guided">
+        <div class="horizontal-nav"><strong>EPICENTER.</strong><span class="selected">Overview</span><span>Roadmap</span><span>Applications</span></div>
+        <div class="nav-content"><span>Simpler student shell</span><strong>Journey overview</strong></div>
+      </div>
+    </div>
+          <div class="section-copy"><p>The approved current navigation shells are fixed doctrine.</p><p>Changes require an explicit Product Owner decision and a new doctrine version.</p><h3 id="181-counsellor-shell">18.1 Counsellor shell</h3><p>The counsellor experience uses:</p><ul>
+<li>Persistent top utility bar</li>
+<li>Persistent left-side navigation</li>
+<li>Portfolio-level pages</li>
+<li>Individual student workspaces</li>
+<li>Student-level tabs</li>
+<li>Contextual drawers and centred modals</li>
+</ul><p>The sidebar remains visible during normal work.</p><p>The top utility bar may contain approved global utilities such as:</p><ul>
+<li>Search</li>
+<li>User account</li>
+<li>Approved alerts or activity access</li>
+<li>Contextual utility controls</li>
+</ul><h3 id="182-student-shell">18.2 Student shell</h3><p>The student experience uses:</p><ul>
+<li>Simpler top navigation</li>
+<li>Journey-oriented page labels</li>
+<li>No persistent professional sidebar</li>
+<li>Clear current location</li>
+<li>A focused dashboard</li>
+<li>Contextual modals and panels</li>
+</ul><p>The student shell must remain less complex than the counsellor shell.</p><h3 id="183-administrator-shell">18.3 Administrator shell</h3><p>The administrator reuses the professional shell with a configuration-focused navigation set.</p><p>It does not require a distinct visual product.</p><h3 id="184-portfolio-and-student-workspace">18.4 Portfolio and student workspace</h3><p>Counsellors move between:</p><ol type="1">
+<li><strong>Portfolio view:</strong> manage several students and cross-student work</li>
+<li><strong>Student workspace:</strong> understand and act within one student’s full context</li>
+</ol><p>Every portfolio item should open the exact relevant student context.</p><h3 id="185-student-workspace-context">18.5 Student workspace context</h3><p>When a student is open, the interface must clearly show:</p><ul>
+<li>Student name</li>
+<li>Grade</li>
+<li>Assigned counsellor</li>
+<li>Current high-level status</li>
+<li>Current workspace section</li>
+<li>Return path to the student portfolio</li>
+</ul><h3 id="186-navigation-rules">18.6 Navigation rules</h3><ul>
+<li>Primary navigation remains persistent.</li>
+<li>The active location is always visible.</li>
+<li>Deep pages use breadcrumbs where necessary.</li>
+<li>Context is preserved when returning from a drawer or detail page.</li>
+<li>Back behaviour must be predictable.</li>
+<li>Core navigation must not be hidden in an overflow menu.</li>
+<li>Recently viewed context may be supported only if included in the approved V1 flow.</li>
+<li>No new top-level item is created for a feature that can live contextually.</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-iv-page-and-content-hierarchy">
+      <div class="part-header"><span>PART IV — PAGE AND CONTENT HIERARCHY</span></div>
+      
+        <section class="doctrine-section" id="19-standard-page-anatomy">
+          <div class="section-heading"><h2>19. Standard Page Anatomy</h2></div>
+          
+    <div class="specimen anatomy">
+      <div class="anatomy-head"><div><span>Ananya Kapoor · Grade 12</span><strong>University shortlist</strong></div><button class="button primary small">Add University</button></div>
+      <div class="anatomy-summary"><div><span>Current progress</span><strong>8 shortlisted</strong></div><div><span>Next deadline</span><strong>15 October</strong></div><div><span>Current owner</span><strong>Student</strong></div></div>
+      <div class="anatomy-work"><div class="table-head"><span>University and course</span><span>Category</span><span>Status</span></div><div class="table-row"><strong>UCL · Politics and Sociology</strong><span class="status reach">Reach</span><span>Student reviewing</span></div><div class="table-row"><strong>King's College London · Politics</strong><span class="status target">Target</span><span>Counsellor approved</span></div></div>
+    </div>
+          <div class="section-copy"><p>Every working page should use a predictable hierarchy.</p><h3 id="191-page-header">19.1 Page header</h3><p>The page header may include:</p><ul>
+<li>Page title</li>
+<li>Student or object context</li>
+<li>Supporting description</li>
+<li>Status</li>
+<li>Primary action</li>
+<li>Up to two secondary actions</li>
+<li>Important alert or privacy message</li>
+</ul><h3 id="192-summary-layer">19.2 Summary layer</h3><p>Show:</p><ul>
+<li>Current progress</li>
+<li>Upcoming deadline</li>
+<li>Current owner</li>
+<li>Current status</li>
+<li>Next action</li>
+<li>Relevant risk</li>
+<li>Recent update</li>
+</ul><h3 id="193-working-layer">19.3 Working layer</h3><p>This is the main task area.</p><p>Examples:</p><ul>
+<li>Student table</li>
+<li>Roadmap milestones</li>
+<li>Task list</li>
+<li>Shortlist entries</li>
+<li>Application checklist</li>
+<li>Note timeline</li>
+<li>Document review</li>
+<li>Admin form</li>
+</ul><h3 id="194-detail-layer">19.4 Detail layer</h3><p>Lower-priority content belongs in:</p><ul>
+<li>Expandable sections</li>
+<li>Side drawers</li>
+<li>Secondary pages</li>
+<li>Context panels</li>
+<li>Activity history</li>
+</ul><h3 id="195-page-action-limit">19.5 Page action limit</h3><p>A page or major context should normally contain:</p><ul>
+<li>One primary action</li>
+<li>Up to two secondary actions</li>
+<li>Remaining actions in contextual or overflow menus</li>
+</ul><p>Do not present several equally prominent actions.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="20-dashboard-doctrine">
+          <div class="section-heading"><h2>20. Dashboard Doctrine</h2></div>
+          
+    <div class="specimen dashboard-principle">
+      <div class="queue-card"><span>WHAT REQUIRES ATTENTION</span><strong>6 students</strong><p>Each item opens the exact student, task, document, or application.</p></div>
+      <div class="queue-card"><span>WHAT IS OVERDUE</span><strong>12 tasks</strong><p>Owner, due date, and next action are visible before opening.</p></div>
+      <div class="queue-card"><span>WHAT AWAITS REVIEW</span><strong>8 submissions</strong><p>Review work directly without searching through the student record.</p></div>
+    </div>
+          <div class="section-copy"><p>Dashboards are working surfaces, not reports.</p><h3 id="201-every-dashboard-item-must-answer">20.1 Every dashboard item must answer</h3><ul>
+<li>What is this?</li>
+<li>Why does it matter?</li>
+<li>Who owns it?</li>
+<li>When is it due?</li>
+<li>What action can I take?</li>
+<li>Where will clicking take me?</li>
+</ul><h3 id="202-prohibited-dashboard-patterns">20.2 Prohibited dashboard patterns</h3><p>Do not use:</p><ul>
+<li>Large decorative charts</li>
+<li>Vanity metrics</li>
+<li>Unexplained percentages</li>
+<li>Several oversized hero cards</li>
+<li>Repeated counts with no action</li>
+<li>Colourful widgets without operational purpose</li>
+</ul><h3 id="203-dashboard-freshness">20.3 Dashboard freshness</h3><p>Where data freshness matters, show:</p><ul>
+<li>Last updated time</li>
+<li>Current date range</li>
+<li>Refresh state where relevant</li>
+</ul><p>Do not imply live data if the underlying view refreshes on a schedule.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="21-data-density-doctrine">
+          <div class="section-heading"><h2>21. Data Density Doctrine</h2></div>
+          
+          <div class="section-copy"><h3 id="211-tables">21.1 Tables</h3><p>Use tables when the user must:</p><ul>
+<li>Compare students</li>
+<li>Compare applications</li>
+<li>Review task queues</li>
+<li>Manage deadlines</li>
+<li>Scan several records</li>
+<li>Sort or filter operational data</li>
+</ul><h3 id="212-cards">21.2 Cards</h3><p>Use cards when:</p><ul>
+<li>Showing a small number of high-priority items</li>
+<li>Providing a summary</li>
+<li>Highlighting the next action</li>
+<li>Grouping one coherent context</li>
+<li>Presenting a student-facing overview</li>
+</ul><h3 id="213-lists">21.3 Lists</h3><p>Use lists for:</p><ul>
+<li>Activity</li>
+<li>Notes</li>
+<li>To-do items</li>
+<li>Upcoming events</li>
+<li>Review queues</li>
+<li>Chronological updates</li>
+</ul><h3 id="214-rules">21.4 Rules</h3><ul>
+<li>Do not use large cards for simple tabular rows.</li>
+<li>Do not force a table when users need narrative context.</li>
+<li>Do not use a card grid for a high-volume operational queue.</li>
+<li>Preserve readable line lengths.</li>
+<li>Prioritise scannability.</li>
+<li>Use sticky headers for long tables.</li>
+<li>Keep the identifying column visible when horizontal scroll is essential.</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-v-interaction-doctrine">
+      <div class="part-header"><span>PART V — INTERACTION DOCTRINE</span></div>
+      
+        <section class="doctrine-section" id="22-editing-model">
+          <div class="section-heading"><h2>22. Editing Model</h2></div>
+          
+    <div class="specimen editing-grid">
+      <div class="editing-card"><span>INLINE EDIT</span><label>Due date<input value="15 October 2026" aria-label="Due date example"></label></div>
+      <div class="editing-card"><span>SIDE DRAWER</span><strong>Task details</strong><p>Keep the student roadmap visible while reviewing instructions and evidence.</p></div>
+      <div class="editing-card"><span>EXPLICIT SAVE</span><textarea aria-label="Shared note example">Discussed final university list and agreed next steps.</textarea><button class="button primary small">Save Shared Note</button></div>
+    </div>
+          <div class="section-copy"><h3 id="221-inline-editing">22.1 Inline editing</h3><p>Use inline editing for:</p><ul>
+<li>Dates</li>
+<li>Owner</li>
+<li>Status</li>
+<li>Short labels</li>
+<li>Simple profile fields</li>
+<li>Low-risk metadata</li>
+<li>Small corrections</li>
+</ul><p>Inline editing should preserve context and avoid unnecessary page changes.</p><h3 id="222-dedicated-edit-forms">22.2 Dedicated edit forms</h3><p>Use dedicated forms for:</p><ul>
+<li>Complex student profiles</li>
+<li>Multi-section application data</li>
+<li>Roadmap creation or major revision</li>
+<li>Long structured forms</li>
+<li>Permission-sensitive information</li>
+<li>High-impact changes</li>
+<li>Administrative configuration</li>
+</ul><h3 id="223-autosave">22.3 Autosave</h3><p>Use autosave for drafts where losing work would be costly.</p><p>Approved examples:</p><ul>
+<li>Raw notes before submission</li>
+<li>Long text</li>
+<li>Student onboarding progress</li>
+<li>Essay feedback drafts</li>
+<li>Multi-step forms</li>
+<li>Incomplete application work</li>
+<li>Roadmap drafting</li>
+</ul><p>Autosave states must be visible:</p><ul>
+<li>Saving</li>
+<li>Saved</li>
+<li>Save failed</li>
+<li>Last saved time</li>
+</ul><p>Autosave must never silently publish or submit consequential information.</p><h3 id="224-explicit-save">22.4 Explicit save</h3><p>Require explicit Save, Submit, Approve, Reject, Send, or Confirm for:</p><ul>
+<li>Shared notes</li>
+<li>Private notes</li>
+<li>AI-assisted content</li>
+<li>Grade updates</li>
+<li>Shortlist decisions</li>
+<li>Application changes</li>
+<li>Evidence submission</li>
+<li>Feedback sent to a student</li>
+<li>Permission changes</li>
+<li>Reassignment</li>
+<li>Any change immediately visible to another role</li>
+</ul><h3 id="225-side-drawers">22.5 Side drawers</h3><p>Use side drawers for:</p><ul>
+<li>Quick details</li>
+<li>Contextual editing</li>
+<li>Task detail</li>
+<li>Application requirement detail</li>
+<li>Activity history</li>
+<li>Student summary</li>
+<li>AI preview</li>
+<li>Review panels</li>
+<li>Work where the underlying page remains relevant</li>
+</ul><h3 id="226-centred-modals">22.6 Centred modals</h3><p>Use centred modals for:</p><ul>
+<li>Confirmation</li>
+<li>Short focused input</li>
+<li>Final checks</li>
+<li>Small choices</li>
+<li>Destructive warnings</li>
+</ul><p>Do not use modals for long or multi-step work.</p><h3 id="227-full-pages">22.7 Full pages</h3><p>Use full pages for:</p><ul>
+<li>Onboarding</li>
+<li>Complex creation</li>
+<li>Detailed student profiles</li>
+<li>Multi-stage application work</li>
+<li>Roadmap design</li>
+<li>Administrative setup</li>
+</ul><h3 id="228-single-question-steps">22.8 Single-question steps</h3><p>Use one-question-per-screen for:</p><ul>
+<li>Student onboarding</li>
+<li>Reflective student questions</li>
+<li>High-cognitive student input</li>
+<li>Sensitive student responses</li>
+</ul><p>It should not automatically become the pattern for counsellor or administrator forms.</p><h3 id="229-multi-field-forms">22.9 Multi-field forms</h3><p>Use grouped multi-field forms for:</p><ul>
+<li>Counsellor data entry</li>
+<li>Administrator setup</li>
+<li>Repeat operational tasks</li>
+<li>Structured data that benefits from comparison</li>
+</ul><h3 id="2210-draft-saving">22.10 Draft saving</h3><p>Allow incomplete drafts for:</p><ul>
+<li>Notes</li>
+<li>Essays</li>
+<li>Feedback</li>
+<li>Application work</li>
+<li>Roadmaps</li>
+<li>Onboarding</li>
+<li>Long forms</li>
+</ul><p>A user must be able to leave and return without losing meaningful work.</p><h3 id="2211-undo">22.11 Undo</h3><p>Use undo for reversible low-risk actions.</p><p>Examples:</p><ul>
+<li>Removing a filter</li>
+<li>Moving a task</li>
+<li>Archiving a non-critical item</li>
+<li>Changing a minor status</li>
+<li>Reordering a list</li>
+</ul><p>Undo does not replace confirmation for consequential actions.</p><h3 id="2212-version-history">22.12 Version history</h3><p>Maintain version history for:</p><ul>
+<li>Notes</li>
+<li>AI-cleaned notes</li>
+<li>Grades</li>
+<li>Predicted grades</li>
+<li>Roadmaps</li>
+<li>Shortlists</li>
+<li>Applications</li>
+<li>Documents</li>
+<li>Submitted evidence</li>
+<li>Counsellor assignments</li>
+<li>Consequential AI-assisted content</li>
+</ul><p>History should show:</p><ul>
+<li>What changed</li>
+<li>Previous value where appropriate</li>
+<li>New value</li>
+<li>Actor</li>
+<li>Date and time</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="23-confirmation-doctrine">
+          <div class="section-heading"><h2>23. Confirmation Doctrine</h2></div>
+          
+    <div class="specimen confirmation-stage">
+      <div class="confirmation-card">
+        <span class="eyebrow">CONFIRM STATUS CHANGE</span>
+        <h4>Mark this task as complete?</h4>
+        <p>It will move to counsellor review and the submitted status will be visible to your counsellor.</p>
+        <div class="confirmation-actions"><button class="button tertiary">Cancel</button><button class="button primary">Mark Complete</button></div>
+      </div>
+    </div>
+          <div class="section-copy"><p>Confirmation is required for:</p><ul>
+<li>Marking a task complete</li>
+<li>Submitting evidence</li>
+<li>Approving student work</li>
+<li>Rejecting student work</li>
+<li>Converting a shortlist entry into an application</li>
+<li>Changing a university category</li>
+<li>Deleting a note</li>
+<li>Deleting a document</li>
+<li>Reassigning a student</li>
+<li>Submitting an application</li>
+<li>Dismissing a risk</li>
+<li>Applying consequential AI-assisted content</li>
+</ul><h3 id="231-confirmation-strength">23.1 Confirmation strength</h3><p>Use a lightweight confirmation for:</p><ul>
+<li>Marking a task complete</li>
+<li>Changing a category</li>
+<li>Dismissing a risk</li>
+</ul><p>Use a stronger centred modal for:</p><ul>
+<li>Deleting content</li>
+<li>Reassigning a student</li>
+<li>Submitting an application</li>
+<li>Rejecting work with consequences</li>
+<li>Applying high-impact AI content</li>
+</ul><h3 id="232-confirmation-content">23.2 Confirmation content</h3><p>Every confirmation should explain:</p><ul>
+<li>The action</li>
+<li>Who will see the result</li>
+<li>Whether it can be undone</li>
+<li>What happens next</li>
+</ul><p>Avoid:</p><blockquote>
+<p>Are you sure?</p>
+</blockquote><p>Prefer:</p><blockquote>
+<p>Mark this task as complete? It will move to counsellor review and your counsellor will see the submitted status.</p>
+</blockquote><h3 id="233-tick-then-confirm">23.3 Tick-then-confirm</h3><p>Meaningful status transitions should follow the approved tick-then-confirm pattern.</p><p>The initial click expresses intent.</p><p>The confirmation makes the consequence explicit.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="24-workflow-transparency">
+          <div class="section-heading"><h2>24. Workflow Transparency</h2></div>
+          
+    <div class="specimen workflow-card">
+      <div class="workflow-title"><div><span>COMMON APP ESSAY</span><strong>Complete first draft</strong></div><span class="status pending">Pending review</span></div>
+      <div class="workflow-grid"><div><span>Current owner</span><strong>Counsellor</strong></div><div><span>Last action</span><strong>Submitted by Ananya</strong></div><div><span>Last updated</span><strong>Today, 11:42</strong></div><div><span>Next action</span><strong>Review and send feedback</strong></div><div><span>Expected due date</span><strong>12 July</strong></div><div><span>After completion</span><strong>Returns to student</strong></div></div>
+    </div>
+          <div class="section-copy"><p>Every shared workflow should clearly display:</p><ul>
+<li>Current owner</li>
+<li>Current status</li>
+<li>Last action</li>
+<li>Last updated time</li>
+<li>Who acts next</li>
+<li>Expected due date</li>
+<li>What happens after completion</li>
+</ul><h3 id="241-avoid-ambiguous-pending-states">24.1 Avoid ambiguous pending states</h3><p>Do not use “Pending” alone.</p><p>Use:</p><ul>
+<li>Waiting for student submission</li>
+<li>Waiting for counsellor review</li>
+<li>Changes requested from student</li>
+<li>Ready for counsellor approval</li>
+<li>Blocked by missing document</li>
+</ul><h3 id="242-activity-attribution">24.2 Activity attribution</h3><p>For meaningful changes, show:</p><ul>
+<li>Person</li>
+<li>Role where relevant</li>
+<li>Date and time</li>
+<li>Action</li>
+<li>Related object</li>
+</ul><h3 id="243-handoffs">24.3 Handoffs</h3><p>When work moves between roles, the handoff must be explicit.</p><p>Example:</p><blockquote>
+<p>Submitted by Ananya<br/>
+Waiting for counsellor review<br/>
+Due for review by 15 July</p>
+</blockquote><hr/></div>
+        </section>
+        <section class="doctrine-section" id="25-form-doctrine">
+          <div class="section-heading"><h2>25. Form Doctrine</h2></div>
+          
+    <div class="specimen form-specimen">
+      <label>Intended major<input value="Political Science" aria-label="Intended major"></label>
+      <label>Preferred countries<select aria-label="Preferred countries"><option>United Kingdom</option></select></label>
+      <label class="full">Counselling context<textarea aria-label="Counselling context">Interested in public policy, sociology, and interdisciplinary programmes.</textarea></label>
+      <div class="form-actions"><span>Draft saved 2 minutes ago</span><button class="button primary">Save Profile</button></div>
+    </div>
+          <div class="section-copy"><h3 id="251-form-principles">25.1 Form principles</h3><p>Forms should:</p><ul>
+<li>Prefill known information</li>
+<li>Avoid duplicate entry</li>
+<li>Group related fields</li>
+<li>Use clear labels</li>
+<li>Explain why sensitive data is needed</li>
+<li>Distinguish required from optional</li>
+<li>Save long drafts</li>
+<li>Preserve data after errors</li>
+<li>Use structured fields when filtering or reporting is required</li>
+<li>Use free text when nuance is required</li>
+</ul><h3 id="252-labels">25.2 Labels</h3><p>Labels remain visible while the field is in use.</p><p>Do not use placeholder text as the only label.</p><h3 id="253-validation">25.3 Validation</h3><p>Validation should:</p><ul>
+<li>Occur close to the field</li>
+<li>Explain how to fix the issue</li>
+<li>Preserve user input</li>
+<li>Avoid blaming the user</li>
+<li>Not trigger aggressively before the user has had a reasonable chance to complete the field</li>
+</ul><h3 id="254-long-forms">25.4 Long forms</h3><p>Long forms should use:</p><ul>
+<li>Logical sections</li>
+<li>Clear progress</li>
+<li>Save and return</li>
+<li>Section-level validation</li>
+<li>Summary before consequential submission</li>
+</ul><h3 id="255-defaults">25.5 Defaults</h3><p>Use defaults only when they are:</p><ul>
+<li>Safe</li>
+<li>Predictable</li>
+<li>Easy to change</li>
+<li>Based on known data</li>
+</ul><p>Never preselect a consequential decision merely to reduce clicks.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="26-task-interaction-doctrine">
+          <div class="section-heading"><h2>26. Task Interaction Doctrine</h2></div>
+          
+    <div class="specimen task-specimen">
+      <div class="task-row"><div><span>ROADMAP · ESSAYS</span><strong>Complete first Common App essay draft</strong><small>Due Friday · Student owner</small></div><span class="status overdue">3 days overdue</span></div>
+      <div class="task-row"><div><span>APPLICATION · UCL</span><strong>Review course-specific statement</strong><small>Due Monday · Counsellor owner</small></div><span class="status pending">Pending review</span></div>
+      <div class="task-row"><div><span>ROADMAP · RESEARCH</span><strong>Confirm final intended major</strong><small>Completed 7 July</small></div><span class="status complete">Completed</span></div>
+    </div>
+          <div class="section-copy"><p>There is one coherent task model.</p><p>A task may originate from:</p><ul>
+<li>Roadmap</li>
+<li>Note</li>
+<li>Meeting follow-up</li>
+<li>Application</li>
+<li>Document review</li>
+<li>Approved form flow</li>
+<li>Counsellor assignment</li>
+</ul><p>Every task should display:</p><ul>
+<li>Title</li>
+<li>Related student</li>
+<li>Source or context</li>
+<li>Owner</li>
+<li>Status</li>
+<li>Due date</li>
+<li>Priority where approved</li>
+<li>Instructions</li>
+<li>Evidence or files where relevant</li>
+<li>Comments</li>
+<li>Completion criteria</li>
+<li>Next actor</li>
+</ul><p>The same task must remain recognisable across:</p><ul>
+<li>Counsellor dashboard</li>
+<li>Student To-Do List</li>
+<li>Roadmap</li>
+<li>Application</li>
+<li>Review queue</li>
+</ul><p>Do not create separate task systems for each page.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="27-notes-and-communication-doctrine">
+          <div class="section-heading"><h2>27. Notes and Communication Doctrine</h2></div>
+          
+    <div class="specimen notes-grid">
+      <div class="note-card private"><span>PRIVATE NOTE · COUNSELLORS ONLY</span><strong>Student is reconsidering intended major.</strong><p>Review academic fit before the shortlist is finalised.</p><small>Rohan Mehta · Today, 14:10</small></div>
+      <div class="note-card shared"><span>SHARED WITH STUDENT</span><strong>Agreed next steps after strategy session.</strong><p>Research three Politics and Sociology programmes before Friday.</p><small>Rohan Mehta · Today, 14:15</small></div>
+    </div>
+          <div class="section-copy"><p>V1 uses distinct note types.</p><p>Do not merge all communication into one generic note field.</p><h3 id="271-private-counsellor-note">27.1 Private counsellor note</h3><p>Must show:</p><ul>
+<li>Lock icon</li>
+<li>“Private note”</li>
+<li>“Visible only to authorised counsellors”</li>
+<li>Author</li>
+<li>Timestamp</li>
+<li>Version or edit history where relevant</li>
+</ul><h3 id="272-shared-note">27.2 Shared note</h3><p>Must show:</p><ul>
+<li>“Shared with student”</li>
+<li>Author</li>
+<li>Timestamp</li>
+<li>Related meeting or context</li>
+<li>Follow-up actions where relevant</li>
+</ul><h3 id="273-student-update">27.3 Student update</h3><p>Must show:</p><ul>
+<li>Student as author</li>
+<li>Timestamp</li>
+<li>Counsellor visibility</li>
+<li>Related task or context where relevant</li>
+</ul><h3 id="274-contextual-comment">27.4 Contextual comment</h3><p>Task and application comments remain attached to the object.</p><p>They do not replace formal meeting notes.</p><h3 id="275-visibility-before-save">27.5 Visibility before save</h3><p>Before a note is saved, the composer must clearly show its visibility.</p><p>A user must never accidentally save a private note as shared or a shared note as private.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="28-document-interaction-doctrine">
+          <div class="section-heading"><h2>28. Document Interaction Doctrine</h2></div>
+          
+    <div class="specimen document-list">
+      <div class="document-row"><div><span>PDF</span><strong>Common App Essay · Version 3</strong><small>Uploaded by Ananya · Today, 10:08</small></div><span class="status pending">Pending review</span></div>
+      <div class="document-row"><div><span>DOCX</span><strong>Activities List · Final</strong><small>Approved by Rohan · 7 July</small></div><span class="status complete">Approved</span></div>
+    </div>
+          <div class="section-copy"><p>Documents are handled contextually.</p><p>A file should be uploaded once and referenced where needed.</p><h3 id="281-document-information">28.1 Document information</h3><p>Where relevant, show:</p><ul>
+<li>File name</li>
+<li>Type</li>
+<li>Version</li>
+<li>Upload date</li>
+<li>Uploaded by</li>
+<li>Review state</li>
+<li>Related task or application</li>
+<li>Feedback status</li>
+<li>Latest activity</li>
+</ul><h3 id="282-document-review">28.2 Document review</h3><p>Document review should preserve:</p><ul>
+<li>Original file</li>
+<li>Current version</li>
+<li>Feedback</li>
+<li>Reviewer</li>
+<li>Date</li>
+<li>Approval or revision status</li>
+</ul><h3 id="283-upload-state">28.3 Upload state</h3><p>Uploads must show:</p><ul>
+<li>File selected</li>
+<li>Upload progress</li>
+<li>Successful upload</li>
+<li>Failed upload</li>
+<li>Retry</li>
+<li>Whether submission is still a draft</li>
+</ul><h3 id="284-deletion">28.4 Deletion</h3><p>Deleting a document requires confirmation and must explain where the document is currently referenced.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-vi-status-and-feedback">
+      <div class="part-header"><span>PART VI — STATUS AND FEEDBACK</span></div>
+      
+        <section class="doctrine-section" id="29-status-doctrine">
+          <div class="section-heading"><h2>29. Status Doctrine</h2></div>
+          
+    <div class="specimen">
+      <div class="status-line">
+        <span class="status complete">Completed</span>
+        <span class="status overdue">3 days overdue</span>
+        <span class="status pending">Pending review</span>
+        <span class="status reach">Reach</span>
+        <span class="status target">Target</span>
+        <span class="status safety">Safety</span>
+      </div>
+      <div class="progress-example">
+        <div class="progress-copy"><strong>Student progress</strong><span>6 of 10 milestones complete</span></div>
+        <div class="progress-track"><div style="width:60%"></div></div>
+      </div>
+    </div>
+          <div class="section-copy"><p>Status is communicated through an appropriate combination of:</p><ul>
+<li>Label</li>
+<li>Colour</li>
+<li>Icon</li>
+<li>Owner</li>
+<li>Explanation</li>
+<li>Date</li>
+<li>Next action</li>
+</ul><p>Not every compact status needs every element, but no status may depend only on colour.</p><h3 id="291-shared-task-statuses">29.1 Shared task statuses</h3><p>Preferred V1 language:</p><ul>
+<li>Not started</li>
+<li>In progress</li>
+<li>Submitted</li>
+<li>Pending review</li>
+<li>Changes requested</li>
+<li>Approved</li>
+<li>Completed</li>
+<li>Blocked</li>
+<li>Overdue</li>
+<li>Dismissed</li>
+<li>Not applicable</li>
+</ul><h3 id="292-status-consistency">29.2 Status consistency</h3><p>Use the same wording for the same state throughout V1.</p><p>Do not use:</p><ul>
+<li>“Pending review” on one page</li>
+<li>“Awaiting approval” on another</li>
+<li>“In queue” elsewhere</li>
+</ul><p>unless these represent genuinely different states.</p><h3 id="293-status-age">29.3 Status age</h3><p>When time matters, show:</p><ul>
+<li>Due date</li>
+<li>Days overdue</li>
+<li>Time since update</li>
+<li>Time waiting for review</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="30-empty-states">
+          <div class="section-heading"><h2>30. Empty States</h2></div>
+          
+    <div class="specimen state-card"><span>EMPTY STATE</span><h4>No universities have been shortlisted yet.</h4><p>Add the first university after the student’s strategy session.</p><button class="button primary small">Add University</button></div>
+          <div class="section-copy"><p>Every empty state must explain:</p><ul>
+<li>Why the area is empty</li>
+<li>Whether this is expected</li>
+<li>What action should happen first</li>
+<li>Who can take that action</li>
+</ul><p>Example:</p><blockquote>
+<p>No universities have been shortlisted yet.<br/>
+Add the first university after the student’s strategy session.</p>
+</blockquote><p>Avoid purely decorative empty states.</p><p>No illustration is required.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="31-loading-states">
+          <div class="section-heading"><h2>31. Loading States</h2></div>
+          
+    <div class="specimen loading-card"><span class="skeleton wide"></span><span class="skeleton medium"></span><span class="skeleton wide"></span><span class="skeleton short"></span><p>Loading student roadmap…</p></div>
+          <div class="section-copy"><p>Loading states should preserve layout.</p><p>Use:</p><ul>
+<li>Skeletons for predictable content</li>
+<li>Progress bars for uploads or longer operations</li>
+<li>Clear labels for AI processing</li>
+<li>Non-blocking loading where possible</li>
+</ul><p>Avoid indefinite spinners with no explanation.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="32-success-feedback">
+          <div class="section-heading"><h2>32. Success Feedback</h2></div>
+          
+    <div class="specimen feedback success-feedback"><strong>Evidence submitted.</strong><span>Your counsellor can now review it.</span></div>
+          <div class="section-copy"><p>Success feedback should state:</p><ul>
+<li>What happened</li>
+<li>Who can see the result</li>
+<li>What happens next</li>
+</ul><p>Example:</p><blockquote>
+<p>Evidence submitted. Your counsellor can now review it.</p>
+</blockquote><p>Use calm, brief feedback.</p><p>Do not use celebratory animations for normal operational actions.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="33-error-doctrine">
+          <div class="section-heading"><h2>33. Error Doctrine</h2></div>
+          
+    <div class="specimen feedback error-feedback"><strong>Your note could not be saved.</strong><span>Your draft is still available. Check your connection and try again.</span><button class="button destructive small">Try Again</button></div>
+          <div class="section-copy"><p>Errors must:</p><ul>
+<li>Explain what failed</li>
+<li>Explain whether work was preserved</li>
+<li>Provide a recovery action</li>
+<li>Avoid blame</li>
+<li>Preserve entered data where possible</li>
+</ul><p>Avoid:</p><blockquote>
+<p>Something went wrong.</p>
+</blockquote><p>Prefer:</p><blockquote>
+<p>Your note could not be saved because the connection was interrupted. Your draft is still available. Try again.</p>
+</blockquote><h3 id="331-error-placement">33.1 Error placement</h3><ul>
+<li>Field errors appear next to the field.</li>
+<li>Form-level errors appear near the form heading and link to the affected field where possible.</li>
+<li>System errors appear in a clear neutral-to-red callout.</li>
+<li>Destructive or security errors require stronger attention.</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-vii-privacy-and-trust">
+      <div class="part-header"><span>PART VII — PRIVACY AND TRUST</span></div>
+      
+        <section class="doctrine-section" id="34-privacy-doctrine">
+          <div class="section-heading"><h2>34. Privacy Doctrine</h2></div>
+          
+    <div class="specimen privacy-stage">
+      <div class="privacy-card"><span>PRIVATE NOTE</span><h4>Visible only to authorised counsellors.</h4><p>The visibility is explicit before saving. This content never appears in student search, previews, activity, or timelines.</p><button class="button secondary">Save Private Note</button></div>
+    </div>
+          <div class="section-copy"><p>Privacy is visible, explicit, and structural.</p><h3 id="341-private-content-requirements">34.1 Private content requirements</h3><p>Private content must use:</p><ul>
+<li>Lock icon</li>
+<li>Explicit audience statement</li>
+<li>Black semantic treatment</li>
+<li>Distinct neutral surface</li>
+<li>Clear pre-save visibility</li>
+<li>Permission enforcement</li>
+<li>Audit history</li>
+</ul><h3 id="342-shared-content-requirements">34.2 Shared content requirements</h3><p>Shared content must identify the audience where there is any possibility of confusion.</p><h3 id="343-timeline-behaviour">34.3 Timeline behaviour</h3><p>Private and shared notes may appear in the same counsellor-authorised timeline only when:</p><ul>
+<li>Every item has a strong visibility marker</li>
+<li>Filters can isolate note type</li>
+<li>No private content leaks through previews, search, or notifications</li>
+</ul><p>For students, private notes must not appear as:</p><ul>
+<li>Hidden placeholders</li>
+<li>Empty timeline gaps</li>
+<li>Record counts</li>
+<li>Search results</li>
+<li>Activity summaries</li>
+</ul><h3 id="344-sensitive-changes">34.4 Sensitive changes</h3><p>Changes affecting:</p><ul>
+<li>Permissions</li>
+<li>Student assignment</li>
+<li>Private/shared state</li>
+<li>Deletion</li>
+<li>Application submission</li>
+</ul><p>must use explicit confirmation and audit history.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-viii-ai-experience">
+      <div class="part-header"><span>PART VIII — AI EXPERIENCE</span></div>
+      
+        <section class="doctrine-section" id="35-core-ai-principle">
+          <div class="section-heading"><h2>35. Core AI Principle</h2></div>
+          
+    <div class="specimen ai-stage">
+      <div class="ai-review-head"><span class="ai-label">AI-ASSISTED</span><span>Human confirmation required</span></div>
+      <div class="ai-columns"><div><span>ORIGINAL NOTE</span><p>Student unsure major. Look at sociology and public policy. Needs shortlist next week.</p></div><div><span>DRAFT FOR REVIEW</span><p>The student is reconsidering their intended major and will compare Sociology and Public Policy programmes before the shortlist review next week.</p></div></div>
+      <div class="ai-actions"><button class="button tertiary">Keep Original</button><button class="button primary">Approve Edited Draft</button></div>
+    </div>
+          <div class="section-copy"><p>AI drafts. A human confirms before consequential content is saved, shared, or acted upon.</p><p>AI supports judgement.</p><p>AI does not replace counsellor judgement.</p><h3 id="351-ai-review">35.1 AI review</h3><p>Consequential AI-assisted content must be:</p><ul>
+<li>Previewed</li>
+<li>Editable</li>
+<li>Explicitly approved or saved</li>
+<li>Logged</li>
+<li>Attributed as AI-assisted internally</li>
+</ul><h3 id="352-passive-ai-surfaces">35.2 Passive AI surfaces</h3><p>Approved passive AI surfaces may be:</p><ul>
+<li>Viewed</li>
+<li>Acted upon</li>
+<li>Dismissed</li>
+</ul><p>They do not require a save action because they do not directly publish content.</p><p>Examples include approved counsellor-only:</p><ul>
+<li>Daily digest</li>
+<li>Risk flags</li>
+<li>Stalled-task alerts</li>
+</ul><h3 id="353-grounding">35.3 Grounding</h3><p>Any AI output that states a:</p><ul>
+<li>Date</li>
+<li>Count</li>
+<li>Name</li>
+<li>Status</li>
+<li>Deadline</li>
+<li>Grade</li>
+<li>Task state</li>
+</ul><p>must use real product data.</p><p>The model may phrase the result, but must not invent the fact.</p><h3 id="354-pull-over-push">35.4 Pull over push</h3><p>AI should not interrupt the user unnecessarily.</p><p>Prefer:</p><ul>
+<li>On-demand actions</li>
+<li>Quiet dashboard surfaces</li>
+<li>Contextual suggestions</li>
+<li>Dismissible insights</li>
+</ul><p>Avoid:</p><ul>
+<li>Repeated pop-ups</li>
+<li>Forced AI flows</li>
+<li>Automatic publishing</li>
+<li>External AI reminders</li>
+<li>Surprise changes</li>
+</ul><h3 id="355-student-visibility">35.5 Student visibility</h3><p>Students should see approved counsellor feedback.</p><p>Students should not automatically see:</p><ul>
+<li>Internal AI drafting</li>
+<li>Raw AI output</li>
+<li>Counsellor-only risk analysis</li>
+<li>Internal AI summaries</li>
+<li>Unapproved feedback</li>
+</ul><h3 id="356-ai-provenance">35.6 AI provenance</h3><p>The system must retain internal provenance for every AI-assisted action.</p><p>Record:</p><ul>
+<li>Feature</li>
+<li>Student</li>
+<li>Original input</li>
+<li>AI output</li>
+<li>Final human-approved content</li>
+<li>Reviewer</li>
+<li>Review time</li>
+<li>Whether edits were made</li>
+</ul><h3 id="357-ai-marker">35.7 AI marker</h3><p>Use a minimal black AI marker.</p><p>The marker should feel factual, not magical.</p><p>Counsellors see the AI marker on AI-generated or AI-assisted internal content.</p><p>Where an approved V1 flow intentionally presents final counsellor feedback to a student without exposing the internal drafting process, the student UI shows the approved feedback as counsellor feedback while the system retains provenance in the audit record.</p><h3 id="358-ai-processing-state">35.8 AI processing state</h3><p>When AI is processing, show:</p><ul>
+<li>What is happening</li>
+<li>That the user may continue where possible</li>
+<li>How to cancel if supported</li>
+<li>Error and retry behaviour</li>
+</ul><p>Avoid vague “Thinking…” states with no context.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-ix-accessibility">
+      <div class="part-header"><span>PART IX — ACCESSIBILITY</span></div>
+      
+        <section class="doctrine-section" id="36-accessibility-standard">
+          <div class="section-heading"><h2>36. Accessibility Standard</h2></div>
+          
+    <div class="specimen accessibility-stage">
+      <button class="button primary focus-demo">Visible keyboard focus</button>
+      <div class="accessible-status"><span class="status overdue">Overdue</span><strong>Essay draft · 3 days overdue · Student action required</strong></div>
+      <label>Clearly labelled field<input value="Ananya Kapoor" aria-label="Clearly labelled field"></label>
+    </div>
+          <div class="section-copy"><p>Epicenter Education V1 must meet WCAG 2.2 AA.</p><p>This is mandatory.</p><h3 id="361-keyboard">36.1 Keyboard</h3><p>All interactive elements must support:</p><ul>
+<li>Logical tab order</li>
+<li>Visible focus</li>
+<li>Enter/Space activation where appropriate</li>
+<li>Escape to close modal or drawer</li>
+<li>Arrow-key behaviour for components where expected</li>
+<li>No keyboard traps</li>
+</ul><h3 id="362-screen-readers">36.2 Screen readers</h3><p>Use:</p><ul>
+<li>Semantic HTML</li>
+<li>Proper labels</li>
+<li>Descriptive headings</li>
+<li>Accessible names</li>
+<li>Live regions only where appropriate</li>
+<li>Correct dialog semantics</li>
+<li>Status announcements for important async changes</li>
+</ul><h3 id="363-contrast">36.3 Contrast</h3><p>Minimum contrast:</p><ul>
+<li>Normal text: 4.5:1</li>
+<li>Large text: 3:1</li>
+<li>Interactive boundaries and meaningful graphics: 3:1</li>
+</ul><p>Black text should normally be used on Epicenter Yellow.</p><p>White text on yellow is not permitted unless it passes testing.</p><h3 id="364-text-size">36.4 Text size</h3><ul>
+<li>Default body: 16px</li>
+<li>Dense table: 14px minimum</li>
+<li>Essential labels: 14px minimum</li>
+<li>Non-critical metadata: 12px minimum</li>
+<li>Form controls: 14px minimum</li>
+</ul><h3 id="365-zoom">36.5 Zoom</h3><p>The product must remain usable at 200% browser zoom.</p><p>Essential actions and information must not:</p><ul>
+<li>Overlap</li>
+<li>Disappear</li>
+<li>Become unreachable</li>
+<li>Require two-directional scrolling except where an essential table comparison requires horizontal scrolling</li>
+</ul><h3 id="366-reduced-motion">36.6 Reduced motion</h3><p>Respect <code>prefers-reduced-motion</code>.</p><p>Remove non-essential transitions while preserving state clarity.</p><h3 id="367-focus">36.7 Focus</h3><p>Focus indicators must be:</p><ul>
+<li>Clearly visible</li>
+<li>High contrast</li>
+<li>Consistent</li>
+<li>Not removed for aesthetic reasons</li>
+</ul><p>A black and yellow focus treatment may be used if it passes contrast requirements.</p><h3 id="368-status-without-colour">36.8 Status without colour</h3><p>Every status must remain understandable in greyscale.</p><p>Use text and icons in addition to colour.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-x-desktop-and-responsive-behaviour">
+      <div class="part-header"><span>PART X — DESKTOP AND RESPONSIVE BEHAVIOUR</span></div>
+      
+        <section class="doctrine-section" id="37-v1-desktop-doctrine">
+          <div class="section-heading"><h2>37. V1 Desktop Doctrine</h2></div>
+          
+    <div class="specimen desktop-stage"><div class="desktop-frame"><div class="desktop-sidebar"><span></span><span></span><span></span><span></span></div><div class="desktop-content"><span class="bar"></span><div class="desktop-grid"><span></span><span></span><span></span></div><span class="table-line"></span><span class="table-line"></span><span class="table-line short"></span></div></div><p>Desktop-first layout with zoom-safe hierarchy and a sticky identifying column for essential tables.</p></div>
+          <div class="section-copy"><p>V1 is designed and tested for:</p><ul>
+<li>Standard laptop screens</li>
+<li>Large laptop screens</li>
+<li>Desktop monitors</li>
+<li>Current Chrome</li>
+<li>Current Edge</li>
+<li>Current Safari</li>
+</ul><h3 id="371-minimum-layout-target">37.1 Minimum layout target</h3><p>The primary V1 experience should work effectively from approximately 1280px viewport width upward.</p><p>At narrower desktop widths or zoomed states:</p><ul>
+<li>Secondary columns may stack</li>
+<li>Non-essential columns may hide</li>
+<li>Side panels may become overlays</li>
+<li>The left navigation may reduce in width where the approved shell permits</li>
+<li>Core actions must remain visible</li>
+</ul><h3 id="372-no-dedicated-mobile-build">37.2 No dedicated mobile build</h3><p>V1 does not require:</p><ul>
+<li>Mobile navigation</li>
+<li>Phone-specific dashboard cards</li>
+<li>Touch-first patterns</li>
+<li>Native gestures</li>
+<li>Mobile application screens</li>
+</ul><p>Do not spend V1 design or engineering effort creating a separate phone experience.</p><h3 id="373-dense-tables">37.3 Dense tables</h3><p>When tables become constrained:</p><ol type="1">
+<li>Remove non-essential columns</li>
+<li>Permit column selection where approved</li>
+<li>Move secondary detail to a drawer</li>
+<li>Use horizontal scrolling only when comparison is essential</li>
+</ol><p>If horizontal scrolling is used:</p><ul>
+<li>Keep the identifying column sticky</li>
+<li>Keep primary actions reachable</li>
+<li>Indicate additional columns</li>
+<li>Preserve keyboard use</li>
+<li>Preserve row association</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-xi-ux-writing">
+      <div class="part-header"><span>PART XI — UX WRITING</span></div>
+      
+        <section class="doctrine-section" id="38-voice">
+          <div class="section-heading"><h2>38. Voice</h2></div>
+          
+    <div class="specimen copy-grid">
+      <div class="copy-card preferred"><span>PREFERRED</span><strong>Waiting for counsellor review</strong><p>Submitted today. Expected review by 12 July.</p></div>
+      <div class="copy-card avoid"><span>AVOID</span><strong>Pending</strong><p>Status update in progress.</p></div>
+    </div>
+          <div class="section-copy"><p>Product copy should be:</p><ul>
+<li>Direct</li>
+<li>Calm</li>
+<li>Specific</li>
+<li>Human</li>
+<li>Respectful</li>
+<li>Action-oriented</li>
+<li>Free from internal jargon</li>
+</ul><h3 id="381-counsellor-copy">38.1 Counsellor copy</h3><p>Counsellor copy should be concise and professional.</p><p>Prefer:</p><ul>
+<li>Review submission</li>
+<li>Student action required</li>
+<li>Waiting for student</li>
+<li>Due in 3 days</li>
+<li>Updated yesterday</li>
+<li>View student context</li>
+</ul><h3 id="382-student-copy">38.2 Student copy</h3><p>Student copy may be warmer and more encouraging.</p><p>Prefer:</p><ul>
+<li>Your next step</li>
+<li>Continue your draft</li>
+<li>Your counsellor has reviewed this</li>
+<li>Due Friday</li>
+<li>Changes requested</li>
+<li>Send to your counsellor</li>
+</ul><h3 id="383-button-labels">38.3 Button labels</h3><p>Buttons describe the action.</p><p>Use:</p><ul>
+<li>Save Note</li>
+<li>Submit Evidence</li>
+<li>Add University</li>
+<li>Convert to Application</li>
+<li>Request Changes</li>
+<li>Assign Roadmap</li>
+</ul><p>Avoid:</p><ul>
+<li>Continue, where the outcome is unclear</li>
+<li>Submit, without an object</li>
+<li>Process</li>
+<li>Execute</li>
+<li>Initiate</li>
+<li>OK, except in simple acknowledgements</li>
+</ul><h3 id="384-status-copy">38.4 Status copy</h3><p>Avoid vague words such as:</p><ul>
+<li>Pending</li>
+<li>Processing</li>
+<li>Incomplete</li>
+<li>Attention</li>
+</ul><p>without explanation.</p><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-xii-component-system">
+      <div class="part-header"><span>PART XII — COMPONENT SYSTEM</span></div>
+      
+        <section class="doctrine-section" id="39-shared-design-system">
+          <div class="section-heading"><h2>39. Shared Design System</h2></div>
+          
+    <div class="specimen component-board">
+      <button class="button primary">Primary Action</button>
+      <button class="button secondary">Secondary Action</button>
+      <input value="Input field" aria-label="Input field example">
+      <span class="status pending">Pending review</span>
+      <div class="glass-chip">Selected navigation</div>
+      <div class="privacy-label">PRIVATE · COUNSELLORS ONLY</div>
+      <div class="ai-label">AI-ASSISTED</div>
+    </div>
+          <div class="section-copy"><p>Every V1 component must use the shared Epicenter Education design system.</p><p>Implementation foundation:</p><ul>
+<li>Tailwind CSS</li>
+<li>shadcn/ui</li>
+<li>Radix primitives</li>
+<li>Shared Epicenter tokens and components</li>
+</ul><p>Default shadcn styling must not be shipped unchanged.</p><p>Every primitive must inherit:</p><ul>
+<li>Epicenter colours</li>
+<li>Satoshi typography</li>
+<li>Radius scale</li>
+<li>Spacing</li>
+<li>Shadows</li>
+<li>Focus states</li>
+<li>Interaction patterns</li>
+<li>Accessibility behaviour</li>
+</ul><h3 id="391-no-local-one-off-patterns">39.1 No local one-off patterns</h3><p>Do not create a one-off component when an approved shared component can be reused or extended.</p><p>New patterns should be added to the shared system before being repeated.</p><h3 id="392-mandatory-component-states">39.2 Mandatory component states</h3><p>Every interactive component defines:</p><ul>
+<li>Default</li>
+<li>Hover</li>
+<li>Focus</li>
+<li>Active</li>
+<li>Selected</li>
+<li>Disabled</li>
+<li>Loading</li>
+<li>Error</li>
+<li>Success where relevant</li>
+</ul><p>Data components also define:</p><ul>
+<li>Empty</li>
+<li>Partial</li>
+<li>Long content</li>
+<li>Permission-restricted</li>
+<li>Archived where relevant</li>
+<li>Overdue where relevant</li>
+</ul><h3 id="393-required-v1-component-families">39.3 Required V1 component families</h3><p>The shared system should include approved versions of:</p><ul>
+<li>Buttons</li>
+<li>Icon buttons</li>
+<li>Inputs</li>
+<li>Text areas</li>
+<li>Selects</li>
+<li>Checkboxes</li>
+<li>Radio groups</li>
+<li>Date controls</li>
+<li>Tabs</li>
+<li>Sidebar items</li>
+<li>Top-navigation items</li>
+<li>Cards</li>
+<li>Glass surfaces</li>
+<li>Tables</li>
+<li>List rows</li>
+<li>Status badges</li>
+<li>Progress indicators</li>
+<li>Alerts</li>
+<li>Toasts</li>
+<li>Modals</li>
+<li>Drawers</li>
+<li>Accordions</li>
+<li>Tooltips</li>
+<li>Breadcrumbs</li>
+<li>Empty states</li>
+<li>Skeletons</li>
+<li>File upload</li>
+<li>Note composer</li>
+<li>Privacy labels</li>
+<li>AI provenance labels</li>
+<li>Confirmation patterns</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-xiii-governance">
+      <div class="part-header"><span>PART XIII — GOVERNANCE</span></div>
+      
+        <section class="doctrine-section" id="40-doctrine-authority">
+          <div class="section-heading"><h2>40. Doctrine Authority</h2></div>
+          
+          <div class="section-copy"><p>The Epicenter Education Product Owner is the final approver for:</p><ul>
+<li>Doctrine changes</li>
+<li>Design exceptions</li>
+<li>Navigation changes</li>
+<li>New semantic treatments</li>
+<li>New shared component patterns</li>
+<li>Deviations from approved V1 flows</li>
+</ul><p>Designers and engineers may propose exceptions.</p><p>They may not approve their own exceptions.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="41-doctrine-versioning">
+          <div class="section-heading"><h2>41. Doctrine Versioning</h2></div>
+          
+          <div class="section-copy"><p>This doctrine changes only when the Product Owner explicitly requests or approves an iteration.</p><h3 id="411-patch-version">41.1 Patch version</h3><p>Example: <code>1.0.1</code></p><p>Use for:</p><ul>
+<li>Typographical fixes</li>
+<li>Clarification</li>
+<li>Additional examples</li>
+<li>Non-behavioural correction</li>
+</ul><h3 id="412-minor-version">41.2 Minor version</h3><p>Example: <code>1.1</code></p><p>Use for:</p><ul>
+<li>New component rule</li>
+<li>Refined interaction pattern</li>
+<li>Additional approved V1 flow guidance</li>
+<li>Updated token values that preserve the identity</li>
+</ul><h3 id="413-major-version">41.3 Major version</h3><p>Example: <code>2.0</code></p><p>Use for:</p><ul>
+<li>Fundamental visual identity change</li>
+<li>Navigation change</li>
+<li>New interaction philosophy</li>
+<li>Major role change</li>
+<li>Major scope change</li>
+</ul><p>Every update records:</p><ul>
+<li>Date</li>
+<li>Approver</li>
+<li>Summary</li>
+<li>Affected screens</li>
+<li>Required implementation changes</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="42-exception-process">
+          <div class="section-heading"><h2>42. Exception Process</h2></div>
+          
+          <div class="section-copy"><p>Every exception must document:</p><ul>
+<li>Rule being overridden</li>
+<li>Reason</li>
+<li>Affected screen or component</li>
+<li>User benefit</li>
+<li>Risk</li>
+<li>Approver</li>
+<li>Approval date</li>
+<li>Review or expiry date</li>
+</ul><p>Exceptions must not become permanent patterns through repetition.</p><p>At review, an exception must be:</p><ul>
+<li>Removed</li>
+<li>Renewed</li>
+<li>Or incorporated into a doctrine update</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="43-mandatory-screen-review">
+          <div class="section-heading"><h2>43. Mandatory Screen Review</h2></div>
+          
+    <div class="specimen review-grid">
+      <div><span>Purpose</span><strong>Clear</strong></div><div><span>Primary action</span><strong>One</strong></div><div><span>Owner and status</span><strong>Visible</strong></div><div><span>Privacy</span><strong>Explicit</strong></div><div><span>Accessibility</span><strong>WCAG 2.2 AA</strong></div><div><span>Shared components</span><strong>Required</strong></div>
+    </div>
+          <div class="section-copy"><p>Every new V1 screen must pass a doctrine review before it is complete.</p><p>The review covers:</p><ul>
+<li>Purpose</li>
+<li>Visual hierarchy</li>
+<li>Navigation</li>
+<li>Primary action</li>
+<li>Status</li>
+<li>Ownership</li>
+<li>Privacy</li>
+<li>AI provenance</li>
+<li>Accessibility</li>
+<li>States</li>
+<li>Component reuse</li>
+<li>Role appropriateness</li>
+<li>Desktop behaviour</li>
+<li>UI Inspiration reference fidelity</li>
+<li>Login and onboarding fidelity where applicable</li>
+</ul><hr/></div>
+        </section>
+    </div>
+    <div class="part-block" id="part-xiv-design-review-checklist">
+      <div class="part-header"><span>PART XIV — DESIGN REVIEW CHECKLIST</span></div>
+      
+        <section class="doctrine-section" id="44-purpose">
+          <div class="section-heading"><h2>44. Purpose</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the user problem clear?</li>
+<li>Is the screen’s purpose immediately understandable?</li>
+<li>Is the primary action obvious?</li>
+<li>Does the screen help the user act or decide?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="45-hierarchy">
+          <div class="section-heading"><h2>45. Hierarchy</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the most important information shown first?</li>
+<li>Is progressive disclosure used?</li>
+<li>Is the page calm without becoming empty?</li>
+<li>Are unrelated elements visually separated?</li>
+<li>Are related elements grouped?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="46-role-fit">
+          <div class="section-heading"><h2>46. Role fit</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the screen designed for Administrator, Counsellor, or Student?</li>
+<li>Is the density appropriate?</li>
+<li>Is the student experience guided?</li>
+<li>Is the counsellor experience professional?</li>
+<li>Does the administrator experience stay functional and restrained?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="47-navigation">
+          <div class="section-heading"><h2>47. Navigation</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Does the screen follow the fixed V1 shell?</li>
+<li>Is the active location obvious?</li>
+<li>Can the user return to the previous context?</li>
+<li>Does a portfolio item deep-link to the exact relevant object?</li>
+<li>Has an unnecessary top-level destination been introduced?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="48-actions">
+          <div class="section-heading"><h2>48. Actions</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is there one primary action?</li>
+<li>Are there no more than two secondary actions?</li>
+<li>Are destructive actions separated?</li>
+<li>Are labels explicit?</li>
+<li>Does consequential action require confirmation?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="49-workflow">
+          <div class="section-heading"><h2>49. Workflow</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the current owner visible?</li>
+<li>Is the current status visible?</li>
+<li>Is the last action visible where relevant?</li>
+<li>Is the last updated time visible?</li>
+<li>Is the next actor visible?</li>
+<li>Is the due date visible?</li>
+<li>Is the outcome after completion clear?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="50-privacy">
+          <div class="section-heading"><h2>50. Privacy</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the audience explicit?</li>
+<li>Does private content use a lock icon?</li>
+<li>Is visibility clear before saving?</li>
+<li>Could an unauthorised user infer hidden private content?</li>
+<li>Are previews, search, and activity feeds safe?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="51-ai">
+          <div class="section-heading"><h2>51. AI</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is AI provenance visible to the correct reviewing user?</li>
+<li>Does consequential AI content require human confirmation?</li>
+<li>Is factual output grounded in real data?</li>
+<li>Is internal analysis hidden from students?</li>
+<li>Is provenance retained in the system?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="52-accessibility">
+          <div class="section-heading"><h2>52. Accessibility</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Can the screen be fully used by keyboard?</li>
+<li>Is focus visible?</li>
+<li>Does contrast pass?</li>
+<li>Is meaning understandable without colour?</li>
+<li>Does the layout work at 200% zoom?</li>
+<li>Is reduced motion supported?</li>
+<li>Are labels available to screen readers?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="53-states">
+          <div class="section-heading"><h2>53. States</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Is the empty state designed?</li>
+<li>Is the loading state designed?</li>
+<li>Is the error state designed?</li>
+<li>Is the disabled state designed?</li>
+<li>Is the success state designed?</li>
+<li>Is work preserved after failure?</li>
+<li>Is recovery clear?</li>
+</ul></div>
+        </section>
+        <section class="doctrine-section" id="54-system-consistency">
+          <div class="section-heading"><h2>54. System consistency</h2></div>
+          
+          <div class="section-copy"><ul>
+<li>Does the screen use Satoshi?</li>
+<li>Does it use the approved colour tokens?</li>
+<li>Does it use shared components?</li>
+<li>Does selected navigation use the approved glass treatment?</li>
+<li>Was the closest relevant file in <code>UI Inspiration</code> opened and used during the build?</li>
+<li>Does the final screen preserve the composition, visual rhythm, and interaction treatment of that reference where appropriate?</li>
+<li>For Login or Onboarding, does the screen closely replicate the approved UI example rather than a generic alternative?</li>
+<li>Has a one-off pattern been introduced?</li>
+<li>Does wording match shared status language?</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="55-final-decision-priority">
+          <div class="section-heading"><h2>55. Final Decision Priority</h2></div>
+          
+          <div class="section-copy"><p>When principles conflict, use this order:</p><ol type="1">
+<li>Privacy and student safety</li>
+<li>Accessibility</li>
+<li>Clarity</li>
+<li>Task completion</li>
+<li>Workflow transparency</li>
+<li>Context</li>
+<li>Efficiency</li>
+<li>Consistency</li>
+<li>Brand expression</li>
+<li>Visual elegance</li>
+</ol><p>A beautiful interface that hides ownership, weakens privacy, obscures status, or makes the next action unclear is a failed Epicenter Education interface.</p><hr/></div>
+        </section>
+        <section class="doctrine-section" id="56-definition-of-done-for-v1-ui-ux">
+          <div class="section-heading"><h2>56. Definition of Done for V1 UI/UX</h2></div>
+          
+          <div class="section-copy"><p>A V1 screen is complete only when:</p><ul>
+<li>It follows an approved V1 flow</li>
+<li>It uses the fixed role navigation shell</li>
+<li>It uses Satoshi</li>
+<li>It uses approved tokens</li>
+<li>It has one clear primary action</li>
+<li>It communicates ownership and status</li>
+<li>It defines privacy behaviour</li>
+<li>It defines AI behaviour where applicable</li>
+<li>It includes empty, loading, error, disabled, and success states</li>
+<li>It passes WCAG 2.2 AA checks</li>
+<li>It works with keyboard navigation</li>
+<li>It works at 200% zoom</li>
+<li>It uses shared components</li>
+<li>The closest relevant example in <code>UI Inspiration</code> was opened before implementation and reviewed again after the first pass</li>
+<li>The implementation notes or pull-request summary name the UI Inspiration reference file or files used</li>
+<li>Login and Onboarding closely reproduce their approved UI examples while following Epicenter tokens, copy, flows, and accessibility requirements</li>
+<li>It passes the doctrine review checklist</li>
+<li>Any exception is formally documented and approved</li>
+</ul><hr/></div>
+        </section>
+        <section class="doctrine-section" id="57-v1-design-summary">
+          <div class="section-heading"><h2>57. V1 Design Summary</h2></div>
+          
+          <div class="section-copy"><p>Epicenter Education V1 is a calm, intelligent, aspirational, and trustworthy desktop product.</p><p>Its visual system is built around:</p><ul>
+<li><code>#EDC001</code> Epicenter Yellow</li>
+<li><code>#FDFDFD</code> primary surfaces</li>
+<li><code>#000000</code> text and secondary brand identity</li>
+<li>Satoshi typography</li>
+<li>Rounded containers</li>
+<li>Soft borders</li>
+<li>Very subtle shadows</li>
+<li>Restrained glassmorphism</li>
+<li>Minimal icons</li>
+<li>No illustrations</li>
+<li>Subtle functional motion</li>
+</ul><p>Its experience is built around:</p><ul>
+<li>One continuously updated student record</li>
+<li>A professional counsellor portfolio and student workspace</li>
+<li>A guided student journey with an immediate right-side To-Do List</li>
+<li>Clear deadlines and ownership</li>
+<li>Explicit privacy</li>
+<li>Human-confirmed consequential AI</li>
+<li>Actionable dashboards</li>
+<li>Progressive disclosure</li>
+<li>Accessible, consistent interaction patterns</li>
+<li>Continuous visual reference to the approved examples in <code>UI Inspiration</code></li>
+</ul><p>This doctrine is the V1 source of truth for all Epicenter Education frontend design and implementation.</p></div>
+        </section>
+    </div>
+    </div>
+  </main>
+</div>
+<script>
+const links = [...document.querySelectorAll('.nav-part a')];
+const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+const observer = new IntersectionObserver(entries => {
+  const visible = entries.filter(e => e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+  if (!visible) return;
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + visible.target.id));
+}, {rootMargin:'-18% 0px -68% 0px', threshold:[0,.2,.5]});
+sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>
