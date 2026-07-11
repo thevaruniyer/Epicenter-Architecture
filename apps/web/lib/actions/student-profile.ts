@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export type ProfileState = { error?: string; ok?: boolean };
+// `savedAt` changes on every successful save so the UI reacts to each save (not
+// just the first — a boolean effect dependency only fires once).
+export type ProfileState = { error?: string; savedAt?: number };
 
 // Update a student's core profile fields. RLS-scoped: only the student's assigned
 // counsellor (or admin) can update — a bug here can't bypass the DB policy.
@@ -32,5 +34,5 @@ export async function updateStudentProfile(
   if (error) return { error: error.message };
 
   revalidatePath(`/counsellor/students/${studentId}`);
-  return { ok: true };
+  return { savedAt: Date.now() };
 }

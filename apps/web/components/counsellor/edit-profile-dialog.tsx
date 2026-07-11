@@ -39,11 +39,11 @@ export function EditProfileDialog({
     initial,
   );
 
-  // Close the (centered) dialog once the save succeeds; parent re-renders with
-  // the persisted values.
+  // Close the (centered) dialog after every successful save (savedAt changes each
+  // time); parent re-renders with the persisted values.
   useEffect(() => {
-    if (state.ok) setOpen(false);
-  }, [state.ok]);
+    if (state.savedAt) setOpen(false);
+  }, [state.savedAt]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
