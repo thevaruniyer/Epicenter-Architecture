@@ -1,0 +1,17 @@
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
+
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Run on all paths except static assets, image files, the Sentry tunnel
+     * route, and the Sentry debug route. Keeps the auth session fresh everywhere
+     * a page/route needs it.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|monitoring|api/debug-sentry|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+  ],
+};

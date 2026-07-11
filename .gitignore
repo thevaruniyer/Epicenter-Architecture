@@ -39,3 +39,6 @@ npm-debug.log*
 pnpm-debug.log*
 .idea/
 .vscode/
+
+# Playwright MCP scratch artifacts
+.playwright-mcp/
