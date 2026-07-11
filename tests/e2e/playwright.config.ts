@@ -1,9 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
+import { config as loadEnv } from "dotenv";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webDir = resolve(here, "../../apps/web");
+// Make Supabase URL/key available to the test process (for fixture setup that
+// acts as seeded users through the Supabase client).
+loadEnv({ path: resolve(webDir, ".env.local") });
 const PORT = 3100;
 
 // E2E runs against a production build of apps/web. Requires apps/web/.env.local
