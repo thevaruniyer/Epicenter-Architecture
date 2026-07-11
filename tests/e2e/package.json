@@ -3,5 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "description": "Playwright end-to-end specs (one test per major screen/flow, per stage)",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@epicenter/config": "workspace:*",
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  }
 }
