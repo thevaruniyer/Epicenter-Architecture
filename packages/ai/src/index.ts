@@ -24,3 +24,4 @@ export {
   type OnboardingField,
 } from "./extract-onboarding-tags";
 export { generateDigest, type DigestItem } from "./generate-digest";
+export { generateRiskFlag, type RiskType } from "./generate-risk-flag";
