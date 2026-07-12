@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ClipboardList } from "lucide-react";
 import {
-  Button,
+  buttonVariants,
   Card,
   CardContent,
   CardDescription,
@@ -74,8 +74,8 @@ export default async function StudentHomePage() {
               </p>
             </div>
           </div>
-          <Link href="/onboarding">
-            <Button size="sm">Resume</Button>
+          <Link href="/onboarding" className={buttonVariants({ size: "sm" })}>
+            Resume
           </Link>
         </div>
       ) : null}
