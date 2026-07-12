@@ -37,3 +37,7 @@ export {
   generateHandoffSnapshot,
   type HandoffContext,
 } from "./generate-handoff-snapshot";
+export {
+  generateMeetingPrep,
+  type MeetingPrepContext,
+} from "./generate-meeting-prep";
