@@ -26,3 +26,4 @@ export {
 export { generateDigest, type DigestItem } from "./generate-digest";
 export { generateRiskFlag, type RiskType } from "./generate-risk-flag";
 export { generateStalledAlert } from "./generate-stalled-alert";
+export { generateEssayFeedback } from "./generate-essay-feedback";
