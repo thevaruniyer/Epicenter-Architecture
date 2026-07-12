@@ -1,6 +1,12 @@
+import { after } from "next/server";
 import { Card } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import { confirmTask } from "@/lib/actions/roadmap";
+import {
+  runStalledDetection,
+  getActiveStalledAlerts,
+} from "@/lib/stalled-tasks";
+import { StalledAlertsPanel } from "@/components/counsellor/stalled-alerts-panel";
 import { AddMilestoneDialog } from "@/components/counsellor/add-milestone-dialog";
 import { AddTaskDialog } from "@/components/counsellor/add-task-dialog";
 import { TaskStatusBadge } from "@/components/counsellor/task-status-badge";
@@ -30,6 +36,10 @@ export default async function StudentRoadmapTab({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+
+  // Passive stalled-task detection runs after the response; active alerts read now.
+  after(() => runStalledDetection(id));
+  const stalledAlerts = await getActiveStalledAlerts(id);
 
   const [{ data: milestoneRows }, { data: taskRows }, { data: signalRows }] =
     await Promise.all([
@@ -78,6 +88,8 @@ export default async function StudentRoadmapTab({
 
   return (
     <div className="flex flex-col gap-4">
+      <StalledAlertsPanel alerts={stalledAlerts} studentId={id} />
+
       <div className="flex flex-wrap items-center justify-end gap-2">
         <AddMilestoneDialog studentId={id} />
         <AddTaskDialog

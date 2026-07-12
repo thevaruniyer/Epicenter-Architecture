@@ -38,7 +38,10 @@ export async function markTaskDone(
     status === "pending_review"; // allow re-upload while awaiting review
   if (!canTick) return { error: "This task can't be submitted right now." };
 
-  const patch: Record<string, unknown> = { status: "pending_review" };
+  const patch: Record<string, unknown> = {
+    status: "pending_review",
+    pending_review_at: new Date().toISOString(),
+  };
 
   if (file instanceof File && file.size > 0) {
     const ext = file.name.includes(".")

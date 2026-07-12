@@ -25,3 +25,4 @@ export {
 } from "./extract-onboarding-tags";
 export { generateDigest, type DigestItem } from "./generate-digest";
 export { generateRiskFlag, type RiskType } from "./generate-risk-flag";
+export { generateStalledAlert } from "./generate-stalled-alert";
