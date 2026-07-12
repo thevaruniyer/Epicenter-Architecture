@@ -1,35 +1,78 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Eye, Lock } from "lucide-react";
+import { Eye, Lock, Sparkles } from "lucide-react";
 import { Button, Card, cn } from "@epicenter/ui";
-import { createNote, type NoteState } from "@/lib/actions/notes";
+import {
+  createNote,
+  cleanUpMeetingNote,
+  type NoteState,
+  type CleanUpState,
+} from "@/lib/actions/notes";
 
-const initial: NoteState = {};
+const initialSave: NoteState = {};
+const initialClean: CleanUpState = {};
 
 export function NoteComposer({ studentId }: { studentId: string }) {
   const [text, setText] = useState("");
   const [visibility, setVisibility] = useState<"shared" | "private">("shared");
-  const [state, formAction, pending] = useActionState(createNote, initial);
+  // Draft-then-approve state: `aiCleaned` marks the current text as an AI draft;
+  // `rawOriginal` preserves what the counsellor typed (audit trail per §1.1).
+  const [aiCleaned, setAiCleaned] = useState(false);
+  const [rawOriginal, setRawOriginal] = useState("");
 
-  // Clear the composer after every successful save (savedId changes each time);
-  // the list re-renders with the note.
+  const [saveState, saveAction, saving] = useActionState(createNote, initialSave);
+  const [cleanState, cleanAction, cleaning] = useActionState(
+    cleanUpMeetingNote,
+    initialClean,
+  );
+
+  // Clear the composer after every successful save.
   useEffect(() => {
-    if (state.savedId) setText("");
-  }, [state.savedId]);
+    if (saveState.savedId) {
+      setText("");
+      setAiCleaned(false);
+      setRawOriginal("");
+    }
+  }, [saveState.savedId]);
+
+  // When a cleaned draft returns, swap it in for review (not saved yet).
+  useEffect(() => {
+    if (cleanState.at && cleanState.cleaned) {
+      setText(cleanState.cleaned);
+      setAiCleaned(true);
+    }
+  }, [cleanState.at, cleanState.cleaned]);
 
   return (
     <Card>
-      <form action={formAction} className="flex flex-col gap-3">
-        <input type="hidden" name="studentId" value={studentId} />
-        <input type="hidden" name="visibility" value={visibility} />
-
+      <div className="flex flex-col gap-3">
         <label htmlFor="note-text" className="text-sm font-semibold text-ink">
           New meeting note
         </label>
+
+        {aiCleaned ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border-soft bg-surface-muted px-3 py-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink">
+              <Sparkles className="size-3.5" aria-hidden />
+              AI-assisted draft — review and edit, then save. The badge stays once
+              saved.
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setText(rawOriginal);
+                setAiCleaned(false);
+              }}
+              className="text-xs font-semibold text-ink-secondary underline hover:text-ink"
+            >
+              Revert to what I typed
+            </button>
+          </div>
+        ) : null}
+
         <textarea
           id="note-text"
-          name="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={4}
@@ -68,17 +111,52 @@ export function NoteComposer({ studentId }: { studentId: string }) {
             ))}
           </div>
 
-          <Button type="submit" size="sm" disabled={pending || !text.trim()}>
-            {pending ? "Saving…" : "Save note"}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Clean-up: produces a draft, never saves. */}
+            <form action={cleanAction}>
+              <input type="hidden" name="studentId" value={studentId} />
+              <input type="hidden" name="text" value={text} />
+              <Button
+                type="submit"
+                variant="tertiary"
+                size="sm"
+                disabled={cleaning || !text.trim()}
+                onClick={() => setRawOriginal(text)}
+              >
+                <Sparkles className="size-4" aria-hidden />
+                {cleaning ? "Structuring your note…" : "Clean up with AI"}
+              </Button>
+            </form>
+
+            {/* Save: the only thing that persists the note. */}
+            <form action={saveAction}>
+              <input type="hidden" name="studentId" value={studentId} />
+              <input type="hidden" name="visibility" value={visibility} />
+              <input type="hidden" name="text" value={text} />
+              <input
+                type="hidden"
+                name="ai_cleaned"
+                value={aiCleaned ? "true" : "false"}
+              />
+              <input type="hidden" name="raw_text" value={rawOriginal || text} />
+              <Button type="submit" size="sm" disabled={saving || !text.trim()}>
+                {saving ? "Saving…" : "Save note"}
+              </Button>
+            </form>
+          </div>
         </div>
 
-        {state.error ? (
+        {cleanState.error ? (
           <p role="alert" className="text-sm text-error-ink">
-            {state.error}
+            {cleanState.error}
           </p>
         ) : null}
-      </form>
+        {saveState.error ? (
+          <p role="alert" className="text-sm text-error-ink">
+            {saveState.error}
+          </p>
+        ) : null}
+      </div>
     </Card>
   );
 }

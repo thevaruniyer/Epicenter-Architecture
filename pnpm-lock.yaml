@@ -10,6 +10,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@epicenter/ai':
+        specifier: workspace:^
+        version: link:../../packages/ai
       '@epicenter/ui':
         specifier: workspace:*
         version: link:../../packages/ui

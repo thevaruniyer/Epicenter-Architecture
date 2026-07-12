@@ -11,3 +11,5 @@ export {
   type GenerateOptions,
   type AiActionLogEntry,
 } from "./client";
+
+export { cleanUpNote, type CleanUpMode } from "./clean-up-note";
