@@ -8,8 +8,10 @@ import {
 } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import { runRiskDetection, getActiveRiskFlags } from "@/lib/risk-flags";
+import { getHandoffForMe } from "@/lib/handoff";
 import { EditProfileDialog } from "@/components/counsellor/edit-profile-dialog";
 import { RiskFlagsPanel } from "@/components/counsellor/risk-flags-panel";
+import { HandoffSnapshotCard } from "@/components/counsellor/handoff-snapshot-card";
 
 type Extracurricular = { activity?: string; role?: string; duration?: string };
 
@@ -50,7 +52,10 @@ export default async function StudentOverviewPage({
   // Passive risk detection runs after the response (never blocks the page);
   // newly flagged risks appear on the next load. Active flags are read now.
   after(() => runRiskDetection(id));
-  const riskFlags = await getActiveRiskFlags(id);
+  const [riskFlags, handoff] = await Promise.all([
+    getActiveRiskFlags(id),
+    getHandoffForMe(id),
+  ]);
 
   const { data } = await supabase
     .from("student_profiles")
@@ -76,6 +81,7 @@ export default async function StudentOverviewPage({
 
   return (
     <div className="flex flex-col gap-4">
+      <HandoffSnapshotCard snapshot={handoff} />
       <RiskFlagsPanel flags={riskFlags} studentId={id} />
 
       <Card>

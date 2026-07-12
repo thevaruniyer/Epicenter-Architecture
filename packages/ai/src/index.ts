@@ -33,3 +33,7 @@ export {
   type RequirementType,
   type ExtractedRequirement,
 } from "./extract-requirement-checklist";
+export {
+  generateHandoffSnapshot,
+  type HandoffContext,
+} from "./generate-handoff-snapshot";
