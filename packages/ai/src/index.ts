@@ -19,3 +19,7 @@ export {
   type TaskCategory,
   type ExtractedSignal,
 } from "./extract-signals";
+export {
+  extractOnboardingTags,
+  type OnboardingField,
+} from "./extract-onboarding-tags";

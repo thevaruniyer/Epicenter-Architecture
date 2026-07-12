@@ -6,6 +6,7 @@ import {
   saveOnboardingStep,
   skipOnboarding,
 } from "@/lib/actions/onboarding";
+import { OnboardingTagField } from "@/components/onboarding/tag-field";
 
 type Extracurricular = { activity?: string };
 type Profile = {
@@ -127,45 +128,37 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
       );
     case 3:
       return (
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
-          Hobbies &amp; interests
-          <textarea
-            name="hobbies"
-            rows={4}
-            defaultValue={(profile.hobbies ?? []).join("\n")}
-            placeholder="Tell us in your own words…"
-            className={fieldClass}
-          />
-        </label>
+        <OnboardingTagField
+          name="hobbies"
+          kind="hobbies"
+          label="Hobbies & interests"
+          placeholder="Tell us in your own words…"
+          defaultValue={(profile.hobbies ?? []).join("\n")}
+        />
       );
     case 4:
       return (
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
-          Intended major
-          <input
-            name="intended_major"
-            type="text"
-            defaultValue={profile.intended_major ?? ""}
-            placeholder="However you'd describe it"
-            className={fieldClass}
-          />
-        </label>
+        <OnboardingTagField
+          name="intended_major"
+          kind="major"
+          label="Intended major"
+          placeholder="However you'd describe it"
+          defaultValue={profile.intended_major ?? ""}
+          multiline={false}
+        />
       );
     case 5:
       return (
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
-          Extracurriculars
-          <textarea
-            name="extracurriculars"
-            rows={4}
-            defaultValue={(profile.extracurriculars ?? [])
-              .map((ec) => ec.activity ?? "")
-              .filter(Boolean)
-              .join("\n")}
-            placeholder={"Robotics Club — Team Lead\nDebate Team — 2 yrs"}
-            className={fieldClass}
-          />
-        </label>
+        <OnboardingTagField
+          name="extracurriculars"
+          kind="extracurriculars"
+          label="Extracurriculars"
+          placeholder={"Robotics Club — Team Lead\nDebate Team — 2 yrs"}
+          defaultValue={(profile.extracurriculars ?? [])
+            .map((ec) => ec.activity ?? "")
+            .filter(Boolean)
+            .join("\n")}
+        />
       );
     default:
       return null;

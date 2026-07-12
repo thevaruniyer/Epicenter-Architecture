@@ -2,8 +2,55 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  extractOnboardingTags,
+  logAiAction,
+  type OnboardingField,
+} from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 import { splitList, TOTAL_STEPS } from "@/lib/onboarding";
+
+// Draft-then-approve tag extraction (§2.3): returns suggested tags for the
+// student to edit before confirming. Never writes to the profile itself.
+export type TagState = { error?: string; tags?: string[]; at?: number };
+
+const FIELDS: OnboardingField[] = ["hobbies", "major", "extracurriculars"];
+
+export async function suggestOnboardingTags(
+  _prev: TagState,
+  formData: FormData,
+): Promise<TagState> {
+  const text = String(formData.get("text") ?? "").trim();
+  const kind = String(formData.get("kind") ?? "") as OnboardingField;
+  if (!FIELDS.includes(kind)) return { error: "Unknown field." };
+  if (!text) return { error: "Write something first." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  let tags: string[];
+  try {
+    tags = await extractOnboardingTags(text, kind);
+  } catch {
+    return { error: "AI suggestions are unavailable right now." };
+  }
+
+  try {
+    await logAiAction(supabase, {
+      feature: "onboarding_extraction",
+      studentId: user.id,
+      actorId: user.id,
+      outputText: JSON.stringify(tags),
+    });
+  } catch {
+    /* logging must never block onboarding */
+  }
+
+  return { tags, at: Date.now() };
+}
 
 // Onboarding writes to the student's OWN student_profiles row (admin-created;
 // RLS sp_update lets the student update their own). Skippable + resumable via
