@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Protected route prefixes (authenticated shell). Role-specific gating comes later.
-const PROTECTED_PREFIXES = ["/app"];
+// Protected route prefixes (require an authenticated session). Role-specific
+// gating (e.g. students out of /counsellor) happens in the route layouts.
+const PROTECTED_PREFIXES = ["/app", "/counsellor", "/student"];
 // Auth pages an already-signed-in user should be bounced away from.
 const AUTH_PAGES = ["/login", "/signup"];
 

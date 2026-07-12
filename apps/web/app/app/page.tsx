@@ -9,6 +9,9 @@ export default async function AppShellPage() {
   const user = await getSessionUser();
   // Belt-and-braces: middleware already redirects unauthenticated users.
   if (!user) redirect("/login");
+  // Staff roles land in the counsellor shell. (Student home arrives in Stage 3;
+  // students stay on this simple shell until then.)
+  if (user.role !== "student") redirect("/counsellor/dashboard");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-4">
