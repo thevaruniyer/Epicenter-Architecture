@@ -151,6 +151,7 @@ export default async function StudentShortlistTab({
                     entryId={e.id}
                     status={e.status}
                     category={e.category}
+                    converted={convertedIds.has(e.id)}
                   />
                 </div>
               </Card>

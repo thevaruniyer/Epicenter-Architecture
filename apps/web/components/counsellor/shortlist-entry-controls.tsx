@@ -17,6 +17,7 @@ import {
   deleteShortlistEntry,
   type ActionState,
 } from "@/lib/actions/shortlist";
+import { convertToApplication } from "@/lib/actions/applications";
 import type { ShortlistStatus, ShortlistCategory } from "@/lib/status-display";
 
 const initial: ActionState = {};
@@ -31,14 +32,20 @@ export function ShortlistEntryControls({
   entryId,
   status,
   category,
+  converted,
 }: {
   studentId: string;
   entryId: string;
   status: ShortlistStatus;
   category: ShortlistCategory | null;
+  converted: boolean;
 }) {
   const [review, reviewAction, reviewing] = useActionState(
     reviewShortlistEntry,
+    initial,
+  );
+  const [convert, convertAction, converting] = useActionState(
+    convertToApplication,
     initial,
   );
   const [pickedCategory, setPickedCategory] = useState<ShortlistCategory | "">(
@@ -79,12 +86,33 @@ export function ShortlistEntryControls({
           </Button>
         </form>
 
+        {/* Convert to application (UC5) — only once approved and not yet live. */}
+        {status === "approved" && !converted ? (
+          <form action={convertAction}>
+            <input type="hidden" name="entryId" value={entryId} />
+            <input type="hidden" name="studentId" value={studentId} />
+            <Button
+              type="submit"
+              variant="tertiary"
+              size="sm"
+              disabled={converting}
+            >
+              {converting ? "Converting…" : "Convert to Application →"}
+            </Button>
+          </form>
+        ) : null}
+
         <DeleteEntryButton studentId={studentId} entryId={entryId} />
       </div>
 
       {review.error ? (
         <p role="alert" className="text-sm text-error-ink">
           {review.error}
+        </p>
+      ) : null}
+      {convert.error ? (
+        <p role="alert" className="text-sm text-error-ink">
+          {convert.error}
         </p>
       ) : null}
     </div>
