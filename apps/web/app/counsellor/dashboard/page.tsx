@@ -6,6 +6,8 @@ import {
   CardDescription,
   CardContent,
 } from "@epicenter/ui";
+import { getDigest } from "@/lib/digest";
+import { DigestCard } from "@/components/counsellor/digest-card";
 
 function firstName(email: string | null): string {
   if (!email) return "there";
@@ -18,6 +20,7 @@ function firstName(email: string | null): string {
 // and deadlines are wired in later phases; this is the on-brand landing.
 export default async function CounsellorDashboardPage() {
   const user = await getSessionUser();
+  const digest = user ? await getDigest(user.id) : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,7 +33,9 @@ export default async function CounsellorDashboardPage() {
         </h1>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <DigestCard lines={digest} />
+
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Your caseload</CardTitle>
@@ -48,16 +53,6 @@ export default async function CounsellorDashboardPage() {
           </CardHeader>
           <CardContent className="text-ink-secondary">
             Items students have marked done appear here for review.
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Daily digest</CardTitle>
-            <CardDescription>AI-assisted summary.</CardDescription>
-          </CardHeader>
-          <CardContent className="text-ink-secondary">
-            A plain-language digest of what needs attention arrives in a later phase.
           </CardContent>
         </Card>
       </div>

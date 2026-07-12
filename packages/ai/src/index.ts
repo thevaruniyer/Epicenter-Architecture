@@ -23,3 +23,4 @@ export {
   extractOnboardingTags,
   type OnboardingField,
 } from "./extract-onboarding-tags";
+export { generateDigest, type DigestItem } from "./generate-digest";
