@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   AlertCircle,
   CheckCircle2,
+  Circle,
   Clock,
   ShieldCheck,
   Target,
@@ -19,12 +20,18 @@ export type PillStatus =
   | "pending"
   | "reach"
   | "target"
-  | "safety";
+  | "safety"
+  | "neutral";
 
 const STATUS: Record<
   PillStatus,
   { label: string; Icon: LucideIcon; className: string }
 > = {
+  neutral: {
+    label: "—",
+    Icon: Circle,
+    className: "bg-surface-muted border-border-strong text-ink-secondary",
+  },
   complete: {
     label: "Complete",
     Icon: CheckCircle2,
