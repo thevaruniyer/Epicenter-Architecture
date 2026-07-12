@@ -1,4 +1,4 @@
-import { Card } from "@epicenter/ui";
+import { AiBadge, Card } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import {
   ApplicationStatusPill,
@@ -8,6 +8,7 @@ import {
 } from "@/lib/status-display";
 import type { RequirementStatus } from "@/lib/tick-then-confirm";
 import { AddRequirementDialog } from "@/components/counsellor/add-requirement-dialog";
+import { PasteRequirementsDialog } from "@/components/counsellor/paste-requirements-dialog";
 import { RequirementReviewControls } from "@/components/counsellor/requirement-review-controls";
 import { AdvanceApplicationControls } from "@/components/counsellor/advance-application-controls";
 
@@ -31,6 +32,7 @@ type Requirement = {
   title: string;
   requirement_type: string;
   status: RequirementStatus;
+  ai_extracted: boolean;
 };
 
 function fmt(iso: string | null): string | null {
@@ -62,7 +64,7 @@ export default async function StudentApplicationsTab({
   if (appIds.length) {
     const { data: reqRows } = await supabase
       .from("application_requirements")
-      .select("id, application_id, title, requirement_type, status")
+      .select("id, application_id, title, requirement_type, status, ai_extracted")
       .in("application_id", appIds)
       .order("title");
     requirements = (reqRows as Requirement[]) ?? [];
@@ -128,7 +130,10 @@ export default async function StudentApplicationsTab({
             <div className="mt-4 border-t border-border-soft pt-3">
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-ink">Requirements</h3>
-                <AddRequirementDialog applicationId={a.id} studentId={id} />
+                <div className="flex items-center gap-2">
+                  <PasteRequirementsDialog applicationId={a.id} studentId={id} />
+                  <AddRequirementDialog applicationId={a.id} studentId={id} />
+                </div>
               </div>
               {reqs.length === 0 ? (
                 <p className="text-sm text-ink-tertiary">
@@ -142,7 +147,12 @@ export default async function StudentApplicationsTab({
                       className="flex flex-wrap items-center gap-3 py-2.5"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-ink">{r.title}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm font-medium text-ink">
+                            {r.title}
+                          </p>
+                          {r.ai_extracted ? <AiBadge label="AI-extracted" /> : null}
+                        </div>
                         <p className="text-xs capitalize text-ink-tertiary">
                           {r.requirement_type}
                         </p>

@@ -27,3 +27,9 @@ export { generateDigest, type DigestItem } from "./generate-digest";
 export { generateRiskFlag, type RiskType } from "./generate-risk-flag";
 export { generateStalledAlert } from "./generate-stalled-alert";
 export { generateEssayFeedback } from "./generate-essay-feedback";
+export {
+  extractRequirementChecklist,
+  REQUIREMENT_TYPES,
+  type RequirementType,
+  type ExtractedRequirement,
+} from "./extract-requirement-checklist";
