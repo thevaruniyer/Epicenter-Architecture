@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cleanUpNote, logAiAction } from "@epicenter/ai";
+import { after } from "next/server";
+import { cleanUpNote, extractSignals, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
 // `savedId` changes on every successful save so the UI can react to each save
@@ -89,6 +90,37 @@ export async function createNote(
 
   if (error) return { error: error.message };
 
+  // Async signal extraction (Flow Plan §3/§4.3): after the response is sent,
+  // pull tagged signals out of the note into student_signals so the category
+  // nudge is a fast table read later — never a live LLM call. Best-effort:
+  // failures here must never affect the saved note.
+  const noteId = data.id as string;
+  after(async () => {
+    try {
+      const supa = await createClient();
+      const signals = await extractSignals(text);
+      if (signals.length) {
+        await supa.from("student_signals").insert(
+          signals.map((s) => ({
+            student_id: studentId,
+            category: s.category,
+            tag_text: s.tag,
+            source_note_id: noteId,
+          })),
+        );
+        await logAiAction(supa, {
+          feature: "nudge",
+          studentId,
+          actorId: user?.id ?? null,
+          inputRef: noteId,
+          outputText: JSON.stringify(signals),
+        });
+      }
+    } catch {
+      /* background enrichment — swallow */
+    }
+  });
+
   revalidatePath(`/counsellor/students/${studentId}/notes`);
-  return { savedId: data.id as string };
+  return { savedId: noteId };
 }

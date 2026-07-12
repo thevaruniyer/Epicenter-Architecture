@@ -50,6 +50,8 @@ export interface GenerateOptions {
   system?: string;
   /** 0–2; lower is more deterministic. Defaults to the model default. */
   temperature?: number;
+  /** When true, forces a JSON response (responseMimeType application/json). */
+  json?: boolean;
 }
 
 /**
@@ -61,6 +63,7 @@ export async function generate({
   prompt,
   system,
   temperature,
+  json,
 }: GenerateOptions): Promise<string> {
   const ai = getClient();
   const response = await ai.models.generateContent({
@@ -69,6 +72,7 @@ export async function generate({
     config: {
       ...(system ? { systemInstruction: system } : {}),
       ...(temperature !== undefined ? { temperature } : {}),
+      ...(json ? { responseMimeType: "application/json" } : {}),
     },
   });
   const text = response.text;

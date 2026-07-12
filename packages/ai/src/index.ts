@@ -13,3 +13,9 @@ export {
 } from "./client";
 
 export { cleanUpNote, type CleanUpMode } from "./clean-up-note";
+export {
+  extractSignals,
+  TASK_CATEGORIES,
+  type TaskCategory,
+  type ExtractedSignal,
+} from "./extract-signals";
