@@ -27,7 +27,6 @@ type Item = TaskItem | FormItem;
 // nav tab — the same "one place to check" pattern Documents already uses.
 export function TodoPanel({ items }: { items: Item[] }) {
   const [openForm, setOpenForm] = useState<FormItem | null>(null);
-  const pending = items.filter((i) => i.kind === "task" || i.status !== "responded");
 
   return (
     <Card>
@@ -35,11 +34,11 @@ export function TodoPanel({ items }: { items: Item[] }) {
         <CardTitle>To Do</CardTitle>
         <CardDescription>Tasks and forms that need your attention.</CardDescription>
       </CardHeader>
-      {pending.length === 0 ? (
+      {items.length === 0 ? (
         <p className="px-1 text-sm text-ink-tertiary">All caught up.</p>
       ) : (
         <ul className="flex flex-col gap-2">
-          {pending.map((item) =>
+          {items.map((item) =>
             item.kind === "task" ? (
               <li
                 key={`task-${item.id}`}
