@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
 import {
   extractOnboardingTags,
   logAiAction,
@@ -34,7 +35,8 @@ export async function suggestOnboardingTags(
   let tags: string[];
   try {
     tags = await extractOnboardingTags(text, kind);
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "onboarding_extraction" } });
     return { error: "AI suggestions are unavailable right now." };
   }
 
@@ -45,8 +47,10 @@ export async function suggestOnboardingTags(
       actorId: user.id,
       outputText: JSON.stringify(tags),
     });
-  } catch {
-    /* logging must never block onboarding */
+  } catch (err) {
+    // logging must never block onboarding — but a silently broken audit
+    // trail (CLAUDE.md §4) still needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "onboarding_extraction_log" } });
   }
 
   return { tags, at: Date.now() };
@@ -91,16 +95,25 @@ export async function saveOnboardingStep(formData: FormData): Promise<void> {
       break;
     case 3:
       patch.hobbies = splitList(String(formData.get("hobbies") ?? ""));
+      if (formData.get("hobbies_ai_extracted") === "true") {
+        patch.hobbies_ai_extracted = true;
+      }
       break;
     case 4:
       patch.intended_major =
         String(formData.get("intended_major") ?? "").trim() || null;
+      if (formData.get("intended_major_ai_extracted") === "true") {
+        patch.intended_major_ai_extracted = true;
+      }
       break;
     case 5:
       // Plain form: store each line as a minimal object; AI structures it in Phase 5.
       patch.extracurriculars = splitList(
         String(formData.get("extracurriculars") ?? ""),
       ).map((activity) => ({ activity }));
+      if (formData.get("extracurriculars_ai_extracted") === "true") {
+        patch.extracurriculars_ai_extracted = true;
+      }
       break;
   }
 

@@ -62,6 +62,14 @@ export function OnboardingTagField({
       {label}
       {/* The submitted value — chips when confirmed, otherwise the raw text. */}
       <input type="hidden" name={name} value={hiddenValue} />
+      {/* Tells the step action whether this field's saved value came from the
+          AI-suggested-tags path, so the profile page can show the permanent
+          badge (CLAUDE.md §4 — badge stays once AI-touched content is saved). */}
+      <input
+        type="hidden"
+        name={`${name}_ai_extracted`}
+        value={tags !== null ? "true" : "false"}
+      />
 
       {tags === null ? (
         multiline ? (
