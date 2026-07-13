@@ -1,6 +1,7 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { generateEssayFeedback, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -38,7 +39,8 @@ export async function draftEssayFeedback(
       { revalidate: 86_400 },
     );
     feedback = await cached(essay);
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "essay_feedback" } });
     return { error: "AI feedback is unavailable right now — write yours below." };
   }
 
@@ -49,8 +51,10 @@ export async function draftEssayFeedback(
       actorId: user?.id ?? null,
       outputText: feedback,
     });
-  } catch {
-    /* logging must never block the counsellor */
+  } catch (err) {
+    // logging must never block the counsellor — but a silently broken audit
+    // trail (CLAUDE.md §4) still needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "essay_feedback_log" } });
   }
 
   return { feedback, at: Date.now() };
@@ -83,8 +87,10 @@ export async function saveEssayFeedback(
       outputText: feedback,
       editedBeforeSave: aiAssisted ? edited : false,
     });
-  } catch {
-    /* non-fatal */
+  } catch (err) {
+    // non-fatal — but a silently broken audit trail (CLAUDE.md §4) still
+    // needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "essay_feedback_log" } });
   }
 
   return { savedAt: Date.now() };

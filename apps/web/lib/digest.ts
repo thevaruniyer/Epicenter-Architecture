@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { generateDigest, type DigestItem } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -99,13 +100,20 @@ async function detect(): Promise<DigestItem[]> {
  * Phrase the digest, cached per counsellor per detected fact-set so Gemini is
  * called at most once per hour for a given caseload state (architecture §4
  * once-per-session rate-limit intent), and re-phrased when the facts change.
+ * Best-effort — never throws into the caller (a passive feature must never
+ * break the dashboard it's displayed on).
  */
 export async function getDigest(counsellorId: string): Promise<string[]> {
-  const items = await detect();
-  const cached = unstable_cache(
-    async (payload: DigestItem[]) => generateDigest(payload),
-    ["counsellor-digest", counsellorId],
-    { revalidate: 3600 },
-  );
-  return cached(items);
+  try {
+    const items = await detect();
+    const cached = unstable_cache(
+      async (payload: DigestItem[]) => generateDigest(payload),
+      ["counsellor-digest", counsellorId],
+      { revalidate: 3600 },
+    );
+    return await cached(items);
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "digest" } });
+    return [];
+  }
 }

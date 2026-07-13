@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import {
   generateHandoffSnapshot,
   logAiAction,
@@ -116,11 +117,20 @@ export async function generateAndStoreHandoff(
         reviewedBy: forCounsellorId,
         outputText: content,
       });
-    } catch {
-      /* non-fatal */
+    } catch (err) {
+      // non-fatal — but a silently broken audit trail (CLAUDE.md §4) still
+      // needs to be visible somewhere.
+      Sentry.captureException(err, {
+        tags: { ai_feature: "reassignment_snapshot_log" },
+      });
     }
     return content;
-  } catch {
+  } catch (err) {
+    // Generation/storage failure — reassignment can proceed and retry, but
+    // a silent failure here still needs to be visible somewhere.
+    Sentry.captureException(err, {
+      tags: { ai_feature: "reassignment_snapshot" },
+    });
     return null;
   }
 }

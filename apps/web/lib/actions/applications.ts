@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
 import { extractRequirementChecklist, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -291,7 +292,8 @@ export async function extractChecklist(
   let items;
   try {
     items = await extractRequirementChecklist(text);
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "checklist_extraction" } });
     return { error: "AI extraction is unavailable right now." };
   }
   if (!items.length) {
@@ -307,8 +309,10 @@ export async function extractChecklist(
       actorId: user?.id ?? null,
       outputText: JSON.stringify(items),
     });
-  } catch {
-    /* non-fatal */
+  } catch (err) {
+    // non-fatal — but a silently broken audit trail (CLAUDE.md §4) still
+    // needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "checklist_extraction_log" } });
   }
 
   return { items, at: Date.now() };

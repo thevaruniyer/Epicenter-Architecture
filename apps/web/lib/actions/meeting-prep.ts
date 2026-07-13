@@ -1,6 +1,7 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import {
   generateMeetingPrep,
   logAiAction,
@@ -109,7 +110,8 @@ export async function prepareMeeting(
       { revalidate: 86_400 },
     );
     briefing = await cached(meetingId);
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "meeting_prep" } });
     return { error: "AI prep is unavailable right now — open the full record." };
   }
 
@@ -121,8 +123,10 @@ export async function prepareMeeting(
       inputRef: meetingId,
       outputText: briefing,
     });
-  } catch {
-    /* non-fatal */
+  } catch (err) {
+    // non-fatal — but a silently broken audit trail (CLAUDE.md §4) still
+    // needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "meeting_prep_log" } });
   }
 
   return { briefing, at: Date.now() };

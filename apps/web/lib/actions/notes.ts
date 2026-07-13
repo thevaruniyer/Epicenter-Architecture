@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { cleanUpNote, extractSignals, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,7 +30,8 @@ export async function cleanUpMeetingNote(
   let cleaned: string;
   try {
     cleaned = await cleanUpNote(raw, "meeting");
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "clean_up" } });
     return {
       error: "AI clean-up is unavailable right now. Your note is unchanged.",
     };
@@ -43,8 +45,10 @@ export async function cleanUpMeetingNote(
       actorId: user?.id ?? null,
       outputText: cleaned,
     });
-  } catch {
-    /* logging must never block the counsellor's work */
+  } catch (err) {
+    // logging must never block the counsellor's work — but a silently broken
+    // audit trail (CLAUDE.md §4) still needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "clean_up_log" } });
   }
 
   return { cleaned, at: Date.now() };
@@ -116,8 +120,10 @@ export async function createNote(
           outputText: JSON.stringify(signals),
         });
       }
-    } catch {
-      /* background enrichment — swallow */
+    } catch (err) {
+      // background enrichment — must never affect the saved note, but a
+      // silent failure here is still worth knowing about.
+      Sentry.captureException(err, { tags: { ai_feature: "nudge" } });
     }
   });
 

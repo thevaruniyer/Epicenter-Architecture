@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { generateRiskFlag, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -105,8 +106,10 @@ export async function runRiskDetection(studentId: string): Promise<void> {
         outputText: summary,
       });
     }
-  } catch {
-    /* passive background detection — swallow */
+  } catch (err) {
+    // passive background detection — must never surface as a user-facing
+    // error, but a silent failure here means a real risk goes unflagged.
+    Sentry.captureException(err, { tags: { ai_feature: "risk_flag" } });
   }
 }
 

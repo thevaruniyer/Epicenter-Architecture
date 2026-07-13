@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { generateStalledAlert, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -65,8 +66,10 @@ export async function runStalledDetection(studentId: string): Promise<void> {
         outputText: summary,
       });
     }
-  } catch {
-    /* passive background detection — swallow */
+  } catch (err) {
+    // passive background detection — must never surface as a user-facing
+    // error, but a silent failure here means a real stall goes unflagged.
+    Sentry.captureException(err, { tags: { ai_feature: "stalled_alert" } });
   }
 }
 

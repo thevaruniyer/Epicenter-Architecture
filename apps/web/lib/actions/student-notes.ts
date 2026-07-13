@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
 import { cleanUpNote, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 
@@ -26,7 +27,8 @@ export async function cleanUpStudentUpdate(
   let cleaned: string;
   try {
     cleaned = await cleanUpNote(raw, "update");
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "clean_up" } });
     return {
       error: "AI clean-up is unavailable right now. Your update is unchanged.",
     };
@@ -39,8 +41,10 @@ export async function cleanUpStudentUpdate(
       actorId: user.id,
       outputText: cleaned,
     });
-  } catch {
-    /* logging must never block the student's work */
+  } catch (err) {
+    // logging must never block the student's work — but a silently broken
+    // audit trail (CLAUDE.md §4) still needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "clean_up_log" } });
   }
 
   return { cleaned, at: Date.now() };
