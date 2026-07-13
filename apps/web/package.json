@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@epicenter/ai": "workspace:^",
     "@epicenter/ui": "workspace:*",
     "@sentry/nextjs": "^10.65.0",
     "@supabase/ssr": "^0.12.0",

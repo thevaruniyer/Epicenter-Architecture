@@ -2,8 +2,59 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
+import {
+  extractOnboardingTags,
+  logAiAction,
+  type OnboardingField,
+} from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 import { splitList, TOTAL_STEPS } from "@/lib/onboarding";
+
+// Draft-then-approve tag extraction (§2.3): returns suggested tags for the
+// student to edit before confirming. Never writes to the profile itself.
+export type TagState = { error?: string; tags?: string[]; at?: number };
+
+const FIELDS: OnboardingField[] = ["hobbies", "major", "extracurriculars"];
+
+export async function suggestOnboardingTags(
+  _prev: TagState,
+  formData: FormData,
+): Promise<TagState> {
+  const text = String(formData.get("text") ?? "").trim();
+  const kind = String(formData.get("kind") ?? "") as OnboardingField;
+  if (!FIELDS.includes(kind)) return { error: "Unknown field." };
+  if (!text) return { error: "Write something first." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  let tags: string[];
+  try {
+    tags = await extractOnboardingTags(text, kind);
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "onboarding_extraction" } });
+    return { error: "AI suggestions are unavailable right now." };
+  }
+
+  try {
+    await logAiAction(supabase, {
+      feature: "onboarding_extraction",
+      studentId: user.id,
+      actorId: user.id,
+      outputText: JSON.stringify(tags),
+    });
+  } catch (err) {
+    // logging must never block onboarding — but a silently broken audit
+    // trail (CLAUDE.md §4) still needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "onboarding_extraction_log" } });
+  }
+
+  return { tags, at: Date.now() };
+}
 
 // Onboarding writes to the student's OWN student_profiles row (admin-created;
 // RLS sp_update lets the student update their own). Skippable + resumable via
@@ -44,16 +95,25 @@ export async function saveOnboardingStep(formData: FormData): Promise<void> {
       break;
     case 3:
       patch.hobbies = splitList(String(formData.get("hobbies") ?? ""));
+      if (formData.get("hobbies_ai_extracted") === "true") {
+        patch.hobbies_ai_extracted = true;
+      }
       break;
     case 4:
       patch.intended_major =
         String(formData.get("intended_major") ?? "").trim() || null;
+      if (formData.get("intended_major_ai_extracted") === "true") {
+        patch.intended_major_ai_extracted = true;
+      }
       break;
     case 5:
       // Plain form: store each line as a minimal object; AI structures it in Phase 5.
       patch.extracurriculars = splitList(
         String(formData.get("extracurriculars") ?? ""),
       ).map((activity) => ({ activity }));
+      if (formData.get("extracurriculars_ai_extracted") === "true") {
+        patch.extracurriculars_ai_extracted = true;
+      }
       break;
   }
 

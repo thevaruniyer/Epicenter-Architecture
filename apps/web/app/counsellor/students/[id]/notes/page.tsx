@@ -1,5 +1,5 @@
 import { Eye, Lock } from "lucide-react";
-import { cn } from "@epicenter/ui";
+import { AiBadge, cn } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/auth";
 import { NoteComposer } from "@/components/counsellor/note-composer";
@@ -9,6 +9,7 @@ type NoteRow = {
   visibility: "shared" | "private";
   type: string;
   final_text: string | null;
+  ai_cleaned: boolean;
   created_at: string;
 };
 
@@ -34,7 +35,7 @@ export default async function StudentNotesTab({
   const supabase = await createClient();
   const { data } = await supabase
     .from("notes")
-    .select("id, visibility, type, final_text, created_at")
+    .select("id, visibility, type, final_text, ai_cleaned, created_at")
     .eq("student_id", id)
     .order("created_at", { ascending: false });
 
@@ -67,6 +68,7 @@ export default async function StudentNotesTab({
                   <span className="text-xs capitalize text-ink-tertiary">
                     {n.type.replace("_", " ")}
                   </span>
+                  {n.ai_cleaned ? <AiBadge /> : null}
                   <span
                     className={cn(
                       "ml-auto inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-[11px] font-bold",

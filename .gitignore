@@ -42,3 +42,4 @@ pnpm-debug.log*
 
 # Playwright MCP scratch artifacts
 .playwright-mcp/
+.env*

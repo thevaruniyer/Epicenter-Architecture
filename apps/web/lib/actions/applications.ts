@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
+import { extractRequirementChecklist, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
 import {
   canTransition,
@@ -263,5 +265,96 @@ export async function recordDecision(
   if (error) return { error: error.message };
 
   revalidatePath("/student/application");
+  return { savedAt: Date.now() };
+}
+
+// --- Counsellor: Requirement Checklist Extraction (§1.10, draft-then-approve) --
+export type ChecklistState = {
+  error?: string;
+  items?: { title: string; type: string }[];
+  at?: number;
+};
+
+// Extract an editable checklist from pasted text — nothing is saved here.
+export async function extractChecklist(
+  _prev: ChecklistState,
+  formData: FormData,
+): Promise<ChecklistState> {
+  const text = String(formData.get("text") ?? "").trim();
+  const studentId = String(formData.get("studentId") ?? "");
+  if (text.length < 20) return { error: "Paste the requirements text first." };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let items;
+  try {
+    items = await extractRequirementChecklist(text);
+  } catch (err) {
+    Sentry.captureException(err, { tags: { ai_feature: "checklist_extraction" } });
+    return { error: "AI extraction is unavailable right now." };
+  }
+  if (!items.length) {
+    return {
+      error: "Couldn't find any requirements in that text — add them manually.",
+    };
+  }
+
+  try {
+    await logAiAction(supabase, {
+      feature: "checklist_extraction",
+      studentId: studentId || null,
+      actorId: user?.id ?? null,
+      outputText: JSON.stringify(items),
+    });
+  } catch (err) {
+    // non-fatal — but a silently broken audit trail (CLAUDE.md §4) still
+    // needs to be visible somewhere.
+    Sentry.captureException(err, { tags: { ai_feature: "checklist_extraction_log" } });
+  }
+
+  return { items, at: Date.now() };
+}
+
+// Save the (edited) extracted checklist as real requirements. ai_extracted=true
+// so the permanent AI badge marks these as AI-extracted (per §1.10).
+export async function saveExtractedRequirements(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const applicationId = String(formData.get("applicationId") ?? "");
+  const studentId = String(formData.get("studentId") ?? "");
+  if (!applicationId) return { error: "Missing application." };
+
+  let items: { title?: unknown; type?: unknown }[];
+  try {
+    const parsed = JSON.parse(String(formData.get("items") ?? "[]"));
+    items = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return { error: "Invalid checklist." };
+  }
+
+  const rows = items
+    .filter((i) => typeof i.title === "string" && (i.title as string).trim())
+    .map((i) => ({
+      application_id: applicationId,
+      title: String(i.title).slice(0, 200),
+      requirement_type: REQUIREMENT_TYPES.includes(String(i.type))
+        ? String(i.type)
+        : "other",
+      status: "awaiting_student",
+      ai_extracted: true,
+    }));
+  if (!rows.length) return { error: "Nothing to save." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("application_requirements")
+    .insert(rows);
+  if (error) return { error: error.message };
+
+  revalidateBoth(studentId);
   return { savedAt: Date.now() };
 }

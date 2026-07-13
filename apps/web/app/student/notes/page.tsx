@@ -1,3 +1,4 @@
+import { AiBadge } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import { AddUpdate } from "@/components/student/add-update";
 
@@ -5,6 +6,7 @@ type Note = {
   id: string;
   type: string;
   final_text: string | null;
+  ai_cleaned: boolean;
   created_at: string;
 };
 
@@ -22,7 +24,7 @@ export default async function StudentNotesPage() {
   // fetched here (the #1 boundary).
   const { data } = await supabase
     .from("notes")
-    .select("id, type, final_text, created_at")
+    .select("id, type, final_text, ai_cleaned, created_at")
     .order("created_at", { ascending: false });
 
   const notes = (data as Note[]) ?? [];
@@ -54,6 +56,7 @@ export default async function StudentNotesPage() {
                 <span className="text-xs capitalize text-ink-secondary">
                   {n.type === "student_update" ? "Your update" : "Meeting"}
                 </span>
+                {n.ai_cleaned ? <AiBadge /> : null}
               </div>
               <p className="whitespace-pre-wrap text-sm text-ink">
                 {n.final_text}

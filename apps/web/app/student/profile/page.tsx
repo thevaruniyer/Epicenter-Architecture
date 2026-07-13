@@ -1,4 +1,5 @@
 import {
+  AiBadge,
   Card,
   CardContent,
   CardDescription,
@@ -20,6 +21,9 @@ type Profile = {
   preferred_countries: string[] | null;
   extracurriculars: Extracurricular[] | null;
   test_scores: Record<string, string | number> | null;
+  hobbies_ai_extracted: boolean | null;
+  intended_major_ai_extracted: boolean | null;
+  extracurriculars_ai_extracted: boolean | null;
 };
 
 export default async function StudentProfilePage() {
@@ -28,7 +32,7 @@ export default async function StudentProfilePage() {
   const { data } = await supabase
     .from("student_profiles")
     .select(
-      "grade, age, intended_major, career_interest, subjects, hobbies, preferred_countries, extracurriculars, test_scores",
+      "grade, age, intended_major, career_interest, subjects, hobbies, preferred_countries, extracurriculars, test_scores, hobbies_ai_extracted, intended_major_ai_extracted, extracurriculars_ai_extracted",
     )
     .eq("user_id", user!.id)
     .maybeSingle();
@@ -54,7 +58,6 @@ export default async function StudentProfilePage() {
         />
       </div>
 
-      {/* Major / EC list are pre-filled from onboarding. AI badges land in Phase 5. */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -62,7 +65,11 @@ export default async function StudentProfilePage() {
             <CardDescription>Direction and destinations.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Field label="Intended major" value={p?.intended_major ?? null} />
+            <Field
+              label="Intended major"
+              value={p?.intended_major ?? null}
+              aiExtracted={p?.intended_major_ai_extracted ?? false}
+            />
             <Field label="Career interest" value={p?.career_interest ?? null} />
             <Field
               label="Preferred countries"
@@ -74,7 +81,12 @@ export default async function StudentProfilePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Extracurriculars &amp; achievements</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle>Extracurriculars &amp; achievements</CardTitle>
+              {p?.extracurriculars_ai_extracted ? (
+                <AiBadge label="AI-extracted" />
+              ) : null}
+            </div>
             <CardDescription>From your onboarding.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -128,7 +140,11 @@ export default async function StudentProfilePage() {
             <CardDescription>Hobbies and interests.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Field label="Hobbies" value={(p?.hobbies ?? []).join(", ") || null} />
+            <Field
+              label="Hobbies"
+              value={(p?.hobbies ?? []).join(", ") || null}
+              aiExtracted={p?.hobbies_ai_extracted ?? false}
+            />
           </CardContent>
         </Card>
       </div>
@@ -136,11 +152,20 @@ export default async function StudentProfilePage() {
   );
 }
 
-function Field({ label, value }: { label: string; value: string | null }) {
+function Field({
+  label,
+  value,
+  aiExtracted,
+}: {
+  label: string;
+  value: string | null;
+  aiExtracted?: boolean;
+}) {
   return (
     <div className="flex flex-col">
-      <span className="text-xs font-semibold uppercase tracking-wide text-ink-secondary">
+      <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-secondary">
         {label}
+        {aiExtracted ? <AiBadge label="AI-extracted" /> : null}
       </span>
       <span className="text-sm text-ink">
         {value ?? <span className="text-ink-secondary">Not set</span>}

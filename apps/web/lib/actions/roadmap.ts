@@ -37,17 +37,26 @@ export async function createTask(
   const title = String(formData.get("title") ?? "").trim();
   const dueDate = String(formData.get("due_date") ?? "").trim();
   const milestoneId = String(formData.get("milestone_id") ?? "").trim();
+  const categoryRaw = String(formData.get("category") ?? "other");
+  const CATEGORIES = [
+    "academic",
+    "ec",
+    "essay",
+    "testing",
+    "documents_admin",
+    "other",
+  ];
+  const category = CATEGORIES.includes(categoryRaw) ? categoryRaw : "other";
   if (!studentId) return { error: "Missing student." };
   if (!title) return { error: "Give the task a title." };
 
   const supabase = await createClient();
-  // No category selector or AI nudge yet (Phase 5) — category defaults to 'other'.
   const { error } = await supabase.from("tasks").insert({
     student_id: studentId,
     milestone_id: milestoneId || null,
     title,
     due_date: dueDate || null,
-    category: "other",
+    category,
     assignee: "student",
     status: "not_started",
   });

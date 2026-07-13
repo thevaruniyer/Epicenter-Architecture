@@ -1,6 +1,12 @@
+import { after } from "next/server";
 import { Card } from "@epicenter/ui";
 import { createClient } from "@/lib/supabase/server";
 import { confirmTask } from "@/lib/actions/roadmap";
+import {
+  runStalledDetection,
+  getActiveStalledAlerts,
+} from "@/lib/stalled-tasks";
+import { StalledAlertsPanel } from "@/components/counsellor/stalled-alerts-panel";
 import { AddMilestoneDialog } from "@/components/counsellor/add-milestone-dialog";
 import { AddTaskDialog } from "@/components/counsellor/add-task-dialog";
 import { TaskStatusBadge } from "@/components/counsellor/task-status-badge";
@@ -31,21 +37,40 @@ export default async function StudentRoadmapTab({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: milestoneRows }, { data: taskRows }] = await Promise.all([
-    supabase
-      .from("roadmap_milestones")
-      .select("id, title")
-      .eq("student_id", id)
-      .order("title"),
-    supabase
-      .from("tasks")
-      .select("id, title, status, due_date, milestone_id")
-      .eq("student_id", id)
-      .order("due_date", { nullsFirst: false }),
-  ]);
+  // Passive stalled-task detection runs after the response; active alerts read now.
+  after(() => runStalledDetection(id));
+  const stalledAlerts = await getActiveStalledAlerts(id);
+
+  const [{ data: milestoneRows }, { data: taskRows }, { data: signalRows }] =
+    await Promise.all([
+      supabase
+        .from("roadmap_milestones")
+        .select("id, title")
+        .eq("student_id", id)
+        .order("title"),
+      supabase
+        .from("tasks")
+        .select("id, title, status, due_date, milestone_id")
+        .eq("student_id", id)
+        .order("due_date", { nullsFirst: false }),
+      // AI-extracted signals for the category-aware nudge (Flow Plan §4.3):
+      // a plain table read, grouped by category client-side below.
+      supabase
+        .from("student_signals")
+        .select("category, tag_text")
+        .eq("student_id", id)
+        .order("extracted_at", { ascending: false }),
+    ]);
 
   const milestones = (milestoneRows as Milestone[]) ?? [];
   const tasks = (taskRows as Task[]) ?? [];
+
+  const signalsByCategory: Record<string, string[]> = {};
+  for (const s of (signalRows as { category: string | null; tag_text: string | null }[]) ??
+    []) {
+    if (!s.category || !s.tag_text) continue;
+    (signalsByCategory[s.category] ??= []).push(s.tag_text);
+  }
   const tasksByMilestone = (mid: string | null) =>
     tasks.filter((t) => t.milestone_id === mid);
 
@@ -63,9 +88,15 @@ export default async function StudentRoadmapTab({
 
   return (
     <div className="flex flex-col gap-4">
+      <StalledAlertsPanel alerts={stalledAlerts} studentId={id} />
+
       <div className="flex flex-wrap items-center justify-end gap-2">
         <AddMilestoneDialog studentId={id} />
-        <AddTaskDialog studentId={id} milestones={milestones} />
+        <AddTaskDialog
+          studentId={id}
+          milestones={milestones}
+          signalsByCategory={signalsByCategory}
+        />
       </div>
 
       {groups.length === 0 ? (

@@ -1,6 +1,43 @@
 // @epicenter/ai — Gemini 2.5 Flash abstraction layer.
-// lib/ai/client.ts (single entry point) and the per-feature functions
-// (cleanUpNote, extractSignals, generateDigest, ...) land in Stage 5
-// (Build Runbook Prompt 5.1+). Server-side only; API key from env, never
-// exposed client-side. Intentionally empty at bootstrap.
-export {};
+// client.ts is the single entry point for all Gemini calls (architecture §4).
+// Per-feature functions (cleanUpNote, extractSignals, generateDigest, …) are
+// added one at a time in Build Runbook Prompts 5.2+, each in its own file,
+// re-exported here. Server-side only; API key from env, never client-exposed.
+export {
+  generate,
+  logAiAction,
+  GEMINI_MODEL,
+  type AiFeature,
+  type GenerateOptions,
+  type AiActionLogEntry,
+} from "./client";
+
+export { cleanUpNote, type CleanUpMode } from "./clean-up-note";
+export {
+  extractSignals,
+  TASK_CATEGORIES,
+  type TaskCategory,
+  type ExtractedSignal,
+} from "./extract-signals";
+export {
+  extractOnboardingTags,
+  type OnboardingField,
+} from "./extract-onboarding-tags";
+export { generateDigest, type DigestItem } from "./generate-digest";
+export { generateRiskFlag, type RiskType } from "./generate-risk-flag";
+export { generateStalledAlert } from "./generate-stalled-alert";
+export { generateEssayFeedback } from "./generate-essay-feedback";
+export {
+  extractRequirementChecklist,
+  REQUIREMENT_TYPES,
+  type RequirementType,
+  type ExtractedRequirement,
+} from "./extract-requirement-checklist";
+export {
+  generateHandoffSnapshot,
+  type HandoffContext,
+} from "./generate-handoff-snapshot";
+export {
+  generateMeetingPrep,
+  type MeetingPrepContext,
+} from "./generate-meeting-prep";
