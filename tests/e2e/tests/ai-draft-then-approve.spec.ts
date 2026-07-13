@@ -5,11 +5,25 @@ import { clientFor, CREDS, STUDENT_ID } from "../support/db";
 // Stage 5 draft-then-approve UI contract (CLAUDE.md §4): an AI output is only
 // used after an explicit human save/approve, and the human can edit the draft
 // first. These exercise the real UIs. Clean-up and checklist make live Gemini
-// calls (generous timeouts); the nudge is a pure table read (deterministic).
+// calls (generous per-test timeouts, and generate() retries transient 503s);
+// the nudge is a pure table read (deterministic).
+//
+// NOTE on assertions: never assert that exact input text survives an LLM
+// rewrite — the clean-up model legitimately reformats (e.g. "Ref-123" becomes
+// "Reference: 123"). We assert on the permanent AI badge instead, which is the
+// actual product contract, and use a bare numeric marker only for DB cleanup
+// (the model preserves digits verbatim per its fact-preservation prompt).
 
+// The two live-Gemini tests run serially (not concurrently): parallel Gemini
+// calls trigger transient 503 "high demand" and latency spikes that blow the
+// per-step timeouts. Nothing else in the suite calls Gemini, so serialising
+// just these two keeps at most one model call in flight. The deterministic
+// nudge test below stays parallel.
+test.describe.serial("live-Gemini draft-then-approve", () => {
 // AI clean-up: the cleaned note only becomes a saved note after an explicit save.
 test("AI Note Clean-Up applies only after explicit save", async ({ page }) => {
-  const marker = `Ref-${Date.now()}`;
+  test.setTimeout(90_000); // one live Gemini call in the middle of the flow
+  const digits = String(Date.now()); // survives the rewrite; used for cleanup
   const counsellor = await clientFor(
     CREDS.counsellor.email,
     CREDS.counsellor.password,
@@ -18,29 +32,36 @@ test("AI Note Clean-Up applies only after explicit save", async ({ page }) => {
   await loginAsCounsellor(page);
   await page.goto(`/counsellor/students/${STUDENT_ID}/notes`);
 
+  // Saved notes that carry the permanent AI badge. The composer's "AI-assisted
+  // draft" review banner is a <div>, never an <li>, so it is not counted here.
+  const savedAiNotes = page
+    .locator("li")
+    .filter({ has: page.getByText("AI-assisted", { exact: false }) });
+  const before = await savedAiNotes.count();
+
   await page
-    .getByLabel("New meeting note")
-    .fill(`met w kabir today. discussed his essay. ${marker}. physics grade droppd.`);
-  await page.getByRole("button", { name: "Clean up with AI" }).click();
+    .locator("#note-text")
+    .fill(`met w kabir today. discussed his essay. ref ${digits}. physics grade droppd.`);
+  const cleanBtn = page.getByRole("button", { name: "Clean up with AI" });
+  await expect(cleanBtn).toBeEnabled(); // input registered (guards hydration race)
+  await cleanBtn.click();
 
   // The AI draft appears for review — but nothing is saved yet.
-  await expect(page.getByText("AI-assisted draft", { exact: false })).toBeVisible({
-    timeout: 30_000,
-  });
-  await expect(page.getByText(marker)).toHaveCount(0); // not in the saved list
+  await expect(
+    page.getByText("AI-assisted draft", { exact: false }),
+  ).toBeVisible({ timeout: 45_000 });
+  await expect(savedAiNotes).toHaveCount(before); // draft is not in the saved list
 
   // Explicit save is the only thing that persists it — with a permanent badge.
   await page.getByRole("button", { name: "Save note" }).click();
-  const saved = page.locator("li", { hasText: marker });
-  await expect(saved).toBeVisible();
-  await expect(saved.getByText("AI-assisted")).toBeVisible();
+  await expect(savedAiNotes).toHaveCount(before + 1); // exactly one new badged note
 
-  // Cleanup.
+  // Cleanup (digits survive the rewrite, so this matches the saved row).
   await counsellor
     .from("notes")
     .delete()
     .eq("student_id", STUDENT_ID)
-    .ilike("final_text", `%${marker}%`);
+    .ilike("final_text", `%${digits}%`);
 });
 
 // Requirement Checklist Extraction: the extracted checklist is editable before
@@ -48,6 +69,7 @@ test("AI Note Clean-Up applies only after explicit save", async ({ page }) => {
 test("Requirement Checklist Extraction is editable before saving", async ({
   page,
 }) => {
+  test.setTimeout(90_000); // one live Gemini call (the extraction)
   const uni = `Extract Test ${Date.now()}`;
   const edited = `Personal statement (EDITED ${Date.now()})`;
   const counsellor = await clientFor(
@@ -55,7 +77,7 @@ test("Requirement Checklist Extraction is editable before saving", async ({
     CREDS.counsellor.password,
   );
 
-  const { data: entry } = await counsellor
+  const { data: entry, error: entryErr } = await counsellor
     .from("shortlist_entries")
     .insert({
       student_id: STUDENT_ID,
@@ -66,7 +88,8 @@ test("Requirement Checklist Extraction is editable before saving", async ({
     })
     .select("id")
     .single();
-  const entryId = entry!.id as string;
+  if (entryErr || !entry) throw new Error(`fixture: shortlist insert failed: ${entryErr?.message}`);
+  const entryId = entry.id as string;
   await counsellor
     .from("applications")
     .insert({ shortlist_entry_id: entryId, student_id: STUDENT_ID, status: "preparing" });
@@ -87,7 +110,7 @@ test("Requirement Checklist Extraction is editable before saving", async ({
 
     // Editable rows appear BEFORE any save.
     await expect(dialog.getByText("Extracted checklist")).toBeVisible({
-      timeout: 30_000,
+      timeout: 45_000,
     });
     const firstRow = dialog.getByRole("textbox").first();
     await expect(firstRow).toBeVisible();
@@ -108,6 +131,7 @@ test("Requirement Checklist Extraction is editable before saving", async ({
     await counsellor.from("shortlist_entries").delete().eq("id", entryId);
   }
 });
+}); // end serial live-Gemini describe
 
 // Category-aware nudge: renders the student's signals for the selected category
 // (a pure table read — no live LLM when the panel opens).
@@ -117,12 +141,13 @@ test("Category-aware nudge renders in the +Add Task panel", async ({ page }) => 
     CREDS.counsellor.email,
     CREDS.counsellor.password,
   );
-  const { data: signal } = await counsellor
+  const { data: signal, error: signalErr } = await counsellor
     .from("student_signals")
     .insert({ student_id: STUDENT_ID, category: "essay", tag_text: tag })
     .select("id")
     .single();
-  const signalId = signal!.id as string;
+  if (signalErr || !signal) throw new Error(`fixture: signal insert failed: ${signalErr?.message}`);
+  const signalId = signal.id as string;
 
   try {
     await loginAsCounsellor(page);

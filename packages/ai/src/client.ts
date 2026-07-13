@@ -54,10 +54,33 @@ export interface GenerateOptions {
   json?: boolean;
 }
 
+// Retry only *transient* upstream failures: Gemini overload/503 ("model
+// currently experiencing high demand"), rate limits (429), 5xx, and network
+// blips. A 400/403 is a real bug (bad prompt, bad key, blocked content) — those
+// must fail loudly on the first try, never be masked by retries.
+const MAX_ATTEMPTS = 4; // 1 initial + 3 retries
+const BASE_DELAY_MS = 500;
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+const RETRYABLE_MESSAGE = /unavailable|overload|high demand|try again|deadline|ECONNRESET|ETIMEDOUT|fetch failed|socket hang up/i;
+
+function isTransient(err: unknown): boolean {
+  // @google/genai throws ApiError with a numeric HTTP `status`.
+  const status = (err as { status?: unknown })?.status;
+  if (typeof status === "number" && RETRYABLE_STATUSES.has(status)) return true;
+  const message =
+    err instanceof Error ? err.message : typeof err === "string" ? err : "";
+  return RETRYABLE_MESSAGE.test(message);
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 /**
  * Low-level Gemini call. Feature functions own their prompt templates and call
  * this; UI code never calls it directly. Throws on an empty response so callers
  * fail loudly (and Sentry captures it) rather than silently using "".
+ *
+ * Transient upstream failures (503 overload, 429, 5xx, network blips) are
+ * retried with exponential backoff + jitter; anything else throws immediately.
  */
 export async function generate({
   prompt,
@@ -66,20 +89,35 @@ export async function generate({
   json,
 }: GenerateOptions): Promise<string> {
   const ai = getClient();
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: prompt,
-    config: {
-      ...(system ? { systemInstruction: system } : {}),
-      ...(temperature !== undefined ? { temperature } : {}),
-      ...(json ? { responseMimeType: "application/json" } : {}),
-    },
-  });
-  const text = response.text;
-  if (!text || !text.trim()) {
-    throw new Error("Gemini returned an empty response.");
+  let lastErr: unknown;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: prompt,
+        config: {
+          ...(system ? { systemInstruction: system } : {}),
+          ...(temperature !== undefined ? { temperature } : {}),
+          ...(json ? { responseMimeType: "application/json" } : {}),
+        },
+      });
+      const text = response.text;
+      if (!text || !text.trim()) {
+        throw new Error("Gemini returned an empty response.");
+      }
+      return text;
+    } catch (err) {
+      lastErr = err;
+      // Don't retry real bugs, or when we've exhausted our budget.
+      if (attempt === MAX_ATTEMPTS || !isTransient(err)) throw err;
+      // Exponential backoff with jitter: ~0.5s, ~1s, ~2s.
+      const backoff = BASE_DELAY_MS * 2 ** (attempt - 1);
+      await sleep(backoff + Math.random() * 250);
+    }
   }
-  return text;
+  // Unreachable — the loop either returns or throws — but satisfies the compiler.
+  throw lastErr;
 }
 
 // The audit trail. Every AI call is recorded (CLAUDE.md §4). The caller passes
