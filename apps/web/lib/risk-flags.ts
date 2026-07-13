@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { generateRiskFlag, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Risk Flagging detection (grounding rule, CLAUDE.md §4). Real, RLS-scoped
 // queries over ONE student's own data — never across students. Gemini only
@@ -29,10 +30,18 @@ type Snapshot = { milestone_id?: string; summary?: string };
  * Detect pace-lag risks for one student and store any NEW ones. Idempotent: a
  * milestone with an existing un-dismissed flag is skipped, so re-running never
  * duplicates an active flag. Best-effort — never throws into the caller.
+ *
+ * Takes a pre-built Supabase client rather than creating its own: this is
+ * called from inside next/server's `after()`, which runs once the response
+ * has already been sent — `createClient()` reads `cookies()` internally, and
+ * Next.js does not support reading cookies from inside an `after()` callback.
+ * The caller must build the client beforehand, while cookies() is still valid.
  */
-export async function runRiskDetection(studentId: string): Promise<void> {
+export async function runRiskDetection(
+  supabase: SupabaseClient,
+  studentId: string,
+): Promise<void> {
   try {
-    const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

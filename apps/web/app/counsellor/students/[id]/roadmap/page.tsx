@@ -37,8 +37,11 @@ export default async function StudentRoadmapTab({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Passive stalled-task detection runs after the response; active alerts read now.
-  after(() => runStalledDetection(id));
+  // Passive stalled-task detection runs after the response; active alerts read
+  // now. The client is built here (not inside the callback) — after() runs
+  // once the response is already sent, and createClient() needs cookies(),
+  // which Next.js doesn't allow reading from inside an after() callback.
+  after(() => runStalledDetection(supabase, id));
   const stalledAlerts = await getActiveStalledAlerts(id);
 
   const [{ data: milestoneRows }, { data: taskRows }, { data: signalRows }] =

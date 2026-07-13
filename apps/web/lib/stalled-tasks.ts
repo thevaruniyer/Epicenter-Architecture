@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { generateStalledAlert, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Stalled-Task Alerts detection (grounding rule, CLAUDE.md §4). Real, RLS-scoped
 // query: a task that has sat in pending_review past the threshold. Gemini only
@@ -17,10 +18,18 @@ export type ActiveStalledAlert = { id: string; taskId: string; summary: string }
  * Detect and store stalled-task alerts for one student's roadmap. Idempotent:
  * a task with an existing un-dismissed alert is skipped, so re-running never
  * duplicates. Best-effort — never throws into the caller.
+ *
+ * Takes a pre-built Supabase client rather than creating its own: this is
+ * called from inside next/server's `after()`, which runs once the response
+ * has already been sent — `createClient()` reads `cookies()` internally, and
+ * Next.js does not support reading cookies from inside an `after()` callback.
+ * The caller must build the client beforehand, while cookies() is still valid.
  */
-export async function runStalledDetection(studentId: string): Promise<void> {
+export async function runStalledDetection(
+  supabase: SupabaseClient,
+  studentId: string,
+): Promise<void> {
   try {
-    const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

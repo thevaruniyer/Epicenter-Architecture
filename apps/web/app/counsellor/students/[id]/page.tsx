@@ -51,7 +51,10 @@ export default async function StudentOverviewPage({
 
   // Passive risk detection runs after the response (never blocks the page);
   // newly flagged risks appear on the next load. Active flags are read now.
-  after(() => runRiskDetection(id));
+  // The client is built here (not inside the callback) — after() runs once
+  // the response is already sent, and createClient() needs cookies(), which
+  // Next.js doesn't allow reading from inside an after() callback.
+  after(() => runRiskDetection(supabase, id));
   const [riskFlags, handoff] = await Promise.all([
     getActiveRiskFlags(id),
     getHandoffForMe(id),
