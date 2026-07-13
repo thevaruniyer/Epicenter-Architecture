@@ -59,9 +59,7 @@ export function OnboardingTagField({
 
   return (
     <div className="flex flex-col gap-2 text-sm font-medium text-ink">
-      {label}
-      {/* The submitted value — chips when confirmed, otherwise the raw text. */}
-      <input type="hidden" name={name} value={hiddenValue} />
+      <label htmlFor={name}>{label}</label>
       {/* Tells the step action whether this field's saved value came from the
           AI-suggested-tags path, so the profile page can show the permanent
           badge (CLAUDE.md §4 — badge stays once AI-touched content is saved). */}
@@ -72,8 +70,12 @@ export function OnboardingTagField({
       />
 
       {tags === null ? (
+        // Plain-text mode: the visible field's own value IS the submitted
+        // value, so it carries `name` directly — no hidden mirror needed.
         multiline ? (
           <textarea
+            id={name}
+            name={name}
             rows={4}
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -82,6 +84,8 @@ export function OnboardingTagField({
           />
         ) : (
           <input
+            id={name}
+            name={name}
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -91,6 +95,9 @@ export function OnboardingTagField({
         )
       ) : (
         <div className="flex flex-col gap-2 rounded-md border border-border-soft bg-surface-muted p-3">
+          {/* Chips aren't a native form control, so the joined value they
+              represent is submitted through this hidden mirror instead. */}
+          <input type="hidden" name={name} value={hiddenValue} />
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink">
             <AiBadge /> Suggested — edit before you continue
           </span>
