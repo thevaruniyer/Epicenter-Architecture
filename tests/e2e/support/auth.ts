@@ -27,3 +27,17 @@ export async function loginAsStudent(page: Page): Promise<void> {
   await page.click('button[type="submit"]');
   await page.waitForURL("**/student/home");
 }
+
+// Priya Sharma — Head of Counselling (seed_rls_fixtures.sql + seed_counsellor_fixtures.sql).
+export const HEAD = {
+  email: "rls-head@epicenter-test.dev",
+  password: "Test-Passw0rd!",
+};
+
+export async function loginAsHead(page: Page): Promise<void> {
+  await page.goto("/login");
+  await page.fill("#email", HEAD.email);
+  await page.fill("#password", HEAD.password);
+  await page.click('button[type="submit"]');
+  await page.waitForURL("**/counsellor/dashboard");
+}

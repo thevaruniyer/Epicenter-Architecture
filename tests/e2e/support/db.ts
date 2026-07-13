@@ -15,8 +15,18 @@ export const CREDS = {
     email: "demo-student1@epicenter-test.dev",
     password: "Test-Passw0rd!",
   },
+  counsellor2: {
+    email: "rls-counsellor2@epicenter-test.dev",
+    password: "Test-Passw0rd!",
+  },
+  head: {
+    email: "rls-head@epicenter-test.dev",
+    password: "Test-Passw0rd!",
+  },
 };
 export const STUDENT_ID = "60000000-0000-0000-0000-000000000001";
+export const COUNSELLOR1_ID = "33333333-3333-3333-3333-333333333333";
+export const COUNSELLOR2_ID = "44444444-4444-4444-4444-444444444444";
 
 // Dedicated onboarding fixture student (admin-created profile, not onboarded).
 export const ONBOARDING_STUDENT = {
