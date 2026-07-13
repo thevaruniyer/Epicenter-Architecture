@@ -20,6 +20,8 @@ export function NoteComposer({ studentId }: { studentId: string }) {
   // `rawOriginal` preserves what the counsellor typed (audit trail per §1.1).
   const [aiCleaned, setAiCleaned] = useState(false);
   const [rawOriginal, setRawOriginal] = useState("");
+  // UC9 Screen 6: also log a calendar event (and push to Google if connected).
+  const [alsoAddToGoogle, setAlsoAddToGoogle] = useState(false);
 
   const [saveState, saveAction, saving] = useActionState(createNote, initialSave);
   const [cleanState, cleanAction, cleaning] = useActionState(
@@ -33,6 +35,7 @@ export function NoteComposer({ studentId }: { studentId: string }) {
       setText("");
       setAiCleaned(false);
       setRawOriginal("");
+      setAlsoAddToGoogle(false);
     }
   }, [saveState.savedId]);
 
@@ -79,6 +82,16 @@ export function NoteComposer({ studentId }: { studentId: string }) {
           placeholder="Type the session up in your own words…"
           className="w-full resize-y rounded-md border border-border-strong bg-surface-raised px-3 py-2 text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-yellow"
         />
+
+        <label className="inline-flex w-fit items-center gap-2 text-sm text-ink-secondary">
+          <input
+            type="checkbox"
+            checked={alsoAddToGoogle}
+            onChange={(e) => setAlsoAddToGoogle(e.target.checked)}
+            className="size-4 rounded border-border-strong accent-yellow"
+          />
+          Also add to Google Calendar
+        </label>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div
@@ -139,6 +152,11 @@ export function NoteComposer({ studentId }: { studentId: string }) {
                 value={aiCleaned ? "true" : "false"}
               />
               <input type="hidden" name="raw_text" value={rawOriginal || text} />
+              <input
+                type="hidden"
+                name="also_add_to_google_calendar"
+                value={alsoAddToGoogle ? "true" : "false"}
+              />
               <Button type="submit" size="sm" disabled={saving || !text.trim()}>
                 {saving ? "Saving…" : "Save note"}
               </Button>
