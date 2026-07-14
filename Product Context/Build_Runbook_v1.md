@@ -421,6 +421,65 @@ Run the full test suite, lint, typecheck. Trigger the Sentry test route and conf
 
 ---
 
+## Stage 8 — Documents, Dashboard Colour System, and Playful Interfaces
+
+Continues Stage 6.5's "retrofit against real, already-shipped screens" pattern, not a new phase — just the next stage number (`stage-7-calendar-forms` is already a merged branch, so this is 8, not 7.5). Grounded directly against the live codebase (branch `stage-6-5-ui-fixes` as of this audit), not just the storyboards — file paths below are real, not inferred.
+
+**Two deliberate Doctrine exceptions in this stage — read before executing:** (1) Prompt 8.3's "liquid glass pink gradient" for the AI-insights card background directly contradicts Doctrine §7.10 ("do not use a magical gradient... for AI-assisted content"). The `AiBadge` marker itself stays the standard black badge — only the card surface gets the gradient — but this is still a real, intentional departure from the written Doctrine, not a misread of it. (2) Prompt 8.3 also adds a new "review" semantic tone (light blue) to the dashboard's tone system, reusing the Doctrine's existing `target-*` tokens (already blue, currently used for Target-university shortlist pills) for a second, unrelated meaning. Both are product calls, not Doctrine-compliance bugs — flag them explicitly in the PR description so a future Doctrine-checklist pass doesn't "fix" them back, and log both as a formal addendum to `UI-UX Doctrine/Epicenter_Education_UIUX_Doctrine_V1_Final.html` once merged so the written Doctrine and the shipped product stop disagreeing.
+
+**Prompt 8.1 — Confirm Stage 6.5 is actually merged, then branch + baseline audit**
+```
+Hard gate before anything else: run `git log --oneline main` and `git branch -a`, and confirm stage-6-5-ui-fixes has actually been merged into main — Prompt 6.5.9's PR opened and merged, not just its commits pushed to the feature branch. If it has NOT been merged yet, stop here and tell me directly — do not branch for Stage 8 off an unmerged stage-6-5-ui-fixes, and do not proceed with anything below until I confirm it's merged. Only once main genuinely contains Stage 6.5's work: checkout main, pull latest, create branch stage-8-docs-dashboard-playful. Then screenshot current state via Playwright/Chrome DevTools MCP: the Documents tab at /counsellor/students/[id]/documents, the counsellor Dashboard, the counsellor Topbar's calendar icon, the student Home dashboard (established state), the student nav logo, and the landing page at /. Confirm the documents table and its existing upload path (already used in apps/web/lib/actions/student-roadmap.ts and apps/web/app/student/roadmap/page.tsx) before building anything new against it. Report findings before proceeding.
+```
+
+**Prompt 8.2 — Documents tab: chronological list, search, download/open, glassmorphic viewer**
+```
+Replace the current /counsellor/students/[id]/documents tab (apps/web/app/counsellor/students/[id]/documents/page.tsx), which today renders only <EssayReviewPanel> per its own comment ("Full document upload/versioning is not modelled yet"). Build a DocumentListCard querying the existing documents table (same one used by student-roadmap.ts) filtered by student_id, ordered by created_at descending — chronological, most recent first. Each row: filename/title, upload date, a Download button (signed URL from Supabase Storage, direct download) and an Open button. Open renders a glassmorphic viewer using the existing Dialog primitive (packages/ui/src/dialog.tsx) styled with the existing bg-glass/backdrop-blur-glass/shadow-glass Tailwind tokens (already defined in apps/web/tailwind.config.ts, used elsewhere e.g. the Sidebar) — inline preview for PDFs/images, a clear "download to view" fallback for other file types. Add a client-side search input filtering the list by filename. Keep the existing EssayReviewPanel, but move it below the new document list as a secondary section — do not add any AI action (grading, summarising, extraction) to the new document list itself, and do not remove or rewire the existing Stage 5 essay feedback capability, just don't extend it in this prompt. Commit with message "[stage-8] Replace Documents tab default view with searchable chronological document list and glassmorphic viewer".
+```
+
+**Prompt 8.3 — Counsellor Dashboard: colour system, calendar widget, remove Caseload progress, fix calendar icon**
+```
+Rework apps/web/app/counsellor/dashboard/page.tsx, apps/web/components/counsellor/attention-list-card.tsx, apps/web/components/counsellor/digest-card.tsx, and apps/web/components/counsellor/topbar.tsx together — this is one coherent pass, not five separate ones:
+
+1. Add a small calendar widget to the Dashboard (reuse whatever the existing apps/web/components/counsellor/calendar-view.tsx already does for rendering, in a compact mode if it has one, or a simple month-grid if not) positioned near the existing "Today" meetings Card. Background: a calm light yellow — use the Doctrine's existing reach-bg token (#FFF5C7, "a calm yellow family distinct from the stronger action yellow," per Doctrine §7.4) rather than inventing a new yellow.
+2. Re-skin the DigestCard (AI-generated insights) with a liquid-glass, mellow pink gradient background — this is a deliberate, flagged Doctrine §7.10 exception (see the stage note above), not a mistake. Keep the AiBadge marker itself as the standard black badge; only the card surface changes.
+3. In attention-list-card.tsx, add a new tone to the TONE map — call it "review" — using the Doctrine's existing target-bg/target-border/target-ink tokens (already a light blue, currently used for Target-university shortlist pills elsewhere; this is the second, flagged Doctrine exception — reusing an existing token for a second meaning rather than inventing a new one). In dashboard/page.tsx, change the "Awaiting your review" AttentionListCard's tone from "pending" to "review" so it renders blue. Leave "Requires attention" on tone="overdue" (Doctrine's calm red, per §7.2 — "use a calm red rather than a bright alarm red") — it already matches what was asked for, just confirm the visual result actually reads as calm and light, not muted-away.
+4. Delete the entire "Caseload progress" Card block from dashboard/page.tsx (the progressPct calculation, the progress bar, and the surrounding Card) — remove it outright, not just hide it. Check whether the same "% of tasks complete" metric appears anywhere else in the counsellor-facing UI (not the Team view's caseload bars from Stage 6 — those show workload distribution across counsellors, a different metric — but check individual student profile views) and flag anywhere else you find it before removing, rather than assuming Dashboard is the only place.
+5. In topbar.tsx, the Calendar icon is currently a plain `<button type="button">` with no action — the file's own comment says wiring it was deliberately deferred. Convert it to a Next.js Link to /counsellor/calendar. Leave the Notifications and Profile icons as presentational for now — out of scope for this prompt.
+6. Rebuild the Dashboard's overall layout, spacing, and visual hierarchy against UI Ref 1 Dashboard.jpg and UI Reference 2 Dashboard.jpg in UI Inspiration/ with heavy emphasis on actually matching their composition — Stage 6.5 already did one pass against these same references and the result still reads as flat, so look hard at what's different this time: density, imagery, card proportions, not just token substitution.
+7. Remove every em dash from UI-facing copy strings in every file touched this prompt (component labels, descriptions, empty-states) — rewrite with a period, comma, or separate sentence instead. This applies to visible product copy, not code comments.
+
+Commit with message "[stage-8] Add calendar widget and colour system to counsellor Dashboard, remove Caseload progress, fix calendar icon link".
+```
+
+**Prompt 8.4 — Student interface: colour, motion, and playful graphics, second pass**
+```
+Stage 6.5 (Prompt 6.5.5) already did one liveliness pass on the established-state student Home dashboard; it's still reading as clanky and utilitarian, so this is an intensified second pass, not a repeat. Unlike the counsellor shell, the student shell isn't bound by Doctrine §13.3/§15's "no playful motion, professional density" constraint — Doctrine §18.2 already treats the student shell as simpler and less formal than the counsellor's persistent professional sidebar, so there's real room here for a livelier, more playful treatment, within reduced-motion accessibility rules. Apply the Doctrine's semantic colour set more expressively across student Home's cards, add tasteful decorative graphic accents (simple abstract shapes/illustration consistent with the existing glass aesthetic — not stock clipart, not a jarring style shift), and layer in more generous Doctrine-approved motion (§13.1 — card entrance stagger, hover micro-interactions, richer page transitions) than 6.5's conservative pass used. Use the emil-design-eng, impeccable, and taste-skill skills throughout, and consult .claude/skills/epicenter-conventions/SKILL.md before making changes so this stays consistent with what's already been established, not a fresh reinvention. Commit with message "[stage-8] Second liveliness pass on student Home dashboard with playful graphics and expanded motion".
+```
+
+**Prompt 8.5 — Logo: remove icon from student nav, keep text-only "EPICENTER."**
+```
+apps/web/components/counsellor/sidebar.tsx already renders the logo as text-only "EPICENTER." with no icon. apps/web/components/student/student-nav.tsx does not match — it still renders a Sparkles icon in a black rounded box before the "EPICENTER." text. Remove that icon span entirely from student-nav.tsx so both shells render the identical text-only wordmark. Commit with message "[stage-8] Remove icon from student nav logo to match text-only counsellor sidebar treatment".
+```
+
+**Prompt 8.6 — Landing page copy rewrite**
+```
+apps/web/app/page.tsx currently reads "Epicenter Education" (eyebrow label) above "College counselling, organised." (H1). Replace with three lines: "Epicenter." as the top line, "Let's all be on the same page" as the main heading below it, and "THE AI LMS BUILT FOR COUNSELLORS AND STUDENTS" as small caps Satoshi text just below that (reuse the existing text-xs font-bold uppercase tracking-wide utility already used for the current eyebrow label, don't invent a new type style for it). Commit with message "[stage-8] Rewrite landing page hero copy".
+```
+
+**Prompt 8.7 — Design-skill review pass**
+```
+Run /impeccable audit, the taste-skill review, and the emil-design-eng animation review across every screen touched this stage. Explicitly re-read .claude/skills/epicenter-conventions/SKILL.md and confirm nothing built this stage drifts from it — update the skill via skill-creator if something genuinely new was established (the "review" blue tone, the AI-insights gradient exception) that later stages should know about. For each screen, re-open its closest UI Inspiration/ reference and compare side by side per Doctrine §3.2. Report what each skill flagged before committing, then commit with message "[stage-8] Apply design-skill review findings".
+```
+
+**Prompt 8.8 — End of stage**
+```
+Run the full test suite, lint, typecheck. Trigger the Sentry test route and confirm capture. Run the UI/UX Doctrine's Design Review Checklist (Part XIV) against everything touched this stage — but explicitly note the two flagged Doctrine exceptions (AI-insights pink gradient card, the new "review" blue tone) as intentional and do not revert them; confirm every other item still holds (AiBadge marker itself is still black, "Requires attention" still calm red not alarm red, all new motion respects prefers-reduced-motion, student-side motion doesn't break clarity even though it's more playful than the counsellor side). Confirm: the Documents tab shows a real chronological, searchable list with working Download/Open and a glassmorphic viewer; the counsellor Dashboard's Calendar icon actually navigates to /counsellor/calendar; Caseload progress is gone; no em dashes remain in any UI copy touched this stage. Run /graphify to refresh the index. Push stage-8-docs-dashboard-playful and open a PR against main titled "Stage 8: Documents, Dashboard Colour System, and Playful Interfaces". Summarize the diff, and call out the two Doctrine exceptions explicitly so they get a deliberate sign-off, not a silent merge.
+```
+(Merge, then `git checkout main && git pull`.)
+
+---
+
 ## After Stage 6 — where the initial pilot build stops
 
 Phase 7 (Microsoft Entra ID SSO migration + OneDrive/Graph API storage migration) is explicitly a later milestone, not part of the initial pilot build — it isn't included as a stage here on purpose. When you're ready to start it, budget the dedicated Entra ID ↔ Supabase Auth migration spike CLAUDE.md §9 calls out, and treat it as its own stage (`stage-7-entra-onedrive`) with the same branch/commit/PR/merge discipline as everything above.
