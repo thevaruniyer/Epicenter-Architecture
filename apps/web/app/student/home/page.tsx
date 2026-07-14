@@ -10,9 +10,19 @@ import {
 } from "@epicenter/ui";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { TodoPanel } from "@/components/student/todo-panel";
+import type { Question } from "@/lib/actions/forms";
 
 type Task = { id: string; title: string; status: string; due_date: string | null };
 type Note = { id: string; final_text: string | null; created_at: string };
+type FormAssignment = { form_id: string; status: string };
+type FormRow = {
+  id: string;
+  title: string;
+  source: string;
+  questions: Question[] | null;
+  external_form_id: string | null;
+};
 
 function firstName(full: string | null): string {
   if (!full) return "there";
@@ -23,7 +33,7 @@ export default async function StudentHomePage() {
   const user = await getSessionUser();
   const supabase = await createClient();
 
-  const [{ data: userRow }, { data: profile }, { data: taskRows }, { data: noteRows }, { data: shortlist }] =
+  const [{ data: userRow }, { data: profile }, { data: taskRows }, { data: noteRows }, { data: shortlist }, { data: assignmentRows }] =
     await Promise.all([
       supabase.from("users").select("full_name").eq("id", user!.id).maybeSingle(),
       supabase
@@ -38,6 +48,7 @@ export default async function StudentHomePage() {
         .order("created_at", { ascending: false })
         .limit(3),
       supabase.from("shortlist_entries").select("id"),
+      supabase.from("form_assignments").select("form_id, status").eq("student_id", user!.id),
     ]);
 
   const name = firstName(userRow?.full_name ?? null);
@@ -45,10 +56,44 @@ export default async function StudentHomePage() {
   const tasks = (taskRows as Task[]) ?? [];
   const notes = (noteRows as Note[]) ?? [];
   const shortlistCount = (shortlist ?? []).length;
+  const assignments = (assignmentRows as FormAssignment[]) ?? [];
   const established = tasks.length > 0 || notes.length > 0 || shortlistCount > 0;
 
   const completed = tasks.filter((t) => t.status === "complete").length;
   const nextTask = tasks.find((t) => t.status !== "complete");
+
+  // SU8: forms sit alongside tasks in one To Do list — only worth rendering
+  // once a real form has actually been assigned (never a placeholder panel).
+  const pendingForms = assignments.filter((a) => a.status !== "responded");
+  let todoItems: Parameters<typeof TodoPanel>[0]["items"] = [];
+  if (assignments.length > 0) {
+    const formIds = assignments.map((a) => a.form_id);
+    const { data: forms } = await supabase
+      .from("forms")
+      .select("id, title, source, questions, external_form_id")
+      .in("id", formIds);
+    const formById = new Map((forms as FormRow[] | null)?.map((f) => [f.id, f]) ?? []);
+    todoItems = [
+      ...tasks
+        .filter((t) => t.status !== "complete")
+        .map((t) => ({ kind: "task" as const, id: t.id, title: t.title, due: t.due_date })),
+      ...assignments
+        .map((a) => {
+          const f = formById.get(a.form_id);
+          if (!f) return null;
+          return {
+            kind: "form" as const,
+            id: f.id,
+            title: f.title,
+            source: f.source,
+            questions: f.questions,
+            external_form_id: f.external_form_id,
+            status: a.status,
+          };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null),
+    ];
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -79,6 +124,8 @@ export default async function StudentHomePage() {
           </Link>
         </div>
       ) : null}
+
+      {assignments.length > 0 ? <TodoPanel items={todoItems} /> : null}
 
       {!established ? (
         <Card className="text-center">

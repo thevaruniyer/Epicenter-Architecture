@@ -5,6 +5,7 @@ import { after } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { cleanUpNote, extractSignals, logAiAction } from "@epicenter/ai";
 import { createClient } from "@/lib/supabase/server";
+import { insertGoogleEvent, isGoogleCalendarConfigured } from "@/lib/google-calendar";
 
 // `savedId` changes on every successful save so the UI can react to each save
 // (not just the first). Effects keyed on a boolean would only fire once.
@@ -93,6 +94,49 @@ export async function createNote(
     .single();
 
   if (error) return { error: error.message };
+
+  // UC9 Screen 6: "Also add to Google Calendar" — logging that a meeting
+  // happened creates a same-day Epicenter calendar event too, and pushes it to
+  // Google if the counsellor has that sync direction enabled. Best-effort:
+  // never blocks the note, which is already saved above.
+  if (formData.get("also_add_to_google_calendar") === "true" && user) {
+    try {
+      const startsAt = new Date();
+      const endsAt = new Date(startsAt.getTime() + 30 * 60_000);
+      const { data: event } = await supabase
+        .from("calendar_events")
+        .insert({
+          counsellor_id: user.id,
+          student_id: studentId,
+          title: "Meeting logged",
+          starts_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
+        })
+        .select("id")
+        .single();
+
+      if (event && isGoogleCalendarConfigured()) {
+        const { data: connection } = await supabase
+          .from("google_calendar_connections")
+          .select("access_token, push_epicenter_to_google")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (connection?.push_epicenter_to_google && connection.access_token) {
+          const googleEventId = await insertGoogleEvent(connection.access_token, {
+            title: "Meeting logged",
+            startsAt: startsAt.toISOString(),
+            endsAt: endsAt.toISOString(),
+          });
+          await supabase
+            .from("calendar_events")
+            .update({ google_synced: true, google_event_id: googleEventId })
+            .eq("id", event.id);
+        }
+      }
+    } catch (err) {
+      Sentry.captureException(err, { tags: { feature: "google_calendar_push" } });
+    }
+  }
 
   // Async signal extraction (Flow Plan §3/§4.3): after the response is sent,
   // pull tagged signals out of the note into student_signals so the category
