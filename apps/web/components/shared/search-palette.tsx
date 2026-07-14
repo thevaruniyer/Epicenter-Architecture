@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@epicenter/ui";
 import type { SearchResult } from "@/lib/actions/search";
+
+// Code-split: cmdk (and the rest of the Command UI) only loads once a user
+// actually opens search, not as part of every page's initial JS.
+const SearchCommandContent = dynamic(
+  () => import("./search-command-content").then((m) => m.SearchCommandContent),
+  { ssr: false },
+);
 
 // Stage 6.5 Prompt 6.5.6: replaces the decorative search icon (s-search-circle
 // in the storyboards) on both shells with a real, role-scoped search — the
@@ -110,41 +110,18 @@ export function SearchPalette({
         </button>
       )}
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput
-          value={query}
-          onValueChange={setQuery}
+      {open ? (
+        <SearchCommandContent
+          open={open}
+          onOpenChange={setOpen}
+          query={query}
+          onQueryChange={setQuery}
           placeholder={placeholder}
+          loading={loading}
+          grouped={grouped}
+          onSelect={select}
         />
-        <CommandList>
-          {query.trim().length < 2 ? (
-            <CommandEmpty>Type at least 2 characters to search.</CommandEmpty>
-          ) : loading ? (
-            <CommandEmpty>Searching…</CommandEmpty>
-          ) : results.length === 0 ? (
-            <CommandEmpty>No results for &ldquo;{query}&rdquo;.</CommandEmpty>
-          ) : (
-            Object.entries(grouped).map(([group, items]) => (
-              <CommandGroup key={group} heading={group}>
-                {items.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    value={item.id}
-                    onSelect={() => select(item.href)}
-                  >
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate">{item.label}</span>
-                      {item.meta ? (
-                        <span className="truncate text-xs text-ink-tertiary">{item.meta}</span>
-                      ) : null}
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ))
-          )}
-        </CommandList>
-      </CommandDialog>
+      ) : null}
     </>
   );
 }

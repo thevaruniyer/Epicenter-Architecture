@@ -188,7 +188,7 @@ export function CalendarView({
       </div>
 
       {view === "month" ? (
-        <Card>
+        <Card key={view} className="animate-in fade-in duration-200 ease-out motion-reduce:animate-none">
           <div className="grid grid-cols-7 gap-px overflow-hidden rounded-md bg-border-soft">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <div
@@ -228,7 +228,10 @@ export function CalendarView({
           </div>
         </Card>
       ) : (
-        <Card className="overflow-x-auto">
+        <Card
+          key={view}
+          className="animate-in fade-in overflow-x-auto duration-200 ease-out motion-reduce:animate-none"
+        >
           <div className="flex min-w-[560px]">
             <div className="w-14 shrink-0">
               <div style={{ height: ROW_HEIGHT }} />

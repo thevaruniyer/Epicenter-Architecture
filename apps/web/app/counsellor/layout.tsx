@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { Sidebar } from "@/components/counsellor/sidebar";
 import { Topbar } from "@/components/counsellor/topbar";
+import { PageTransition } from "@/components/shared/page-transition";
 
 // Counsellor app shell (Doctrine §18.1): persistent sidebar + topbar, staff-only.
 export default async function CounsellorLayout({
@@ -22,7 +23,9 @@ export default async function CounsellorLayout({
         </div>
         <div className="flex min-w-0 flex-col">
           <Topbar />
-          <main className="min-w-0 px-6 pb-16">{children}</main>
+          <main className="min-w-0 px-6 pb-16">
+            <PageTransition>{children}</PageTransition>
+          </main>
         </div>
       </div>
     </div>
