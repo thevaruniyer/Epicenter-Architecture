@@ -20,19 +20,24 @@ export function MiniCalendarCard({ eventDates }: { eventDates: string[] }) {
     return d;
   });
 
+  const monthLabel = today.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
   return (
+    // The day grid below is a visual preview, not a set of 42 individual
+    // targets — it's marked aria-hidden and the link carries its own label,
+    // so a screen reader hears one clear destination instead of every date
+    // in the month concatenated into the link name.
     <Link
       href="/counsellor/calendar"
+      aria-label={`Open My Calendar. ${monthLabel}.`}
       className="flex flex-col rounded-lg border border-reach-border bg-reach-bg p-5 shadow-glass transition-transform hover:-translate-y-px motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
     >
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-ink">
-          {today.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-        </h2>
-        <ChevronRight className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
+      <div className="flex items-center justify-between gap-2" aria-hidden>
+        <h2 className="text-sm font-semibold text-ink">{monthLabel}</h2>
+        <ChevronRight className="size-4 shrink-0 text-ink-tertiary" />
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-y-1 text-center">
+      <div className="mt-3 grid grid-cols-7 gap-y-1 text-center" aria-hidden>
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={i} className="text-[11px] font-semibold uppercase text-ink-tertiary">
             {d}
@@ -48,14 +53,13 @@ export function MiniCalendarCard({ eventDates }: { eventDates: string[] }) {
                 className={
                   isToday
                     ? "grid size-6 place-items-center rounded-full bg-ink text-xs font-bold text-white"
-                    : `grid size-6 place-items-center text-xs ${inMonth ? "text-ink" : "text-ink-tertiary/50"}`
+                    : `grid size-6 place-items-center text-xs ${inMonth ? "text-ink" : "text-ink-tertiary"}`
                 }
               >
                 {d.getDate()}
               </span>
               <span
                 className={`size-1 rounded-full ${hasEvent && !isToday ? "bg-ink/60" : "bg-transparent"}`}
-                aria-hidden
               />
             </div>
           );
