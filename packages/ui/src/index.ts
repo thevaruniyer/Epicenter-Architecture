@@ -11,6 +11,7 @@ export {
 export { Button, buttonVariants, type ButtonProps } from "./button";
 export { StatusPill, type PillStatus, type StatusPillProps } from "./status-pill";
 export { AiBadge, type AiBadgeProps } from "./ai-badge";
+export { Skeleton } from "./skeleton";
 export {
   Dialog,
   DialogTrigger,
@@ -23,3 +24,12 @@ export {
   DialogFooter,
   type DialogContentProps,
 } from "./dialog";
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "./command";

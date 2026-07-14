@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { LogOut, Sparkles } from "lucide-react";
 import { cn } from "@epicenter/ui";
 import { signOut } from "@/lib/actions/auth";
+import { SearchPalette } from "@/components/shared/search-palette";
+import { searchStudent } from "@/lib/actions/search";
 
 // Student shell nav (Doctrine §18.2): a simpler, guided top pill-nav — not the
 // counsellor's persistent professional sidebar.
@@ -14,6 +16,7 @@ const NAV = [
   { label: "Notes", href: "/student/notes" },
   { label: "College Shortlist", href: "/student/shortlist" },
   { label: "My Application", href: "/student/application" },
+  { label: "My Calendar", href: "/student/calendar" },
   { label: "My Profile", href: "/student/profile" },
 ];
 
@@ -50,6 +53,12 @@ export function StudentNav() {
             );
           })}
         </nav>
+
+        <SearchPalette
+          searchAction={searchStudent}
+          placeholder="Search notes, roadmap, shortlist…"
+          variant="icon"
+        />
 
         <form action={signOut}>
           <button

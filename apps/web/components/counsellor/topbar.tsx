@@ -1,19 +1,14 @@
-import { Bell, CalendarDays, Search, User } from "lucide-react";
+import { Bell, CalendarDays, User } from "lucide-react";
+import { SearchPalette } from "@/components/shared/search-palette";
+import { searchCounsellor } from "@/lib/actions/search";
 
-// Counsellor topbar (architecture §6): search + notifications / calendar /
-// profile icons. Presentational for the shell; wiring comes with the features.
+// Counsellor topbar (architecture §6): real functional search (Stage 6.5
+// Prompt 6.5.6) + notifications / calendar / profile icons — those three
+// remain presentational for the shell; wiring is a separate, unnamed prompt.
 export function Topbar() {
   return (
     <header className="flex items-center gap-4 px-6 py-4">
-      <div className="flex min-w-0 max-w-md flex-1 items-center gap-2 rounded-pill border border-border-soft bg-surface-raised px-4 py-2 text-ink-tertiary">
-        <Search className="size-4 shrink-0" aria-hidden />
-        <input
-          type="search"
-          placeholder="Search students, universities…"
-          aria-label="Search"
-          className="w-full border-0 bg-transparent p-0 text-sm text-ink outline-none placeholder:text-ink-tertiary focus-visible:ring-0"
-        />
-      </div>
+      <SearchPalette searchAction={searchCounsellor} placeholder="Search students, notes, applications…" />
 
       <div className="ml-auto flex items-center gap-2">
         {[
