@@ -51,7 +51,7 @@ export function SearchCommandContent({
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate">{item.label}</span>
                     {item.meta ? (
-                      <span className="truncate text-xs text-ink-tertiary">{item.meta}</span>
+                      <span className="truncate text-xs text-ink-secondary">{item.meta}</span>
                     ) : null}
                   </div>
                 </CommandItem>

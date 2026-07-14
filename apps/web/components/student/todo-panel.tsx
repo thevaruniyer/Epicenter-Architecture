@@ -82,7 +82,7 @@ export function TodoPanel({
       </CardHeader>
 
       {empty ? (
-        <p className="px-1 py-6 text-center text-sm text-ink-tertiary">
+        <p className="px-1 py-6 text-center text-sm text-ink-secondary">
           Nothing yet — check back after your first meeting with your counsellor.
         </p>
       ) : (

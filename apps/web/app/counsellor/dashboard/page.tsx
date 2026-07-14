@@ -182,13 +182,13 @@ export default async function CounsellorDashboardPage() {
       <Card>
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-ink">Today</h2>
-          <p className="text-xs text-ink-tertiary">
+          <p className="text-xs text-ink-secondary">
             {meetingItems.length} counselling{" "}
             {meetingItems.length === 1 ? "meeting" : "meetings"}
           </p>
         </div>
         {meetingItems.length === 0 ? (
-          <p className="mt-3 text-sm text-ink-tertiary">No meetings scheduled today.</p>
+          <p className="mt-3 text-sm text-ink-secondary">No meetings scheduled today.</p>
         ) : (
           <ul className="mt-3 flex flex-col divide-y divide-border-soft">
             {meetingItems.map((m) => (
@@ -238,15 +238,15 @@ export default async function CounsellorDashboardPage() {
 
       <Card>
         <h2 className="text-sm font-semibold text-ink">Caseload progress</h2>
-        <p className="text-xs text-ink-tertiary">
+        <p className="text-xs text-ink-secondary">
           Roadmap tasks complete across your caseload — no vanity metric, just the count.
         </p>
         <div className="mt-4 flex items-center gap-4">
           <p className="text-3xl font-bold tracking-tight text-ink">{progressPct}%</p>
           <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-muted">
             <div
-              className="h-full rounded-pill bg-yellow"
-              style={{ width: `${progressPct}%` }}
+              className="h-full w-full origin-left rounded-pill bg-yellow transition-transform duration-200 ease-out"
+              style={{ transform: `scaleX(${progressPct / 100})` }}
             />
           </div>
         </div>

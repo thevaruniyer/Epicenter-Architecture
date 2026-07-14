@@ -55,7 +55,7 @@ export default function CounsellorStudentsPage() {
 
 function StudentsGridSkeleton() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6" role="status" aria-label="Loading">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-3 w-16" />

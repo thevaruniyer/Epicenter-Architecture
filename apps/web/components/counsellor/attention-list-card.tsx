@@ -4,11 +4,9 @@ export type AttentionItem = { id: string; label: string; meta: string; href: str
 
 const TONE = {
   overdue: {
-    card: "border-l-4 border-l-overdue-border",
     pill: "bg-overdue-bg text-overdue-ink",
   },
   pending: {
-    card: "border-l-4 border-l-pending-border",
     pill: "bg-pending-bg text-pending-ink",
   },
 } as const;
@@ -40,12 +38,12 @@ export function AttentionListCard({
     <div
       role="region"
       aria-label={title}
-      className={`rounded-lg border border-border-soft bg-surface-raised p-5 shadow-glass ${t.card}`}
+      className="rounded-lg border border-border-soft bg-surface-raised p-5 shadow-glass"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-ink">{title}</h2>
-          <p className="text-xs text-ink-tertiary">{description}</p>
+          <p className="text-xs text-ink-secondary">{description}</p>
         </div>
         <span className={`shrink-0 rounded-pill px-2.5 py-1 text-sm font-bold ${t.pill}`}>
           {items.length}
@@ -53,7 +51,7 @@ export function AttentionListCard({
       </div>
 
       {visible.length === 0 ? (
-        <p className="mt-3 text-sm text-ink-tertiary">{emptyLabel}</p>
+        <p className="mt-3 text-sm text-ink-secondary">{emptyLabel}</p>
       ) : (
         <ul className="mt-3 flex flex-col divide-y divide-border-soft">
           {visible.map((item) => (
@@ -70,7 +68,7 @@ export function AttentionListCard({
         </ul>
       )}
       {overflow > 0 ? (
-        <p className="mt-2 text-xs font-medium text-ink-tertiary">
+        <p className="mt-2 text-xs font-medium text-ink-secondary">
           +{overflow} more
         </p>
       ) : null}

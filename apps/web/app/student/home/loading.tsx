@@ -1,11 +1,11 @@
 import { Skeleton } from "@epicenter/ui";
 
-// Perceived-performance fix (Stage 6.5 Prompt 6.5.7) — see
-// counsellor/students/loading.tsx. Mirrors the established-state grid shape;
-// a first-run student sees this same skeleton for the same brief instant.
+// Perceived-performance fix (Stage 6.5 Prompt 6.5.7). Mirrors the
+// established-state grid shape; a first-run student sees this same skeleton
+// for the same brief instant. role="status" — see counsellor/dashboard/loading.tsx.
 export default function Loading() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6" role="status" aria-label="Loading">
       <div className="flex flex-col gap-2">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-8 w-40" />

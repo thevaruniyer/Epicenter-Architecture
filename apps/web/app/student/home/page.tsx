@@ -233,11 +233,13 @@ export default async function StudentHomePage() {
                   <div className="h-2 overflow-hidden rounded-pill bg-surface-muted">
                     <div
                       className={cn(
-                        "h-full rounded-pill transition-[width] duration-200 ease-out",
+                        "h-full w-full origin-left rounded-pill transition-transform duration-200 ease-out",
                         overdueCount > 0 ? "bg-overdue-ink" : "bg-yellow",
                       )}
                       style={{
-                        width: `${tasks.length ? Math.round((completed / tasks.length) * 100) : 0}%`,
+                        // transform, not width — width triggers layout/paint;
+                        // scaleX is GPU-composited (emil-design-eng review, 6.5.8).
+                        transform: `scaleX(${tasks.length ? completed / tasks.length : 0})`,
                       }}
                     />
                   </div>

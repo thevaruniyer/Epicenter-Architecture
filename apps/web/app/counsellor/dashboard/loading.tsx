@@ -1,9 +1,12 @@
 import { Skeleton } from "@epicenter/ui";
 
-// Perceived-performance fix (Stage 6.5 Prompt 6.5.7) — see students/loading.tsx.
+// Perceived-performance fix (Stage 6.5 Prompt 6.5.7). role="status" so screen
+// readers get one "Loading" announcement instead of silence while this
+// Suspense fallback is on screen (the pulsing divs themselves carry no
+// accessible name and would otherwise announce nothing).
 export default function Loading() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6" role="status" aria-label="Loading">
       <div className="flex flex-col gap-2">
         <Skeleton className="h-3 w-32" />
         <Skeleton className="h-8 w-56" />

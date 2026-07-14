@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import * as Sentry from "@sentry/nextjs";
 import { Search } from "lucide-react";
 import type { SearchResult } from "@/lib/actions/search";
 
@@ -65,12 +66,22 @@ export function SearchPalette({
     setLoading(true);
     const id = ++requestId.current;
     const timeout = setTimeout(() => {
-      searchAction(query).then((r) => {
-        if (id === requestId.current) {
-          setResults(r);
-          setLoading(false);
-        }
-      });
+      searchAction(query)
+        .then((r) => {
+          if (id === requestId.current) {
+            setResults(r);
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          // Without this, a failed search action left `loading` stuck true
+          // forever — "Searching…" with no way out (design-skill review, 6.5.8).
+          Sentry.captureException(err, { tags: { feature: "search" } });
+          if (id === requestId.current) {
+            setResults([]);
+            setLoading(false);
+          }
+        });
     }, 200);
     return () => clearTimeout(timeout);
   }, [query, searchAction]);
