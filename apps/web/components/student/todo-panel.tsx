@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CalendarClock, ClipboardList, ListTodo } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, cn } from "@epicenter/ui";
+import { Card, CardHeader, CardTitle, CardDescription, StatusPill, cn } from "@epicenter/ui";
 import { FormResponseDialog } from "@/components/student/form-response-dialog";
+import { formatDue, isOverdue } from "@/lib/format-due";
 import type { Question } from "@/lib/actions/forms";
 
 type TaskItem = {
@@ -24,22 +25,6 @@ type FormItem = {
 };
 type Item = TaskItem | FormItem;
 export type MeetingItem = { id: string; title: string; startsAt: string };
-
-// Doctrine radius/spacing (16px, 4px gaps) — the storyboard's SU1 Screen 10
-// s-todo-panel border-radius, re-skinned in glass tokens per §12.4 ("panels"
-// are one of the sanctioned glass surfaces, unlike an ordinary Card).
-function formatDue(due: string | null): string {
-  if (!due) return "";
-  const target = new Date(due);
-  target.setHours(0, 0, 0, 0);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diffDays = Math.round((target.getTime() - today.getTime()) / 86_400_000);
-  if (diffDays < 0) return `${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? "" : "s"} overdue`;
-  if (diffDays === 0) return "Due today";
-  if (diffDays === 1) return "Due tomorrow";
-  return `Due in ${diffDays} days`;
-}
 
 function formatMeetingWhen(startsAt: string): string {
   const start = new Date(startsAt);
@@ -75,7 +60,16 @@ export function TodoPanel({
   // resolves to the full Roadmap).
   const VISIBLE_TASKS = 3;
   const formItems = items.filter((i): i is FormItem => i.kind === "form");
-  const taskItems = items.filter((i): i is TaskItem => i.kind === "task");
+  // Soonest-due (and overdue) first — the panel's job is surfacing what's
+  // most urgent within the visible slots, not whatever order the query returned.
+  const taskItems = items
+    .filter((i): i is TaskItem => i.kind === "task")
+    .sort((a, b) => {
+      if (!a.due && !b.due) return 0;
+      if (!a.due) return 1;
+      if (!b.due) return -1;
+      return new Date(a.due).getTime() - new Date(b.due).getTime();
+    });
   const visibleTasks = taskItems.slice(0, VISIBLE_TASKS);
   const overflowTaskCount = taskItems.length - visibleTasks.length;
   const visibleItems: Item[] = [...visibleTasks, ...formItems];
@@ -116,18 +110,38 @@ export function TodoPanel({
             item.kind === "task" ? (
               <li
                 key={`task-${item.id}`}
-                className="flex items-center gap-3 rounded-md border border-border-soft bg-surface-raised px-3 py-2"
+                className={cn(
+                  "flex items-center gap-3 rounded-md border px-3 py-2",
+                  isOverdue(item.due)
+                    ? "border-overdue-border bg-overdue-bg"
+                    : "border-border-soft bg-surface-raised",
+                )}
               >
-                <ListTodo className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
+                <ListTodo
+                  className={cn(
+                    "size-4 shrink-0",
+                    isOverdue(item.due) ? "text-overdue-ink" : "text-ink-tertiary",
+                  )}
+                  aria-hidden
+                />
                 <div className="flex-1">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+                  <p
+                    className={cn(
+                      "text-xs font-semibold uppercase tracking-wide",
+                      isOverdue(item.due) ? "text-overdue-ink" : "text-ink-tertiary",
+                    )}
+                  >
                     Task
                   </p>
                   <p className="text-sm font-medium text-ink">{item.title}</p>
                 </div>
-                <span className="shrink-0 text-xs text-ink-secondary">
-                  {formatDue(item.due)}
-                </span>
+                {isOverdue(item.due) ? (
+                  <StatusPill status="overdue" label={formatDue(item.due)} className="shrink-0" />
+                ) : (
+                  <span className="shrink-0 text-xs text-ink-secondary">
+                    {formatDue(item.due)}
+                  </span>
+                )}
               </li>
             ) : (
               <li key={`form-${item.id}`}>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardList } from "lucide-react";
+import { ArrowRight, ClipboardList, Compass } from "lucide-react";
 import {
   buttonVariants,
   Card,
@@ -7,10 +7,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  StatusPill,
+  cn,
 } from "@epicenter/ui";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { TodoPanel, type MeetingItem } from "@/components/student/todo-panel";
+import { formatDue } from "@/lib/format-due";
 import type { Question } from "@/lib/actions/forms";
 
 type Task = { id: string; title: string; status: string; due_date: string | null };
@@ -24,6 +27,7 @@ type FormRow = {
   external_form_id: string | null;
 };
 type MeetingRow = { id: string; title: string; starts_at: string | null };
+type ShortlistRow = { id: string; category: string | null };
 
 function firstName(full: string | null): string {
   if (!full) return "there";
@@ -39,7 +43,7 @@ export default async function StudentHomePage() {
       supabase.from("users").select("full_name").eq("id", user!.id).maybeSingle(),
       supabase
         .from("student_profiles")
-        .select("onboarding_completed_at")
+        .select("onboarding_completed_at, grade, subjects")
         .eq("user_id", user!.id)
         .maybeSingle(),
       supabase.from("tasks").select("id, title, status, due_date"),
@@ -48,7 +52,7 @@ export default async function StudentHomePage() {
         .select("id, final_text, created_at")
         .order("created_at", { ascending: false })
         .limit(3),
-      supabase.from("shortlist_entries").select("id"),
+      supabase.from("shortlist_entries").select("id, category"),
       supabase.from("form_assignments").select("form_id, status").eq("student_id", user!.id),
       supabase
         .from("calendar_events")
@@ -61,14 +65,30 @@ export default async function StudentHomePage() {
 
   const name = firstName(userRow?.full_name ?? null);
   const onboardingDone = Boolean(profile?.onboarding_completed_at);
+  const grade = (profile as { grade: number | null } | null)?.grade ?? null;
+  const subjects = (profile as { subjects: string[] | null } | null)?.subjects ?? [];
   const tasks = (taskRows as Task[]) ?? [];
   const notes = (noteRows as Note[]) ?? [];
-  const shortlistCount = (shortlist ?? []).length;
+  const shortlistRows = (shortlist as ShortlistRow[]) ?? [];
+  const shortlistCount = shortlistRows.length;
   const assignments = (assignmentRows as FormAssignment[]) ?? [];
   const established = tasks.length > 0 || notes.length > 0 || shortlistCount > 0;
 
+  const incomplete = tasks.filter((t) => t.status !== "complete");
   const completed = tasks.filter((t) => t.status === "complete").length;
-  const nextTask = tasks.find((t) => t.status !== "complete");
+  const dueSoonest = [...incomplete]
+    .filter((t) => t.due_date)
+    .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime());
+  const nextTask = dueSoonest[0] ?? incomplete[0];
+  const overdueCount = incomplete.filter(
+    (t) => t.due_date && new Date(t.due_date) < new Date(new Date().toDateString()),
+  ).length;
+
+  const shortlistTally = {
+    reach: shortlistRows.filter((s) => s.category === "reach").length,
+    target: shortlistRows.filter((s) => s.category === "target").length,
+    safety: shortlistRows.filter((s) => s.category === "safety").length,
+  };
 
   // Calendar-aware: only a real upcoming calendar_events row for this student
   // becomes a Meeting card — no meeting, no card.
@@ -158,78 +178,143 @@ export default async function StudentHomePage() {
             </p>
           </Card>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-4">
+            {/* Hero — SU1 Screen 10's s-hero, restyled: a calm journey summary
+                (§16.3) rather than the storyboard's plain "Welcome back". */}
             <Card>
-              <CardHeader>
-                <CardTitle>Your roadmap</CardTitle>
-                <CardDescription>
-                  {completed} of {tasks.length} tasks complete
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                <div className="h-2 overflow-hidden rounded-pill bg-surface-muted">
-                  <div
-                    className="h-full rounded-pill bg-yellow"
-                    style={{
-                      width: `${tasks.length ? Math.round((completed / tasks.length) * 100) : 0}%`,
-                    }}
-                  />
-                </div>
-                {nextTask ? (
-                  <p className="text-sm text-ink-secondary">
-                    Next: <span className="font-medium text-ink">{nextTask.title}</span>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight text-ink">
+                    Welcome back, {name}
+                  </h2>
+                  <p className="mt-1 text-sm text-ink-secondary">
+                    {completed} of {tasks.length} tasks complete
+                    {nextTask?.due_date ? ` · Next due ${formatDue(nextTask.due_date).toLowerCase()}` : ""}
                   </p>
-                ) : (
-                  <p className="text-sm text-ink-secondary">All caught up 🎉</p>
-                )}
-                <Link
-                  href="/student/roadmap"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
-                >
-                  Open roadmap <ArrowRight className="size-4" aria-hidden />
+                </div>
+                <Link href="/student/roadmap" className={buttonVariants({ size: "sm" })}>
+                  Continue your roadmap <ArrowRight className="size-4" aria-hidden />
                 </Link>
-              </CardContent>
+              </div>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent notes</CardTitle>
-                <CardDescription>Shared by your counsellor.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                {notes.length ? (
-                  notes.map((n) => (
-                    <p key={n.id} className="line-clamp-2 text-sm text-ink">
-                      {n.final_text}
-                    </p>
-                  ))
-                ) : (
-                  <p className="text-sm text-ink-tertiary">No shared notes yet.</p>
-                )}
-                <Link
-                  href="/student/notes"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
-                >
-                  All notes <ArrowRight className="size-4" aria-hidden />
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Grade card — SU1 Screen 10's s-grade-card. */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>{grade ? `Grade ${grade}` : "My Profile"}</CardTitle>
+                  <CardDescription>
+                    {subjects.length ? subjects.join(" · ") : "No subjects on file yet."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link
+                    href="/student/profile"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
+                  >
+                    My Profile <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </CardContent>
+              </Card>
 
-            <Card className="sm:col-span-2">
-              <CardHeader>
-                <CardTitle>Your shortlist</CardTitle>
-                <CardDescription>Universities you&rsquo;re considering.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                <p className="text-2xl font-bold text-ink">{shortlistCount}</p>
-                <Link
-                  href="/student/shortlist"
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
-                >
-                  Open shortlist <ArrowRight className="size-4" aria-hidden />
-                </Link>
-              </CardContent>
-            </Card>
+              {/* Roadmap — SU1 Screen 10's s-roadmap-card. No illustration
+                  (Doctrine §11.6 bans decorative illustrations/emoji — the
+                  storyboard's 🗺️ block is dropped, a restrained icon instead). */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Jump to Roadmap</CardTitle>
+                  <CardDescription>
+                    {overdueCount > 0
+                      ? `${overdueCount} task${overdueCount === 1 ? "" : "s"} overdue`
+                      : "Keep going — pick up where you left off."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
+                  <div className="h-2 overflow-hidden rounded-pill bg-surface-muted">
+                    <div
+                      className={cn(
+                        "h-full rounded-pill transition-[width] duration-200 ease-out",
+                        overdueCount > 0 ? "bg-overdue-ink" : "bg-yellow",
+                      )}
+                      style={{
+                        width: `${tasks.length ? Math.round((completed / tasks.length) * 100) : 0}%`,
+                      }}
+                    />
+                  </div>
+                  {nextTask ? (
+                    <div className="flex items-center gap-2">
+                      <Compass className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
+                      <p className="text-sm text-ink-secondary">
+                        Next: <span className="font-medium text-ink">{nextTask.title}</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-ink-secondary">All caught up.</p>
+                  )}
+                  <Link
+                    href="/student/roadmap"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
+                  >
+                    Open roadmap <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent notes</CardTitle>
+                  <CardDescription>Shared by your counsellor.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                  {notes.length ? (
+                    notes.map((n) => (
+                      <p key={n.id} className="line-clamp-2 text-sm text-ink">
+                        {n.final_text}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-sm text-ink-tertiary">No shared notes yet.</p>
+                  )}
+                  <Link
+                    href="/student/notes"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
+                  >
+                    All notes <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Shortlist — reach/target/safety semantic tokens (Doctrine
+                  §7.4-7.6) are built for exactly this context. */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your shortlist</CardTitle>
+                  <CardDescription>Universities you&rsquo;re considering.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
+                  <p className="text-2xl font-bold text-ink">{shortlistCount}</p>
+                  {shortlistCount > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {shortlistTally.reach > 0 ? (
+                        <StatusPill status="reach" label={`${shortlistTally.reach} Reach`} />
+                      ) : null}
+                      {shortlistTally.target > 0 ? (
+                        <StatusPill status="target" label={`${shortlistTally.target} Target`} />
+                      ) : null}
+                      {shortlistTally.safety > 0 ? (
+                        <StatusPill status="safety" label={`${shortlistTally.safety} Safety`} />
+                      ) : null}
+                    </div>
+                  ) : null}
+                  <Link
+                    href="/student/shortlist"
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-ink hover:underline"
+                  >
+                    Open shortlist <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
