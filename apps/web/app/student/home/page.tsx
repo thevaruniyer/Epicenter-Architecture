@@ -150,7 +150,7 @@ export default async function StudentHomePage() {
                 Finish setting up your profile
               </p>
               <p className="text-sm text-reach-ink/80">
-                You skipped onboarding — pick up where you left off.
+                You skipped onboarding. Pick up where you left off.
               </p>
             </div>
           </div>
@@ -180,9 +180,21 @@ export default async function StudentHomePage() {
         ) : (
           <div className="flex flex-col gap-4">
             {/* Hero — SU1 Screen 10's s-hero, restyled: a calm journey summary
-                (§16.3) rather than the storyboard's plain "Welcome back". */}
-            <Card>
-              <div className="flex flex-wrap items-center justify-between gap-4">
+                (§16.3) rather than the storyboard's plain "Welcome back".
+                Stage 8 Prompt 8.4 second liveliness pass: soft decorative
+                blurred accents (abstract, not clipart, consistent with the
+                existing glass aesthetic — Doctrine §18.2 gives the student
+                shell real room the counsellor shell doesn't have). */}
+            <Card className="relative animate-in fade-in slide-in-from-bottom-2 overflow-hidden fill-mode-both duration-300 ease-out motion-reduce:animate-none">
+              <div
+                className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-reach-bg blur-3xl"
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute -bottom-20 -left-10 size-40 rounded-full bg-target-bg blur-3xl"
+                aria-hidden
+              />
+              <div className="relative flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight text-ink">
                     Welcome back, {name}
@@ -200,7 +212,10 @@ export default async function StudentHomePage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Grade card — SU1 Screen 10's s-grade-card. */}
-              <Card>
+              <Card
+                className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both border-t-4 border-t-target-border duration-300 ease-out transition-transform hover:-translate-y-0.5 hover:shadow-glass-float motion-reduce:animate-none motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                style={{ animationDelay: "60ms" }}
+              >
                 <CardHeader>
                   <CardTitle>{grade ? `Grade ${grade}` : "My Profile"}</CardTitle>
                   <CardDescription>
@@ -219,14 +234,22 @@ export default async function StudentHomePage() {
 
               {/* Roadmap — SU1 Screen 10's s-roadmap-card. No illustration
                   (Doctrine §11.6 bans decorative illustrations/emoji — the
-                  storyboard's 🗺️ block is dropped, a restrained icon instead). */}
-              <Card>
+                  storyboard's 🗺️ block is dropped, a restrained icon instead).
+                  Top accent is grounded in real state (overdue vs on-track),
+                  never an invented colour. */}
+              <Card
+                className={cn(
+                  "animate-in fade-in slide-in-from-bottom-2 fill-mode-both border-t-4 duration-300 ease-out transition-transform hover:-translate-y-0.5 hover:shadow-glass-float motion-reduce:animate-none motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+                  overdueCount > 0 ? "border-t-overdue-border" : "border-t-complete-border",
+                )}
+                style={{ animationDelay: "110ms" }}
+              >
                 <CardHeader>
                   <CardTitle>Jump to Roadmap</CardTitle>
                   <CardDescription>
                     {overdueCount > 0
                       ? `${overdueCount} task${overdueCount === 1 ? "" : "s"} overdue`
-                      : "Keep going — pick up where you left off."}
+                      : "Keep going, pick up where you left off."}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
@@ -262,7 +285,10 @@ export default async function StudentHomePage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card
+                className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both border-t-4 border-t-safety-border duration-300 ease-out transition-transform hover:-translate-y-0.5 hover:shadow-glass-float motion-reduce:animate-none motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                style={{ animationDelay: "160ms" }}
+              >
                 <CardHeader>
                   <CardTitle>Recent notes</CardTitle>
                   <CardDescription>Shared by your counsellor.</CardDescription>
@@ -288,7 +314,10 @@ export default async function StudentHomePage() {
 
               {/* Shortlist — reach/target/safety semantic tokens (Doctrine
                   §7.4-7.6) are built for exactly this context. */}
-              <Card>
+              <Card
+                className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both border-t-4 border-t-reach-border duration-300 ease-out transition-transform hover:-translate-y-0.5 hover:shadow-glass-float motion-reduce:animate-none motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                style={{ animationDelay: "210ms" }}
+              >
                 <CardHeader>
                   <CardTitle>Your shortlist</CardTitle>
                   <CardDescription>Universities you&rsquo;re considering.</CardDescription>
