@@ -23,3 +23,12 @@ export {
   DialogFooter,
   type DialogContentProps,
 } from "./dialog";
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "./command";

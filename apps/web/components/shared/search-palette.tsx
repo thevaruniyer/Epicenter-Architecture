@@ -1,0 +1,150 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@epicenter/ui";
+import type { SearchResult } from "@/lib/actions/search";
+
+// Stage 6.5 Prompt 6.5.6: replaces the decorative search icon (s-search-circle
+// in the storyboards) on both shells with a real, role-scoped search — the
+// search action passed in is the only thing that differs between the
+// counsellor and student shell.
+export function SearchPalette({
+  searchAction,
+  placeholder,
+  variant = "full",
+}: {
+  searchAction: (query: string) => Promise<SearchResult[]>;
+  placeholder: string;
+  /** "icon" matches the storyboard's compact s-search-circle for the student
+   * shell's tighter pill-nav; "full" is the counsellor topbar's wider bar. */
+  variant?: "full" | "icon";
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const requestId = useRef(0);
+
+  // Cmd/Ctrl+K toggles from anywhere in the shell — a standard command-palette
+  // affordance, not a Doctrine requirement, but harmless alongside the click trigger.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen((o) => !o);
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setQuery("");
+      setResults([]);
+      return;
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const id = ++requestId.current;
+    const timeout = setTimeout(() => {
+      searchAction(query).then((r) => {
+        if (id === requestId.current) {
+          setResults(r);
+          setLoading(false);
+        }
+      });
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [query, searchAction]);
+
+  const grouped = results.reduce<Record<string, SearchResult[]>>((acc, r) => {
+    (acc[r.group] ??= []).push(r);
+    return acc;
+  }, {});
+
+  function select(href: string) {
+    setOpen(false);
+    router.push(href);
+  }
+
+  return (
+    <>
+      {variant === "icon" ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={placeholder}
+          className="grid size-9 shrink-0 place-items-center rounded-full border border-border-soft bg-surface-raised text-ink-secondary transition-colors hover:bg-surface-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
+        >
+          <Search className="size-4" aria-hidden />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex w-full max-w-sm items-center gap-2 rounded-md border border-border-soft bg-surface-raised px-3 py-2 text-left text-sm text-ink-tertiary transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
+        >
+          <Search className="size-4 shrink-0" aria-hidden />
+          <span className="flex-1">{placeholder}</span>
+          <kbd className="hidden shrink-0 rounded border border-border-soft bg-surface-muted px-1.5 py-0.5 text-[10px] font-semibold text-ink-tertiary sm:inline">
+            ⌘K
+          </kbd>
+        </button>
+      )}
+
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput
+          value={query}
+          onValueChange={setQuery}
+          placeholder={placeholder}
+        />
+        <CommandList>
+          {query.trim().length < 2 ? (
+            <CommandEmpty>Type at least 2 characters to search.</CommandEmpty>
+          ) : loading ? (
+            <CommandEmpty>Searching…</CommandEmpty>
+          ) : results.length === 0 ? (
+            <CommandEmpty>No results for &ldquo;{query}&rdquo;.</CommandEmpty>
+          ) : (
+            Object.entries(grouped).map(([group, items]) => (
+              <CommandGroup key={group} heading={group}>
+                {items.map((item) => (
+                  <CommandItem
+                    key={item.id}
+                    value={item.id}
+                    onSelect={() => select(item.href)}
+                  >
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate">{item.label}</span>
+                      {item.meta ? (
+                        <span className="truncate text-xs text-ink-tertiary">{item.meta}</span>
+                      ) : null}
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))
+          )}
+        </CommandList>
+      </CommandDialog>
+    </>
+  );
+}
