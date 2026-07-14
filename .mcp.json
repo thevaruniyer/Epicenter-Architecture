@@ -82,6 +82,14 @@
         "mcp"
       ],
       "env": {}
+    },
+    "lighthouse": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "lighthouse-mcp@latest"
+      ],
+      "env": {}
     }
   }
 }
