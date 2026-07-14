@@ -57,10 +57,8 @@ Create and switch to a new branch called stage-0-bootstrap off the latest main. 
 
 **Prompt 0.3 — shadcn + Doctrine design tokens + shadcn MCP**
 ```
-Inside apps/web, initialize shadcn/ui yourself (run pnpm dlx shadcn@latest init) — this will default to Tailwind v4. Before generating any components, port the UI/UX Doctrine's tokens into tailwind.config.ts — use the exact block in Product Context/Epicenter_Education_Architecture_v1.md §0 (Epicenter Yellow #EDC001, surface-primary #FDFDFD, ink-primary #000000, the full neutral/semantic/radius/glass token set, Satoshi typography loaded via Fontshare) so every shadcn primitive inherits the Doctrine's actual look instead of shadcn's defaults. Because Tailwind v4 no longer auto-detects a JS/TS config file, add `@config "../../tailwind.config.ts";` (adjust the relative path to wherever the file actually lands) near the top of the CSS entry file, alongside the v4 baseline `@import "tailwindcss";`, so tailwind.config.ts keeps loading exactly as written — this is Tailwind's own supported v3-config bridge, not a workaround. Note that v4's JS-config bridge doesn't support the corePlugins, safelist, or separator options; irrelevant to the Doctrine token block itself, but don't reach for them later. Do not port anything from the v3 storyboard HTML files' original <style> blocks — that palette (terracotta/rose/teal) and the old violet AI-badge colors (#6E62E5/#EFEBFC) are explicitly superseded and must not appear anywhere in tailwind.config.ts. Confirm components.json now exists. Then register the shadcn MCP server yourself by running pnpm dlx shadcn@latest mcp init --client claude from inside apps/web, and confirm it's connected by listing the available shadcn components. Commit with message "[stage-0] Initialize shadcn/ui with UI/UX Doctrine design tokens (Tailwind v4 + @config bridge) and register shadcn MCP".
+Inside apps/web, initialize shadcn/ui yourself (run pnpm dlx shadcn@latest init). Before generating any components, port the UI/UX Doctrine's tokens into tailwind.config.ts — use the exact block in Product Context/Epicenter_Education_Architecture_v1.md §0 (Epicenter Yellow #EDC001, surface-primary #FDFDFD, ink-primary #000000, the full neutral/semantic/radius/glass token set, Satoshi typography loaded via Fontshare) so every shadcn primitive inherits the Doctrine's actual look instead of shadcn's defaults. Do not port anything from the v3 storyboard HTML files' original <style> blocks — that palette (terracotta/rose/teal) and the old violet AI-badge colors (#6E62E5/#EFEBFC) are explicitly superseded and must not appear anywhere in tailwind.config.ts. Confirm components.json now exists. Then register the shadcn MCP server yourself by running pnpm dlx shadcn@latest mcp init --client claude from inside apps/web, and confirm it's connected by listing the available shadcn components. Commit with message "[stage-0] Initialize shadcn/ui with UI/UX Doctrine design tokens and register shadcn MCP".
 ```
-
-**Before Prompt 0.4 — manual DSN paste (not automatable):** the Sentry MCP only queries issues/events, it doesn't expose client keys, and there's no Vercel MCP in this stack. Go to sentry.io → your org → your Next.js project → Settings → Client Keys (DSN) → copy the DSN yourself. Paste it into apps/web/.env.local as NEXT_PUBLIC_SENTRY_DSN=... (needed for Prompt 0.6's local verification) and into Vercel dashboard → project → Settings → Environment Variables (needed for production). Do this before running Prompt 0.4 — it reads the env var, it doesn't fetch it.
 
 **Prompt 0.4 — Sentry SDK wiring**
 ```
@@ -369,6 +367,60 @@ Run the full test suite, lint, typecheck. Trigger the Sentry test route and conf
 
 ---
 
+## Stage 6.5 — UI/UX Fix & Polish Pass
+
+Inserted after Stage 6 per Product Owner decision, not part of the original phase plan — this stage exists because real usage of the Stage 2/3-built screens surfaced a set of concrete gaps: a To Do widget that isn't Doctrine-compliant, a Calendar feature that got built outside the formal Tentative Addition path and needs reconciling against Doctrine/UI Inspiration, dashboards that read as flat/empty, a decorative-only search icon, and page transitions that feel slow. This is a retrofit stage against already-shipped screens, not new-build — treat every prompt below as "audit what exists, then fix it," not "build from scratch." Same branch/commit/PR/merge discipline as every stage above.
+
+**Before starting:** install the Lighthouse MCP (`claude mcp add --transport stdio lighthouse --scope project -- npx lighthouse-mcp@latest` — verify with `claude mcp list`) so Prompt 6.5.7 has real before/after performance numbers instead of a subjective "feels smoother" call.
+
+**Prompt 6.5.1 — Branch + baseline audit**
+```
+Checkout main, pull latest, create branch stage-6-5-ui-fixes. Before changing anything, use the Playwright MCP and Chrome DevTools MCP to screenshot the current live state of: student Home dashboard (established state), counsellor Dashboard, the search icon on both shells, and the existing Calendar and Forms features (both built outside the formal Stage 2/7 path — audit current routes and role access for each first). Save these as a baseline in a scratch folder, not committed, so later Doctrine-review prompts in this stage can do real before/after comparisons. Report back what you find before proceeding — specifically confirm whether Calendar is currently counsellor-only or already student-accessible, and which of the three Forms creation paths (native, Microsoft embed, Google embed) actually work today versus which are stubbed.
+```
+
+**Prompt 6.5.2 — Student To-Do widget: glass, roadmap-linked, calendar-aware**
+```
+Rebuild the student Home dashboard's To Do panel (SU1 Screen 10's .s-todo-panel in the storyboard) as a Doctrine-compliant glassmorphic card — port the same glass/surface tokens used in Stage 0's tailwind.config.ts, rectangular with the Doctrine's approved corner radius, positioned in the right-hand column of the existing dashboard grid exactly as the storyboard shows it. Content must pull live from the same roadmap_milestones/tasks data and status hook built in Stage 2/3 (task title, due date, same tick-then-confirm status) — no placeholder data. Additionally: if the student has an upcoming counsellor meeting in the Calendar feature, surface it as a distinct "Meeting" card at the top of the panel (visually distinguished from Task cards per Doctrine's semantic system, not just a color swap), linking through to the Calendar view on click. If there is no upcoming meeting, the panel shows tasks only — don't fabricate a meeting card. Commit with message "[stage-6.5] Rebuild student To Do widget with Doctrine glass tokens and calendar-aware meeting card".
+```
+
+**Prompt 6.5.3 — Calendar + Forms reconciliation, inert Connect Google Calendar button**
+```
+Both Calendar and Forms were built outside this Runbook's formal Stage 2 stub → Tentative Addition path — this prompt reconciles both against Doctrine and UI Inspiration rather than building either from scratch. For Calendar: audit against both UI Reference Calendar.jpg and UI Reference Calendar 2.jpg in UI Inspiration/ and against the UI/UX Doctrine, re-skin anything that doesn't match Doctrine tokens, and confirm/extend it so students can see their own upcoming meetings (not just counsellors), matching whatever role-scoping pattern the rest of the app uses. Add a "Connect Google Calendar" button — visible, on-brand, but intentionally non-functional (no OAuth flow wired yet, since Google Calendar MCP setup previously failed with HTTP 404 and hasn't been re-validated) — clicking it should show a clear "coming soon" state, not a dead click. For Forms: audit all three creation paths (native, Microsoft Forms embed, Google Forms embed) against the Doctrine and the student-side form-as-to-do-card flow from the storyboards, re-skin to Doctrine tokens, and confirm which paths are fully functional versus which need the same "inert but on-brand" treatment as the Calendar button if their OAuth isn't wired yet. Commit with message "[stage-6.5] Reconcile Calendar and Forms against Doctrine/UI Inspiration, add student calendar access and inert Connect Google Calendar button".
+```
+
+**Prompt 6.5.4 — Counsellor Dashboard: Doctrine + UI Inspiration redesign with semantic color**
+```
+Rebuild the counsellor Dashboard against both UI Ref 1 Dashboard.jpg and UI Reference 2 Dashboard.jpg in UI Inspiration/ — build against their composition/density/information hierarchy, then re-skin entirely in Doctrine tokens (never port their original colors). Use the Doctrine's existing semantic colour system (§7 — complete/overdue/pending/reach/target/safety tokens) more visibly across dashboard stat tiles and cards instead of leaving everything in neutral surfaces — these colours already exist in the Doctrine, this is about applying them more, not inventing a new palette. Important constraint: Doctrine's Motion Doctrine (§13.3) explicitly restricts "motion that makes professional work feel playful" and the counsellor shell is meant to read as professional-density (§15) — so get liveliness here from colour, whitespace, and card hierarchy, not from bouncy/playful animation. Commit with message "[stage-6.5] Redesign counsellor Dashboard against UI Inspiration references with Doctrine semantic colour".
+```
+
+**Prompt 6.5.5 — Student Dashboard: established-state liveliness pass**
+```
+Per confirmed scope, only the established-state dashboard (SU1 Screen 10 — the version with real tasks/roadmap progress, not the first-run sparse state) gets touched in this prompt. Leave the first-run empty state exactly as it is — the storyboard's own caption calls it "genuinely sparse, and that's correct," and that reasoning still holds; do not add placeholder content to make it look fuller. On the established state: restyle the hero, grade card, roadmap card, and To Do widget (from 6.5.2) using Doctrine tokens and the UI Inspiration dashboard references, with more expressive (but still Doctrine-compliant) use of the semantic colour set, and only Doctrine-approved motion (§13.1 — hover/focus states, status transitions, context-preserving page transitions). Use the emil-design-eng, impeccable, and taste-skill skills to review before committing. Commit with message "[stage-6.5] Add liveliness pass to established-state student Dashboard".
+```
+
+**Prompt 6.5.6 — Functional search, all interfaces, shadcn Command**
+```
+Replace the decorative search icon (s-search-circle in the storyboards) on both the counsellor and student shells with a real shadcn Command-based search (cmdk-style palette/combobox, installed via the shadcn MCP). Role-scoped: counsellor search queries students, notes, and applications; student search queries their own notes, roadmap, and shortlist. Typing shows a live dropdown of matched results; selecting a result navigates directly to that record's screen. This must work identically from every screen in both shells — not just the Students grid — since search currently doesn't work anywhere in either interface. Commit with message "[stage-6.5] Add functional shadcn Command search to counsellor and student shells".
+```
+
+**Prompt 6.5.7 — Page transition and interaction smoothness pass**
+```
+Before making any change, run the Lighthouse MCP against the dev build on the student Home, counsellor Dashboard, and Students grid routes, and use the Chrome DevTools MCP's network/performance panel to separate real causes from perceived ones: actual data-fetch/query latency and waterfalls vs. missing loading states/skeletons vs. absence of transition animation. Fix real bottlenecks first (query waterfalls, missing Suspense boundaries/loading skeletons, oversized client bundles) — don't paper over slow data-fetching with animation. Then add Doctrine-approved motion (§13.2's timing table) for page-level and component-level transitions, using the emil-design-eng skill for timing/easing specifics. Re-run Lighthouse after and report the before/after scores. Commit with message "[stage-6.5] Fix page-load bottlenecks and add Doctrine-approved transition motion".
+```
+
+**Prompt 6.5.8 — Full design-skill review pass**
+```
+Run /impeccable audit, the taste-skill review, and the emil-design-eng animation review across every screen touched this stage. For each, re-open its closest UI Inspiration/ reference file and compare side by side per Doctrine §3.2's mandatory re-open-and-compare step. Report what each skill flagged before committing any fixes, then commit with message "[stage-6.5] Apply design-skill review findings across UI fix pass".
+```
+
+**Prompt 6.5.9 — End of stage**
+```
+Run the full test suite, lint, typecheck. Trigger the Sentry test route and confirm capture. Run the UI/UX Doctrine's Design Review Checklist (Part XIV) against everything touched this stage, specifically confirming: the To Do widget uses real glass tokens (not a flat white box), both dashboards use the Doctrine's existing semantic colour tokens rather than invented colours, the counsellor Dashboard has no motion that reads as playful (§13.3), all new motion respects prefers-reduced-motion, and the Connect Google Calendar button is clearly inert rather than a dead click. Confirm the shadcn Command search works identically on every screen in both shells. Run /graphify to refresh the index. Push stage-6-5-ui-fixes and open a PR against main titled "Stage 6.5: UI/UX Fix & Polish Pass". Summarize the diff, the before/after Lighthouse scores from Prompt 6.5.7, and the Doctrine check before I review.
+```
+(Merge, then `git checkout main && git pull`.)
+
+---
+
 ## After Stage 6 — where the initial pilot build stops
 
 Phase 7 (Microsoft Entra ID SSO migration + OneDrive/Graph API storage migration) is explicitly a later milestone, not part of the initial pilot build — it isn't included as a stage here on purpose. When you're ready to start it, budget the dedicated Entra ID ↔ Supabase Auth migration spike CLAUDE.md §9 calls out, and treat it as its own stage (`stage-7-entra-onedrive`) with the same branch/commit/PR/merge discipline as everything above.
@@ -377,11 +429,18 @@ Phase 7 (Microsoft Entra ID SSO migration + OneDrive/Graph API storage migration
 
 ---
 
-## Tentative Addition (not scheduled) — Calendar & Forms
+## Formerly-Tentative Addition — Calendar & Forms (both already built)
 
-**Status: tentative, may implement.** This was originally Phase 6 of the build, scoped as its own stage. It's been pulled out entirely — not deleted, just moved here — after the Google Calendar OAuth setup hit a real failure (`SDK auth failed: HTTP 404` on `/register`, meaning the Google Calendar MCP URL used during setup doesn't actually work as documented). Rather than debug that mid-build, the whole feature (Google Calendar sync *and* the Forms feature, all three creation paths) is deferred to whenever you decide to actually build it. The nav items and "Coming soon" stub routes for both already exist from Stage 2 — this section replaces those stubs with the real thing.
+**Status update, post Stage 6.5:** neither Calendar nor Forms is tentative anymore — both were built outside this Runbook's formal path at some point before Stage 6.5, and Stage 6.5 (Prompt 6.5.3) reconciled both against Doctrine/UI Inspiration rather than building either from scratch. The "build from scratch" prompts (T.1–T.5) originally written for this section no longer apply and are kept below only as a historical record of the original scope — do not run them as written.
 
-If and when you pick this back up, revisit `MCP_and_Skills_Setup_Guide_v1.md`'s Google Calendar/Forms section first (it needs a real working OAuth setup verified before any of these prompts will function), then run this as its own branch with the same discipline as every stage above:
+**What's actually still outstanding:** real Google OAuth wiring. The `HTTP 404` failure on the Google Calendar MCP's documented endpoint (noted below) was never resolved — it was worked around by shipping the Calendar UI with an inert "Connect Google Calendar" button (Stage 6.5) instead of a working sync. Same likely applies to whichever of Forms' three creation paths depend on Google/Microsoft OAuth (confirmed per-path in Stage 6.5, Prompt 6.5.1's audit). When you're ready to actually wire real OAuth for either:
+
+1. Revisit `MCP_and_Skills_Setup_Guide_v1.md`'s Google Calendar/Forms section first and get a real working connection verified — the documented endpoint failure below needs to actually be resolved this time, not routed around again.
+2. Treat it as its own small stage (e.g. `stage-7-oauth-wiring`) scoped to "wire real OAuth into the existing inert buttons," not a full feature build — the UI, routes, and non-OAuth functionality already exist.
+3. Add the E2E coverage from the original Prompt T.4 below (Google Calendar sync both directions without duplicating events, mocked; a form created via each of the three paths with a student responding) once the real OAuth flow is in.
+
+<details>
+<summary>Original from-scratch prompts (superseded, kept for reference only)</summary>
 
 **Prompt T.1 — Branch**
 ```
@@ -407,3 +466,5 @@ Write Playwright E2E tests for: Google Calendar sync reflecting both directions 
 ```
 Run the full test suite, lint, typecheck. Trigger the Sentry test route and confirm capture. Run the UI/UX Doctrine's Design Review Checklist (Part XIV) against the real My Calendar and Forms screens replacing the Stage 2 stubs — confirm they were built against their closest `UI Inspiration/` reference and use Doctrine tokens throughout, same bar as every other stage, tentative status doesn't lower it. Fix anything that fails before continuing. Run /graphify to refresh the index. Push stage-7-calendar-forms and open a PR against main titled "Stage 7 (tentative): Calendar & Forms". Summarize the diff and the Doctrine check before I review.
 ```
+
+</details>
