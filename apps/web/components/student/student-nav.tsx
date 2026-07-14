@@ -14,6 +14,7 @@ const NAV = [
   { label: "Notes", href: "/student/notes" },
   { label: "College Shortlist", href: "/student/shortlist" },
   { label: "My Application", href: "/student/application" },
+  { label: "My Calendar", href: "/student/calendar" },
   { label: "My Profile", href: "/student/profile" },
 ];
 

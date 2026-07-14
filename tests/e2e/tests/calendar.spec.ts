@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { loginAsCounsellor } from "../support/auth";
-import { clientFor, CREDS } from "../support/db";
+import { loginAsCounsellor, loginAsStudent } from "../support/auth";
+import { clientFor, CREDS, STUDENT_ID, COUNSELLOR1_ID } from "../support/db";
 
 // UC9. Google Calendar sync isn't functional yet (no GOOGLE_CLIENT_ID/SECRET
 // configured — see .env.example), so a real cross-account sync test isn't
@@ -54,4 +54,40 @@ test("Connect Google Calendar shows a clear not-configured message", async ({ pa
   await expect(
     page.getByText("Google Calendar isn’t connected yet"),
   ).toBeVisible();
+});
+
+// Stage 6.5 Prompt 6.5.3: Calendar extended to students — their own upcoming
+// meetings only, read-only (no Add Event / Connect Google Calendar controls).
+test("student sees their own upcoming meeting on My Calendar and Home, read-only", async ({
+  page,
+}) => {
+  const title = `Student Meeting ${Date.now()}`;
+  createdTitle = title;
+
+  const counsellor = await clientFor(CREDS.counsellor.email, CREDS.counsellor.password);
+  const startsAt = new Date(Date.now() + 60 * 60_000);
+  const endsAt = new Date(startsAt.getTime() + 30 * 60_000);
+  const { error } = await counsellor.from("calendar_events").insert({
+    student_id: STUDENT_ID,
+    counsellor_id: COUNSELLOR1_ID,
+    title,
+    starts_at: startsAt.toISOString(),
+    ends_at: endsAt.toISOString(),
+  });
+  expect(error).toBeNull();
+
+  await loginAsStudent(page);
+
+  // Home: surfaces as a distinct Meeting card, links to My Calendar.
+  await page.goto("/student/home");
+  await expect(page.getByText("Upcoming meeting")).toBeVisible();
+  await expect(page.getByText(title)).toBeVisible();
+
+  // My Calendar: student sees it, but no counsellor-only controls.
+  await page.goto("/student/calendar");
+  await expect(page.getByRole("button", { name: title })).toBeVisible();
+  await expect(page.getByRole("button", { name: "+ Add Event" })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Connect Google Calendar" }),
+  ).toHaveCount(0);
 });
