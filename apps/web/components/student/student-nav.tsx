@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Sparkles } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { cn } from "@epicenter/ui";
 import { signOut } from "@/lib/actions/auth";
 import { SearchPalette } from "@/components/shared/search-palette";
@@ -27,9 +27,6 @@ export function StudentNav() {
     <header className="sticky top-0 z-30 border-b border-border-soft bg-glass backdrop-blur-glass">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-4 py-3">
         <Link href="/student/home" className="inline-flex items-center gap-2 font-bold tracking-tight text-ink">
-          <span className="grid size-7 place-items-center rounded-md bg-ink text-white">
-            <Sparkles className="size-4" aria-hidden />
-          </span>
           EPICENTER.
         </Link>
 
