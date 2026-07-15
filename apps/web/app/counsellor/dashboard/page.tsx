@@ -6,6 +6,7 @@ import { Card } from "@epicenter/ui";
 import { getDigest } from "@/lib/digest";
 import { DigestCard } from "@/components/counsellor/digest-card";
 import { AttentionListCard, type AttentionItem } from "@/components/counsellor/attention-list-card";
+import { MiniCalendarCard } from "@/components/counsellor/mini-calendar-card";
 
 function firstName(email: string | null): string {
   if (!email) return "there";
@@ -39,18 +40,19 @@ export default async function CounsellorDashboardPage() {
     now.getMonth(),
     now.getDate() + 1,
   ).toISOString();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
 
   const [
     digest,
     { data: meetingsToday },
+    { data: monthEvents },
     { data: riskRows },
     { data: stalledRows },
     { data: overdueRows },
     { data: pendingTasks },
     { data: submittedReqs },
     { data: suggestions },
-    { count: totalTasks },
-    { count: completeTasks },
   ] = await Promise.all([
     user ? getDigest(user.id) : Promise.resolve([] as string[]),
     supabase
@@ -60,6 +62,12 @@ export default async function CounsellorDashboardPage() {
       .gte("starts_at", startOfToday)
       .lt("starts_at", startOfTomorrow)
       .order("starts_at", { ascending: true }),
+    supabase
+      .from("calendar_events")
+      .select("starts_at")
+      .eq("counsellor_id", user!.id)
+      .gte("starts_at", startOfMonth)
+      .lt("starts_at", startOfNextMonth),
     supabase
       .from("risk_flags")
       .select("id, student_id, type, users:student_id(full_name)")
@@ -87,8 +95,6 @@ export default async function CounsellorDashboardPage() {
       .select("id, university_name, student_id, users:student_id(full_name)")
       .eq("status", "awaiting_review")
       .eq("suggested_by", "student"),
-    supabase.from("tasks").select("id", { count: "exact", head: true }),
-    supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "complete"),
   ]);
 
   // "Requires attention" — undismissed risk + stalled signals, deduped per
@@ -129,7 +135,7 @@ export default async function CounsellorDashboardPage() {
     );
     return {
       id: t.id,
-      label: `${studentName(t)} — ${t.title}`,
+      label: `${studentName(t)}, ${t.title}`,
       meta: `${days} day${days === 1 ? "" : "s"} overdue`,
       href: `/counsellor/students/${t.student_id}/roadmap`,
     };
@@ -138,7 +144,7 @@ export default async function CounsellorDashboardPage() {
   const awaitingItems: AttentionItem[] = [
     ...((pendingTasks as (NamedRow & { id: string; title: string })[] | null) ?? []).map((t) => ({
       id: `task-${t.id}`,
-      label: `${studentName(t)} — ${t.title}`,
+      label: `${studentName(t)}, ${t.title}`,
       meta: "Task",
       href: `/counsellor/students/${t.student_id}/roadmap`,
     })),
@@ -146,7 +152,7 @@ export default async function CounsellorDashboardPage() {
       | { id: string; title: string; applications: { student_id: string; users?: { full_name: string | null } | null } }[]
       | null) ?? []).map((r) => ({
       id: `req-${r.id}`,
-      label: `${studentName(r.applications)} — ${r.title}`,
+      label: `${studentName(r.applications)}, ${r.title}`,
       meta: "Requirement",
       href: `/counsellor/students/${r.applications.student_id}/applications`,
     })),
@@ -154,7 +160,7 @@ export default async function CounsellorDashboardPage() {
       | { id: string; university_name: string; student_id: string; users?: { full_name: string | null } | null }[]
       | null) ?? []).map((s) => ({
       id: `suggestion-${s.id}`,
-      label: `${studentName(s)} — ${s.university_name}`,
+      label: `${studentName(s)}, ${s.university_name}`,
       meta: "Shortlist",
       href: `/counsellor/students/${s.student_id}/shortlist`,
     })),
@@ -164,7 +170,9 @@ export default async function CounsellorDashboardPage() {
     | { id: string; title: string; starts_at: string; student_id: string | null; users?: { full_name: string | null } | null }[]
     | null) ?? [];
 
-  const progressPct = totalTasks ? Math.round(((completeTasks ?? 0) / totalTasks) * 100) : 0;
+  const monthEventDates = ((monthEvents as { starts_at: string }[] | null) ?? []).map(
+    (e) => e.starts_at,
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -179,38 +187,42 @@ export default async function CounsellorDashboardPage() {
 
       <DigestCard lines={digest} />
 
-      <Card>
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-ink">Today</h2>
-          <p className="text-xs text-ink-secondary">
-            {meetingItems.length} counselling{" "}
-            {meetingItems.length === 1 ? "meeting" : "meetings"}
-          </p>
-        </div>
-        {meetingItems.length === 0 ? (
-          <p className="mt-3 text-sm text-ink-secondary">No meetings scheduled today.</p>
-        ) : (
-          <ul className="mt-3 flex flex-col divide-y divide-border-soft">
-            {meetingItems.map((m) => (
-              <li key={m.id}>
-                <Link
-                  href="/counsellor/calendar"
-                  className="-mx-1 flex items-center gap-3 rounded-md px-1 py-2 text-sm transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
-                >
-                  <Clock className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
-                  <span className="w-16 shrink-0 font-semibold text-ink">
-                    {new Date(m.starts_at).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                  <span className="text-ink">{studentName(m) !== "Unnamed student" ? studentName(m) : m.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="md:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold text-ink">Today</h2>
+            <p className="text-xs text-ink-secondary">
+              {meetingItems.length} counselling{" "}
+              {meetingItems.length === 1 ? "meeting" : "meetings"}
+            </p>
+          </div>
+          {meetingItems.length === 0 ? (
+            <p className="mt-3 text-sm text-ink-secondary">No meetings scheduled today.</p>
+          ) : (
+            <ul className="mt-3 flex flex-col divide-y divide-border-soft">
+              {meetingItems.map((m) => (
+                <li key={m.id}>
+                  <Link
+                    href="/counsellor/calendar"
+                    className="-mx-1 flex items-center gap-3 rounded-md px-1 py-2 text-sm transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
+                  >
+                    <Clock className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
+                    <span className="w-16 shrink-0 font-semibold text-ink">
+                      {new Date(m.starts_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <span className="text-ink">{studentName(m) !== "Unnamed student" ? studentName(m) : m.title}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        <MiniCalendarCard eventDates={monthEventDates} />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <AttentionListCard
@@ -230,30 +242,11 @@ export default async function CounsellorDashboardPage() {
         <AttentionListCard
           title="Awaiting your review"
           description="Open the exact task, requirement, or suggestion."
-          tone="pending"
+          tone="review"
           items={awaitingItems}
           emptyLabel="Nothing waiting on you."
         />
       </div>
-
-      <Card>
-        <h2 className="text-sm font-semibold text-ink">Caseload progress</h2>
-        <p className="text-xs text-ink-secondary">
-          Roadmap tasks complete across your caseload — no vanity metric, just the count.
-        </p>
-        <div className="mt-4 flex items-center gap-4">
-          <p className="text-3xl font-bold tracking-tight text-ink">{progressPct}%</p>
-          <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-muted">
-            <div
-              className="h-full w-full origin-left rounded-pill bg-yellow transition-transform duration-200 ease-out"
-              style={{ transform: `scaleX(${progressPct / 100})` }}
-            />
-          </div>
-        </div>
-        <p className="mt-2 text-xs text-ink-secondary">
-          {completeTasks ?? 0} of {totalTasks ?? 0} tasks complete
-        </p>
-      </Card>
     </div>
   );
 }

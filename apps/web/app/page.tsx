@@ -6,12 +6,15 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-paper px-4 text-center">
       <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-ink-tertiary">
-          Epicenter Education
+        <p className="text-lg font-semibold tracking-tight text-ink-secondary">
+          Epicenter.
         </p>
         <h1 className="mt-2 text-4xl font-bold tracking-tight text-ink">
-          College counselling, organised.
+          Let&rsquo;s all be on the same page
         </h1>
+        <p className="mt-3 text-xs font-bold uppercase tracking-wide text-ink-tertiary">
+          The AI LMS built for counsellors and students
+        </p>
       </div>
       <div className="flex gap-3">
         <Link

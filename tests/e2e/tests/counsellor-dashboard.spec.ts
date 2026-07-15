@@ -18,13 +18,15 @@ test.describe("Counsellor Dashboard", () => {
     await expect(
       page.getByRole("heading", { name: "Awaiting your review" }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Caseload progress" }),
-    ).toBeVisible();
 
     // No leftover placeholder copy from the pre-6.5.4 stub.
     await expect(
       page.getByText("Open the Students grid to manage your caseload."),
+    ).toHaveCount(0);
+
+    // Stage 8 Prompt 8.3 removed "Caseload progress" outright, not just hid it.
+    await expect(
+      page.getByRole("heading", { name: "Caseload progress" }),
     ).toHaveCount(0);
   });
 

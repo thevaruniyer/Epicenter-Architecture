@@ -64,6 +64,22 @@ Use these; do not re-derive or reinvent them per screen.
 - This boundary is covered by the single most important E2E test in the app
   (the private-note visibility test, Stage 3). Never weaken it.
 
+## Stage 8 additions — two flagged, deliberate Doctrine exceptions
+
+Both are product calls made explicitly in the Stage 8 Build Runbook section, not
+accidents — do not "fix" either one back to strict Doctrine compliance without a
+Product Owner decision, and log both as a formal Doctrine addendum once this
+stage merges.
+
+- **DigestCard's pink liquid-glass gradient** (`apps/web/components/counsellor/digest-card.tsx`).
+  Contradicts Doctrine §7.10 ("no gradient for AI-assisted content"). The `AiBadge`
+  marker itself is unaffected and stays the standard black badge — only the card
+  surface got the gradient.
+- **AttentionListCard's "review" tone** (`apps/web/components/counsellor/attention-list-card.tsx`).
+  Reuses the existing `target-*` tokens (Doctrine's Target-university blue) for a
+  second, unrelated meaning — "awaiting your review" on the counsellor Dashboard —
+  rather than inventing a new colour token.
+
 ## When in doubt
 
 Authority order (later wins): PRD → AI specs → v3 storyboards (structure/fields)

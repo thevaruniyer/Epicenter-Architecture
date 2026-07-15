@@ -75,7 +75,7 @@ export function TodoPanel({
   const visibleItems: Item[] = [...visibleTasks, ...formItems];
 
   return (
-    <Card className="bg-glass shadow-glass backdrop-blur-glass">
+    <Card className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both bg-glass shadow-glass backdrop-blur-glass duration-300 ease-out motion-reduce:animate-none">
       <CardHeader>
         <CardTitle>To Do</CardTitle>
         <CardDescription>Tasks and forms that need your attention.</CardDescription>
@@ -83,7 +83,7 @@ export function TodoPanel({
 
       {empty ? (
         <p className="px-1 py-6 text-center text-sm text-ink-secondary">
-          Nothing yet — check back after your first meeting with your counsellor.
+          Nothing yet. Check back after your first meeting with your counsellor.
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -91,7 +91,7 @@ export function TodoPanel({
             <li>
               <Link
                 href="/student/calendar"
-                className="flex items-center gap-3 rounded-md border border-yellow/50 bg-yellow/10 px-3 py-3 transition-colors hover:bg-yellow/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
+                className="flex items-center gap-3 rounded-md border border-yellow/50 bg-yellow/10 px-3 py-3 transition-colors hover:-translate-y-0.5 hover:bg-yellow/15 hover:shadow-sm motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
               >
                 <CalendarClock className="size-5 shrink-0 text-ink" aria-hidden />
                 <div className="flex-1">
