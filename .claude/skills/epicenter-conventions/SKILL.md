@@ -64,12 +64,12 @@ Use these; do not re-derive or reinvent them per screen.
 - This boundary is covered by the single most important E2E test in the app
   (the private-note visibility test, Stage 3). Never weaken it.
 
-## Stage 8 additions — two flagged, deliberate Doctrine exceptions
+## Stage 8 additions — three flagged, deliberate Doctrine exceptions
 
-Both are product calls made explicitly in the Stage 8 Build Runbook section, not
-accidents — do not "fix" either one back to strict Doctrine compliance without a
-Product Owner decision, and log both as a formal Doctrine addendum once this
-stage merges.
+All three are product calls made explicitly in the Stage 8 Build Runbook section,
+not accidents — do not "fix" any of them back to strict Doctrine compliance
+without a Product Owner decision, and log all three as a formal Doctrine
+addendum once this stage merges.
 
 - **DigestCard's pink liquid-glass gradient** (`apps/web/components/counsellor/digest-card.tsx`).
   Contradicts Doctrine §7.10 ("no gradient for AI-assisted content"). The `AiBadge`
@@ -79,6 +79,14 @@ stage merges.
   Reuses the existing `target-*` tokens (Doctrine's Target-university blue) for a
   second, unrelated meaning — "awaiting your review" on the counsellor Dashboard —
   rather than inventing a new colour token.
+- **Student shell's persistent left sidebar** (`apps/web/components/student/student-sidebar.tsx`,
+  `apps/web/components/student/student-topbar.tsx`, `apps/web/app/student/layout.tsx`).
+  Reverses Doctrine §18.2's documented distinction that the student shell is
+  "simpler ... not the counsellor's persistent professional sidebar" — the
+  student shell now uses the exact same grid/sidebar/topbar pattern as the
+  counsellor shell (built directly from `apps/web/components/counsellor/sidebar.tsx`
+  and `topbar.tsx`). `student-nav.tsx` (the old top pill-nav) was deleted; nothing
+  else referenced it.
 
 ## When in doubt
 
