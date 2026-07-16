@@ -1,5 +1,4 @@
 import { ChevronLeft } from "lucide-react";
-import { Button } from "@epicenter/ui";
 import { ONBOARDING_STEPS, TOTAL_STEPS } from "@/lib/onboarding";
 import {
   onboardingBack,
@@ -7,6 +6,10 @@ import {
   skipOnboarding,
 } from "@/lib/actions/onboarding";
 import { OnboardingTagField } from "@/components/onboarding/tag-field";
+import {
+  StepSubmitButton,
+  StepTextSubmitButton,
+} from "@/components/onboarding/step-submit-button";
 
 type Extracurricular = { activity?: string };
 type Profile = {
@@ -37,24 +40,18 @@ export function OnboardingStepForm({
         {step > 0 ? (
           <form action={onboardingBack}>
             <input type="hidden" name="step" value={step} />
-            <button
-              type="submit"
-              className="inline-flex items-center gap-1 text-sm text-ink-secondary transition-colors hover:text-ink"
-            >
+            <StepTextSubmitButton className="inline-flex items-center gap-1 text-sm text-ink-secondary transition-colors hover:text-ink">
               <ChevronLeft className="size-4" aria-hidden />
               Previous Page
-            </button>
+            </StepTextSubmitButton>
           </form>
         ) : (
           <span />
         )}
         <form action={skipOnboarding}>
-          <button
-            type="submit"
-            className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
-          >
+          <StepTextSubmitButton className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
             Skip for now
-          </button>
+          </StepTextSubmitButton>
         </form>
       </div>
 
@@ -66,9 +63,7 @@ export function OnboardingStepForm({
       <form action={saveOnboardingStep} className="mt-8 flex flex-col gap-6">
         <input type="hidden" name="step" value={step} />
         <StepField step={step} profile={profile} />
-        <Button type="submit" className="w-fit">
-          {isLast ? "Finish" : "Next"}
-        </Button>
+        <StepSubmitButton label={isLast ? "Finish" : "Next"} />
       </form>
     </div>
   );

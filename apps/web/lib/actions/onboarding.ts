@@ -123,15 +123,17 @@ export async function saveOnboardingStep(formData: FormData): Promise<void> {
 
   const error = await patchProfile(patch);
   revalidatePath("/onboarding");
-  if (error) redirect("/onboarding"); // save failed — stay on the step
-  redirect(isLast ? "/student/home" : "/onboarding");
+  // A redirect back to the same route the form is already on is a redundant
+  // extra navigation on top of what revalidatePath already triggers — every
+  // step paid for two full round trips instead of one. Only redirect when
+  // actually leaving the page (finishing onboarding).
+  if (!error && isLast) redirect("/student/home");
 }
 
 export async function onboardingBack(formData: FormData): Promise<void> {
   const step = Number(formData.get("step") ?? 0);
   await patchProfile({ onboarding_current_step: Math.max(step - 1, 0) });
   revalidatePath("/onboarding");
-  redirect("/onboarding");
 }
 
 export async function skipOnboarding(): Promise<void> {
