@@ -12,13 +12,16 @@ export default async function OnboardingPage() {
   if (user.role !== "student") redirect("/counsellor/dashboard");
 
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("student_profiles")
-    .select(
-      "grade, age, subjects, hobbies, intended_major, extracurriculars, onboarding_current_step, onboarding_completed_at",
-    )
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: userRow }] = await Promise.all([
+    supabase
+      .from("student_profiles")
+      .select(
+        "grade, age, subjects, hobbies, intended_major, extracurriculars, onboarding_current_step, onboarding_completed_at",
+      )
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase.from("users").select("full_name").eq("id", user.id).maybeSingle(),
+  ]);
 
   // No profile (not admin-created) or already onboarded → Home.
   if (!profile || profile.onboarding_completed_at) redirect("/student/home");
@@ -30,7 +33,10 @@ export default async function OnboardingPage() {
 
   return (
     <OnboardingShell step={step} totalSteps={TOTAL_STEPS}>
-      <OnboardingStepForm step={step} profile={profile} />
+      <OnboardingStepForm
+        step={step}
+        profile={{ ...profile, full_name: userRow?.full_name ?? null }}
+      />
     </OnboardingShell>
   );
 }

@@ -1,6 +1,12 @@
-// Student onboarding — 6 steps (SU1 Screens 2-8). Plain form only in Stage 3;
-// AI tag extraction on the free-text steps lands in Phase 5.
+// Student onboarding — 7 steps (SU1 Screens 2-8, plus the Stage 10 name step
+// ahead of them). Plain form only in Stage 3; AI tag extraction on the
+// free-text steps landed in Phase 5, then was removed again in Stage 10.
 export const ONBOARDING_STEPS = [
+  {
+    key: "name",
+    question: "What's your name?",
+    subtitle: "So we know what to call you.",
+  },
   {
     key: "age",
     question: "How old are you?",

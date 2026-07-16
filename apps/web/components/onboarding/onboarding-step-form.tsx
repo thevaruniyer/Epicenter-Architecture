@@ -19,6 +19,7 @@ type Profile = {
   hobbies: string[] | null;
   intended_major: string | null;
   extracurriculars: Extracurricular[] | null;
+  full_name: string | null;
 };
 
 const fieldClass =
@@ -74,6 +75,20 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
     case 0:
       return (
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+          Full name
+          <input
+            name="full_name"
+            type="text"
+            defaultValue={profile.full_name ?? ""}
+            required
+            autoComplete="name"
+            className={fieldClass}
+          />
+        </label>
+      );
+    case 1:
+      return (
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
           Age
           <input
             name="age"
@@ -86,7 +101,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           />
         </label>
       );
-    case 1:
+    case 2:
       return (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-medium text-ink">Grade</legend>
@@ -108,7 +123,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           ))}
         </fieldset>
       );
-    case 2:
+    case 3:
       return (
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
           Subjects
@@ -121,7 +136,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           />
         </label>
       );
-    case 3:
+    case 4:
       return (
         <OnboardingTagField
           name="hobbies"
@@ -131,7 +146,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           defaultValue={(profile.hobbies ?? []).join("\n")}
         />
       );
-    case 4:
+    case 5:
       return (
         <OnboardingTagField
           name="intended_major"
@@ -142,7 +157,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           multiline={false}
         />
       );
-    case 5:
+    case 6:
       return (
         <OnboardingTagField
           name="extracurriculars"
