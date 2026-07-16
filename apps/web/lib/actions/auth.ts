@@ -2,10 +2,34 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { isUserRole } from "@/lib/roles";
 
 export type AuthState = { error?: string; message?: string };
+
+// Root cause of the onboarding-skip bug (Stage 9 Prompt 9.2): a student's
+// student_profiles row never got created, so app/page.tsx's
+// `if (profile && ...)` check silently fell through to Home instead of
+// onboarding. Called from signUp() for the immediate-session case (email
+// confirmation disabled) AND from signIn() as a catch-all — this dev/test
+// Supabase project currently has email confirmation ENABLED, so signUp()
+// returns no session and a real student only ever gets an authenticated
+// request later, via signIn(), after confirming by email. `onConflict`
+// makes this a no-op for every student who already has a row (i.e. every
+// sign-in after the first). assigned_counsellor_id is deliberately left
+// unset — auto-assigning a default counsellor is a product decision, not
+// something this fix should guess at.
+async function ensureStudentProfile(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<{ error?: string }> {
+  const { error } = await supabase
+    .from("student_profiles")
+    .upsert({ user_id: userId }, { onConflict: "user_id", ignoreDuplicates: true });
+  if (error) return { error: error.message };
+  return {};
+}
 
 export async function signIn(
   _prevState: AuthState,
@@ -19,9 +43,17 @@ export async function signIn(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     return { error: error.message };
+  }
+
+  const role = data.user?.user_metadata?.role;
+  if (role === "student" && data.user) {
+    const { error: profileError } = await ensureStudentProfile(supabase, data.user.id);
+    if (profileError) {
+      return { error: `Signed in, but profile setup failed: ${profileError}` };
+    }
   }
 
   revalidatePath("/", "layout");
@@ -62,6 +94,13 @@ export async function signUp(
       message:
         "Account created. Check your email to confirm, then log in. (For the pilot, email confirmation can be disabled in Supabase Auth settings.)",
     };
+  }
+
+  if (role === "student" && data.user) {
+    const { error: profileError } = await ensureStudentProfile(supabase, data.user.id);
+    if (profileError) {
+      return { error: `Account created, but profile setup failed: ${profileError}` };
+    }
   }
 
   revalidatePath("/", "layout");

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { ONBOARDING_STUDENT, resetOnboardingStudent } from "../support/db";
+import { ONBOARDING_STUDENT, ORPHANED_SIGNUP_STUDENT, resetOnboardingStudent } from "../support/db";
 
 // Both tests share the one onboarding fixture student, so run them serially and
 // reset the student to un-onboarded before each.
@@ -71,4 +71,22 @@ test("skipping shows the resume banner on Home and resumes from the saved step",
   await page.waitForURL("**/onboarding");
   await expect(page.getByRole("heading", { name: "What grade are you in?" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "How old are you?" })).toHaveCount(0);
+});
+
+// Stage 9 Prompt 9.2: the onboarding-gate bug — a student with no
+// student_profiles row silently fell through to Home instead of onboarding.
+// This fixture starts with no row at all (see
+// packages/db/tests/seed_orphaned_signup_fixture.sql); signIn()'s
+// ensureStudentProfile() must create one on first login so the existing
+// app/page.tsx redirect logic (untouched by this fix) has a real row to read.
+test("a self-signup student with no profile row yet is routed into onboarding on first login, not Home", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.fill("#email", ORPHANED_SIGNUP_STUDENT.email);
+  await page.fill("#password", ORPHANED_SIGNUP_STUDENT.password);
+  await page.click('button[type="submit"]');
+
+  await page.waitForURL("**/onboarding");
+  await expect(page.getByRole("heading", { name: "How old are you?" })).toBeVisible();
 });

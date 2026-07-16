@@ -35,6 +35,15 @@ export const ONBOARDING_STUDENT = {
 };
 export const ONBOARDING_STUDENT_ID = "70000000-0000-0000-0000-000000000001";
 
+// Stage 9 Prompt 9.2: a confirmed student auth user with NO student_profiles
+// row — the exact real-world starting state the onboarding-gate bug produced
+// (see packages/db/tests/seed_orphaned_signup_fixture.sql).
+export const ORPHANED_SIGNUP_STUDENT = {
+  email: "orphaned-signup-test@epicenter-test.dev",
+  password: "Test-Passw0rd!",
+};
+export const ORPHANED_SIGNUP_STUDENT_ID = "80000000-0000-0000-0000-000000000001";
+
 export async function clientFor(
   email: string,
   password: string,
