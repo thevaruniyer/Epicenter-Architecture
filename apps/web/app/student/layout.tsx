@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { StudentSidebar } from "@/components/student/student-sidebar";
 import { StudentTopbar } from "@/components/student/student-topbar";
 import { PageTransition } from "@/components/shared/page-transition";
@@ -17,6 +18,13 @@ export default async function StudentLayout({
   if (!user) redirect("/login");
   if (user.role !== "student") redirect("/counsellor/dashboard");
 
+  const supabase = await createClient();
+  const { data: notifications } = await supabase
+    .from("notifications")
+    .select("id, type, title, body, cta_label, cta_href, read_at, created_at")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
   return (
     <div className="min-h-screen bg-paper">
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-0 p-4 md:grid-cols-[280px_minmax(0,1fr)]">
@@ -24,7 +32,7 @@ export default async function StudentLayout({
           <StudentSidebar email={user.email} />
         </div>
         <div className="flex min-w-0 flex-col">
-          <StudentTopbar />
+          <StudentTopbar notifications={notifications ?? []} />
           <main className="min-w-0 px-6 pb-16">
             <PageTransition>{children}</PageTransition>
           </main>
