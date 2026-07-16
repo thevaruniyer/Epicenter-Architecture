@@ -13,6 +13,8 @@ import { ProductTour, type TourStep } from "@/components/shared/product-tour";
 type Phase = "name" | "transition" | "tour";
 
 const NAME_HOLD_MS = 1600;
+// Keep in sync with the name overlay's duration-[600ms] class below — Tailwind
+// utility classes can't reference this constant directly.
 const NAME_FADE_MS = 600;
 
 // Stage 10 Prompt 10.6: the real first-time welcome, immediately after a
@@ -66,7 +68,7 @@ export function WelcomeSequence({
     return (
       <div
         role="status"
-        className={`fixed inset-0 z-[80] grid place-items-center bg-paper transition-opacity duration-600 ease-out motion-reduce:transition-none ${
+        className={`fixed inset-0 z-[80] grid place-items-center bg-paper transition-opacity duration-[600ms] ease-out motion-reduce:transition-none ${
           nameVisible ? "opacity-100" : "opacity-0"
         }`}
       >
