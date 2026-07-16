@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@/lib/supabase/server";
 import { insertGoogleEvent, isGoogleCalendarConfigured } from "@/lib/google-calendar";
+import { createNotification } from "@/lib/notifications";
 
 export type ActionState = { error?: string; savedAt?: number };
 
@@ -42,6 +43,18 @@ export async function createCalendarEvent(
   if (error) return { error: error.message };
 
   await pushToGoogleIfEnabled(supabase, user.id, event.id as string, title, startsAt, endsAt);
+
+  // Notify the student (Stage 9 Prompt 9.7) — only when the event is actually
+  // for a specific student, not a counsellor's own unattached calendar block.
+  if (studentId) {
+    await createNotification(supabase, {
+      userId: studentId,
+      type: "meeting",
+      title: `Your counsellor scheduled a meeting: ${title}`,
+      ctaLabel: "Go to Calendar",
+      ctaHref: "/student/calendar",
+    });
+  }
 
   revalidatePath("/counsellor/calendar");
   return { savedAt: Date.now() };
