@@ -66,7 +66,10 @@ export function ProductTour({
       "(prefers-reduced-motion: reduce)",
     ).matches;
     el?.scrollIntoView({
-      block: "center",
+      // "start" keeps the top of a tall target (e.g. the whole dashboard
+      // content region) in view rather than centering it mid-scroll, which
+      // for a target taller than the viewport buries the top of the content.
+      block: "start",
       behavior: reducedMotion ? "auto" : "smooth",
     });
 
@@ -115,22 +118,24 @@ export function ProductTour({
     : null;
 
   const calloutStyle: React.CSSProperties = spot
-    ? spot.top + spot.height + GAP + 160 < window.innerHeight
-      ? {
-          top: spot.top + spot.height + GAP,
+    ? (() => {
+        const EST_HEIGHT = 170;
+        const maxTop = Math.max(window.innerHeight - EST_HEIGHT - 16, 16);
+        // Prefer just below the spot, then just above it, then clamp into
+        // the viewport outright — a spotlighted target taller than the
+        // viewport (e.g. the whole dashboard content region) would otherwise
+        // push the callout off-screen in either direction.
+        let top = spot.top + spot.height + GAP;
+        if (top > maxTop) top = spot.top - GAP - EST_HEIGHT;
+        top = Math.min(Math.max(top, 16), maxTop);
+        return {
+          top,
           left: Math.min(
             Math.max(spot.left, 16),
             window.innerWidth - CALLOUT_WIDTH - 16,
           ),
-        }
-      : {
-          top: Math.max(spot.top - GAP, 16),
-          left: Math.min(
-            Math.max(spot.left, 16),
-            window.innerWidth - CALLOUT_WIDTH - 16,
-          ),
-          transform: "translateY(-100%)",
-        }
+        };
+      })()
     : { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
 
   return (

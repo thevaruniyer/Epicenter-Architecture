@@ -13,6 +13,8 @@ import {
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { TodoPanel, type MeetingItem } from "@/components/student/todo-panel";
+import { ProductTour } from "@/components/shared/product-tour";
+import { STUDENT_TOUR_STEPS } from "@/lib/tour-steps";
 import { formatDue } from "@/lib/format-due";
 import type { Question } from "@/lib/actions/forms";
 
@@ -43,7 +45,7 @@ export default async function StudentHomePage() {
       supabase.from("users").select("full_name").eq("id", user!.id).maybeSingle(),
       supabase
         .from("student_profiles")
-        .select("onboarding_completed_at, grade, subjects")
+        .select("onboarding_completed_at, grade, subjects, product_tour_completed_at")
         .eq("user_id", user!.id)
         .maybeSingle(),
       supabase.from("tasks").select("id, title, status, due_date"),
@@ -67,6 +69,10 @@ export default async function StudentHomePage() {
   const onboardingDone = Boolean(profile?.onboarding_completed_at);
   const grade = (profile as { grade: number | null } | null)?.grade ?? null;
   const subjects = (profile as { subjects: string[] | null } | null)?.subjects ?? [];
+  const tourCompleted = Boolean(
+    (profile as { product_tour_completed_at: string | null } | null)
+      ?.product_tour_completed_at,
+  );
   const tasks = (taskRows as Task[]) ?? [];
   const notes = (noteRows as Note[]) ?? [];
   const shortlistRows = (shortlist as ShortlistRow[]) ?? [];
@@ -349,10 +355,15 @@ export default async function StudentHomePage() {
           </div>
         )}
 
-        <div className="lg:sticky lg:top-4 lg:self-start">
+        <div data-tour="todo" className="lg:sticky lg:top-4 lg:self-start">
           <TodoPanel items={todoItems} meeting={meeting} />
         </div>
       </div>
+
+      <ProductTour
+        steps={STUDENT_TOUR_STEPS}
+        active={onboardingDone && !tourCompleted}
+      />
     </div>
   );
 }

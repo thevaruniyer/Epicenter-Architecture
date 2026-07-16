@@ -69,6 +69,7 @@ export function NotificationBell({
     <div className="relative">
       <button
         type="button"
+        data-tour="notifications"
         aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
         onClick={handleToggle}
         className={`relative ${iconButtonClassName}`}

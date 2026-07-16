@@ -18,24 +18,24 @@ import { cn } from "@epicenter/ui";
 import { signOut } from "@/lib/actions/auth";
 import { ROLE_LABELS, type UserRole } from "@/lib/roles";
 
-type NavItem = { label: string; href: string; icon: LucideIcon };
+type NavItem = { label: string; href: string; icon: LucideIcon; tour: string };
 
 // Fixed counsellor navigation shell (Doctrine §18.1, architecture §6). Head of
 // Counselling sees Team where a counsellor sees Students.
 function navFor(role: UserRole): NavItem[] {
   const students: NavItem =
     role === "head_of_counselling"
-      ? { label: "Team", href: "/counsellor/team", icon: UsersRound }
-      : { label: "Students", href: "/counsellor/students", icon: Users };
+      ? { label: "Team", href: "/counsellor/team", icon: UsersRound, tour: "students" }
+      : { label: "Students", href: "/counsellor/students", icon: Users, tour: "students" };
 
   return [
-    { label: "Dashboard", href: "/counsellor/dashboard", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/counsellor/dashboard", icon: LayoutDashboard, tour: "dashboard" },
     students,
-    { label: "Applications Centre", href: "/counsellor/applications", icon: GraduationCap },
-    { label: "Internal Notes", href: "/counsellor/notes", icon: NotebookPen },
-    { label: "Reports", href: "/counsellor/reports", icon: BarChart3 },
-    { label: "Forms", href: "/counsellor/forms", icon: ClipboardList },
-    { label: "My Calendar", href: "/counsellor/calendar", icon: Calendar },
+    { label: "Applications Centre", href: "/counsellor/applications", icon: GraduationCap, tour: "applications" },
+    { label: "Internal Notes", href: "/counsellor/notes", icon: NotebookPen, tour: "notes" },
+    { label: "Reports", href: "/counsellor/reports", icon: BarChart3, tour: "reports" },
+    { label: "Forms", href: "/counsellor/forms", icon: ClipboardList, tour: "forms" },
+    { label: "My Calendar", href: "/counsellor/calendar", icon: Calendar, tour: "calendar" },
   ];
 }
 
@@ -58,12 +58,13 @@ export function Sidebar({
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">
-        {items.map(({ label, href, icon: Icon }) => {
+        {items.map(({ label, href, icon: Icon, tour }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
               key={href}
               href={href}
+              data-tour={tour}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",

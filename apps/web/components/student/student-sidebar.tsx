@@ -16,7 +16,7 @@ import {
 import { cn } from "@epicenter/ui";
 import { signOut } from "@/lib/actions/auth";
 
-type NavItem = { label: string; href: string; icon: LucideIcon };
+type NavItem = { label: string; href: string; icon: LucideIcon; tour: string };
 
 // Stage 8 Prompt 8.5, flagged Doctrine exception: a persistent left sidebar
 // identical to the counsellor's, reversing Doctrine §18.2's documented
@@ -26,13 +26,13 @@ type NavItem = { label: string; href: string; icon: LucideIcon };
 // glass surface, same active-state left accent bar. Stage 9 Prompt 9.6
 // removed the wordmark from both sidebars entirely (no logo at all now).
 const NAV: NavItem[] = [
-  { label: "Home", href: "/student/home", icon: Home },
-  { label: "Roadmap", href: "/student/roadmap", icon: Compass },
-  { label: "Notes", href: "/student/notes", icon: NotebookPen },
-  { label: "College Shortlist", href: "/student/shortlist", icon: GraduationCap },
-  { label: "My Application", href: "/student/application", icon: ClipboardList },
-  { label: "My Calendar", href: "/student/calendar", icon: Calendar },
-  { label: "My Profile", href: "/student/profile", icon: User },
+  { label: "Home", href: "/student/home", icon: Home, tour: "home" },
+  { label: "Roadmap", href: "/student/roadmap", icon: Compass, tour: "roadmap" },
+  { label: "Notes", href: "/student/notes", icon: NotebookPen, tour: "notes" },
+  { label: "College Shortlist", href: "/student/shortlist", icon: GraduationCap, tour: "shortlist" },
+  { label: "My Application", href: "/student/application", icon: ClipboardList, tour: "application" },
+  { label: "My Calendar", href: "/student/calendar", icon: Calendar, tour: "calendar" },
+  { label: "My Profile", href: "/student/profile", icon: User, tour: "profile" },
 ];
 
 export function StudentSidebar({ email }: { email: string | null }) {
@@ -47,12 +47,13 @@ export function StudentSidebar({ email }: { email: string | null }) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">
-        {NAV.map(({ label, href, icon: Icon }) => {
+        {NAV.map(({ label, href, icon: Icon, tour }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
               key={href}
               href={href}
+              data-tour={tour}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
