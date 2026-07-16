@@ -93,7 +93,7 @@ function LoginSignupControl() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative flex flex-col items-center">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
