@@ -486,6 +486,100 @@ Run the full test suite, lint, typecheck. Trigger the Sentry test route and conf
 
 ---
 
+## Stage 9 — Onboarding Fix, Notifications, Product Tour, and Final Polish
+
+Continues the Stage 6.5/8 retrofit pattern. **Explicit constraint for this whole stage: do not touch mobile or responsive breakpoints anywhere** — a mobile-friendly approach is being worked out separately, and none of the prompts below should add, fix, or alter `md:`/responsive behaviour, even where it would be tempting (the notification panel especially — build it for desktop only).
+
+**A confirmed, permanent exception to a non-negotiable rule — already resolved, no further sign-off needed:** `CLAUDE.md` §4's "all pop-up panels center on screen" rule now explicitly carves out the Notifications panel as the one confirmed exception (Product Owner decision, already written into `CLAUDE.md` §4 itself — check the current file, the addendum is already there before you start this stage). Build the right-edge floating panel in Prompt 9.8 as specified, no need to re-flag it as pending or ask again — just confirm in the end-of-stage prompt that the shipped panel matches what `CLAUDE.md` now describes.
+
+**Root cause already diagnosed for Prompt 9.2, so it doesn't need rediscovering:** `apps/web/lib/actions/auth.ts`'s `signUp` function creates the Supabase Auth user but never inserts a row into `student_profiles`. `apps/web/app/app/page.tsx` (the post-login router) only redirects to `/onboarding` `if (profile && !profile.onboarding_completed_at)` — when `profile` is `null` (true for every self-signup student today, since the row is never created), it silently falls through to `/student/home`, skipping onboarding entirely. `apps/web/app/onboarding/page.tsx` has the same blind spot (`if (!profile || profile.onboarding_completed_at) redirect("/student/home")`). This is why no new student ever sees onboarding — not a routing bug in either of those two files, both already do the right thing *if* a profile row exists.
+
+**Prompt 9.1 — Confirm Stage 8 is merged, then branch + baseline audit**
+```
+Hard gate, same pattern as Prompt 8.1: run `git log --oneline main` and `git branch -a` and confirm stage-8-docs-dashboard-playful has actually been merged into main. If it hasn't, stop and tell me — do not branch off an unmerged Stage 8. Once confirmed merged: checkout main, pull latest, create branch stage-9-onboarding-notifications-polish. Screenshot current state via Playwright/Chrome DevTools MCP: the signup → first-login flow for a brand-new student account (confirm it currently skips onboarding), the search palette, the counsellor and student sidebars' current wordmark, the landing page, and the counsellor Topbar's notification bell. Confirm which routes under apps/web/app currently lack a loading.tsx (only student/home, counsellor/dashboard, and counsellor/students have one as of Stage 6.5). Report findings before proceeding.
+```
+
+**Prompt 9.2 — Fix the student onboarding gate (root cause: no student_profiles row created at signup)**
+```
+Fix apps/web/lib/actions/auth.ts's signUp function: when role === "student", insert a row into student_profiles for the new user (onboarding_current_step defaulting to 0, onboarding_completed_at left null) as part of the same signup flow, before the redirect to /app. Do not change the redirect logic in apps/web/app/app/page.tsx or apps/web/app/onboarding/page.tsx — both already handle the onboarding-vs-home decision correctly once a profile row actually exists; this is a data-creation fix, not a routing fix. Separately, check what assigned_counsellor_id ends up as for a self-signed-up student with no counsellor assignment — report back what you find (nullable column, RLS implications, whether such a student becomes invisible to every counsellor) rather than guessing a default assignment, since that's a product decision, not a bug fix. Write or extend an E2E test confirming a brand-new self-signup student is correctly routed into the 6-step onboarding wizard on first login, not straight to Home. Commit with message "[stage-9] Fix student onboarding gate: create student_profiles row at signup".
+```
+
+**Prompt 9.3 — Keyboard shortcut for Command search**
+```
+Add a Cmd+K (Mac) / Ctrl+K (Windows/Linux) global keyboard shortcut to apps/web/components/shared/search-palette.tsx that opens the same Command palette the click handler already opens. Show a small "⌘K" hint inside the search bar itself (visible affordance, not just a hidden shortcut) so it's discoverable without documentation. Works identically for both the counsellor and student instances of SearchPalette. Commit with message "[stage-9] Add Cmd+K/Ctrl+K shortcut and visible hint to Command search".
+```
+
+**Prompt 9.4 — Loading skeletons for the remaining routes**
+```
+Using the exact pattern already established in apps/web/app/counsellor/dashboard/loading.tsx (Skeleton primitive from @epicenter/ui, role="status" aria-label="Loading" wrapper so screen readers get one announcement instead of silence), add a loading.tsx to every route that's still missing one: Roadmap, Notes, College Shortlist, My Application, My Calendar, My Profile (student side), and Applications Centre, Internal Notes, Reports, Forms, My Calendar, Team, and each student's Documents tab (counsellor side). Shape each skeleton to roughly match that route's actual content layout (list rows for Notes/Roadmap, a grid for Students-style pages, a form shape for Profile) rather than reusing one generic skeleton everywhere. Commit with message "[stage-9] Add loading skeletons to all remaining routes".
+```
+
+**Prompt 9.5 — Doctrine-styled error and not-found pages**
+```
+There is currently no error.tsx or not-found.tsx anywhere in apps/web/app — a thrown error (e.g. a failed Supabase query) shows Next.js's raw default error page, and an invalid route shows the default 404, neither styled, both off-Doctrine and confusing for a non-technical counsellor or student mid-pilot. Add a root apps/web/app/error.tsx and apps/web/app/not-found.tsx built from Doctrine tokens (same glass/surface treatment as the rest of the app, Satoshi type, calm and reassuring copy rather than a technical stack trace) with a clear way back (a button to Home for whichever role the session belongs to, or to /login if there's no session). Also add role-scoped versions at apps/web/app/counsellor/error.tsx and apps/web/app/student/error.tsx if the messaging or "go back to" destination should differ by role (confirm this makes sense rather than assuming it does). The error boundary must not leak raw error messages or stack traces to the user — log the real error to Sentry, show a calm generic message. Commit with message "[stage-9] Add Doctrine-styled error and not-found pages".
+```
+
+**Prompt 9.6 — Remove the wordmark from both sidebars; sweep every em dash from UI copy and AI-generated text**
+```
+Two unrelated fixes bundled because both are global sweeps, not feature work:
+
+1. Remove the "EPICENTER." wordmark entirely from apps/web/components/counsellor/sidebar.tsx and apps/web/components/student/student-sidebar.tsx — no logo, no wordmark, just the nav items and whatever spacing reads cleanly without it. Do not touch the landing page's "Epicenter." hero line from Stage 8 Prompt 8.6 — that's page copy, not the nav-shell logo, and stays as-is (it gets its own animation treatment in Prompt 9.9 below).
+2. Remove every em dash from every piece of UI-facing copy across the entire app — not just the Dashboard copy Stage 8 already fixed, everywhere: component labels, descriptions, empty states, button text, toasts, error copy written in Prompt 9.5. Rewrite each with a period, comma, or separate sentence. This also applies to the phrasing instructions given to Gemini in packages/ai — check the prompt templates for the Daily Digest, Risk Flags, Stalled-Task Alerts, and any other generated-text feature, and add an explicit instruction telling the model not to use em dashes in its output, since generated text is a second source of em dashes that a static find-and-replace won't catch. Do not touch code comments or this Runbook — this is scoped to user-facing product copy only.
+
+Commit with message "[stage-9] Remove sidebar wordmark and sweep all em dashes from UI copy and AI prompt instructions".
+```
+
+**Prompt 9.7 — Notifications: data model and event triggers**
+```
+No notifications table exists yet — build one. Add a migration for a notifications table: id, user_id (the recipient, references users), type (text), title (text), body (text, nullable), cta_label (text, nullable), cta_href (text, nullable), read_at (timestamptz, nullable), created_at (timestamptz default now()). Write the RLS policy: a user can only select/update their own rows (user_id = auth.uid()), matching the same RLS-everywhere principle as every other table in this app — inserts happen server-side through application code, not directly by end users.
+
+Wire notification creation into exactly three existing event points — find the real function in each of these files and add the insert there, don't build new trigger infrastructure beyond what's needed for these three:
+1. Reassignment (apps/web/lib/actions/team.ts) — when a Head of Counselling reassigns a student to a different counsellor, insert a notification for the receiving counsellor. No CTA needed unless there's an obvious destination (e.g. the student's profile) — otherwise it's informational only, per the confirmed pattern that not every notification needs to lead somewhere.
+2. Meeting creation (apps/web/lib/actions/calendar.ts) — when a counsellor creates a calendar event for a student, insert a notification for that student with cta_label "Go to Calendar" and cta_href pointing at /student/calendar.
+3. Task assignment (apps/web/lib/actions/roadmap.ts) — when a counsellor creates or assigns a roadmap task, insert a notification for that student with cta_label "Go to Task" and cta_href pointing at the specific task on /student/roadmap (deep-link to the task if the route supports it, not just the roadmap list).
+
+Commit with message "[stage-9] Add notifications table, RLS, and triggers for reassignment, meeting creation, and task assignment".
+```
+
+**Prompt 9.8 — Notifications: floating panel UI and Bell wiring for both shells**
+```
+This is the confirmed non-negotiable-rule exception from the stage note above — a right-edge floating panel, not centered. CLAUDE.md §4 already documents this as the one sanctioned exception to the centering rule, so build it as specified without pausing for further confirmation.
+
+Build a shared NotificationPanel component: a floating, rectangular panel with rounded corners, anchored to the right edge of the viewport (not a centered Dialog, a right-side overlay/drawer), using the same glass treatment as the rest of the app (bg-glass, backdrop-blur-glass, shadow-glass tokens). It lists the current user's notifications (newest first) querying the notifications table from Prompt 9.7, each row showing title/body and, if cta_href is set, a button using cta_label that navigates there; rows with no cta_href render as plain informational text with no button. Opening the panel is triggered by clicking the Bell icon.
+
+Wire it into both shells: in apps/web/components/counsellor/topbar.tsx, the Bell icon is currently presentational (plain button, no action) — wire it to open the panel. The student shell has no Bell icon at all today (apps/web/components/student/student-topbar.tsx only has search) — add one, styled consistently with the counsellor topbar's icon buttons, and wire it the same way.
+
+Add a lightweight unread indicator (a small dot or count badge on the Bell icon itself, driven by read_at being null) since showing zero signal that new notifications exist would undercut the whole feature — mark notifications as read when the panel is opened, or when an individual notification is clicked, your call on which reads better, just be consistent between the two shells. Commit with message "[stage-9] Add floating notifications panel and wire Bell icon on both shells".
+```
+
+**Prompt 9.9 — Landing page entrance animation sequence**
+```
+Sequence the landing page (apps/web/app/page.tsx, copy already rewritten in Stage 8 Prompt 8.6) as a staged reveal, each step gated on the previous one finishing, not all firing at once: "Let's all be on the same page" types out character by character like it's being typed live; once typing completes, "THE AI LMS BUILT FOR COUNSELLORS AND STUDENTS" fades in below it; once that fade-in completes, a single control appears in place of today's two separate Log in / Sign up buttons — clicking it expands to reveal both options (an actual dropdown/expanding control, not a reveal animation on the existing two buttons — this is confirmed, no need to ask). Respect prefers-reduced-motion by skipping straight to the fully-revealed end state for users who have it set. Commit with message "[stage-9] Add staged entrance animation sequence and dropdown login/signup control to landing page".
+```
+
+**Prompt 9.10 — First-time interactive product tour: reusable engine**
+```
+Build a reusable spotlight/coach-mark component: given a target element and explanatory text, it dims/blurs the rest of the screen, highlights the target with a cutout, and shows a small text callout near it with Next/Skip controls, advancing through a sequence of steps. Persist completion in the database, not localStorage — add a boolean column (e.g. product_tour_completed_at, nullable timestamptz) to both student_profiles and wherever counsellor-side user state lives, so the tour reliably never shows again for a user who's already seen it, across devices and sessions, and reliably does show for every genuinely new user. The tour must only trigger once, immediately after a user's first meaningful landing on their home surface (post-onboarding for students, first dashboard visit for counsellors) — never for a returning user, and never re-triggered by a page refresh mid-tour without an explicit restart action. Commit with message "[stage-9] Build reusable first-time product tour engine with persisted completion state".
+```
+
+**Prompt 9.11 — First-time product tour: per-role step content**
+```
+Using the engine from Prompt 9.10, wire the actual tour sequences for both roles. Student steps, in order: To Do widget (Home), Roadmap, Notes, College Shortlist, My Application, My Calendar, My Profile, then the new Notifications bell from Prompt 9.8 — one short explanatory sentence per step, plain language, no jargon. Counsellor steps, in order: Dashboard (the digest, attention cards, and new calendar widget from Stage 8), Students, Applications Centre, Internal Notes, Reports, Forms, My Calendar, then Notifications. Keep each callout's copy short enough to read in a couple of seconds — this is orientation, not documentation. Commit with message "[stage-9] Wire first-time product tour content for student and counsellor roles".
+```
+
+**Prompt 9.12 — Design-skill review pass**
+```
+Run /impeccable audit, the taste-skill review, and the emil-design-eng animation review across every screen touched this stage — the notifications panel and the landing page animation sequence especially deserve real scrutiny, both are more novel than a typical retrofit prompt. Re-read .claude/skills/epicenter-conventions/SKILL.md and update it via skill-creator if the notifications panel's right-edge exception or the product tour pattern are worth encoding for future stages to reference. For each screen, re-open its closest UI Inspiration/ reference and compare side by side per Doctrine §3.2. Report what each skill flagged before committing, then commit with message "[stage-9] Apply design-skill review findings".
+```
+
+**Prompt 9.13 — End of stage**
+```
+Run the full test suite, lint, typecheck. Trigger the Sentry test route and confirm capture, and also deliberately trigger the new error.tsx boundary (e.g. force a query to throw) and confirm Sentry captures that too, not just the dedicated debug route. Run the UI/UX Doctrine's Design Review Checklist (Part XIV) against everything touched this stage — confirm the notifications panel's non-centered placement matches the exception already documented in CLAUDE.md §4 (Product Owner-confirmed, not pending). Confirm: a brand-new self-signup student is routed through onboarding, not Home; Cmd+K opens search on both shells; every route has a loading.tsx; error.tsx/not-found.tsx render Doctrine-styled pages with no leaked stack traces; neither sidebar shows a wordmark; no em dashes remain anywhere in UI copy or AI-generated text; notifications actually get created for all three trigger events and the panel/Bell/unread-indicator work on both shells; the landing page's dropdown login/signup control and animation sequence both work and respect prefers-reduced-motion; the product tour shows exactly once for a new user of each role and never for a returning one. Run /graphify to refresh the index. Push stage-9-onboarding-notifications-polish and open a PR against main titled "Stage 9: Onboarding Fix, Notifications, Product Tour, and Final Polish". Summarize the diff before I review.
+```
+(Merge, then `git checkout main && git pull`.)
+
+---
+
 ## After Stage 6 — where the initial pilot build stops
 
 Phase 7 (Microsoft Entra ID SSO migration + OneDrive/Graph API storage migration) is explicitly a later milestone, not part of the initial pilot build — it isn't included as a stage here on purpose. When you're ready to start it, budget the dedicated Entra ID ↔ Supabase Auth migration spike CLAUDE.md §9 calls out, and treat it as its own stage (`stage-7-entra-onedrive`) with the same branch/commit/PR/merge discipline as everything above.
