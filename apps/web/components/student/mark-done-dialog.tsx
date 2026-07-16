@@ -41,7 +41,7 @@ export function MarkDoneDialog({
         <DialogHeader>
           <DialogTitle>Mark done</DialogTitle>
           <DialogDescription>
-            &ldquo;{taskTitle}&rdquo; — your counsellor confirms it after review.
+            &ldquo;{taskTitle}&rdquo;. Your counsellor confirms it after review.
           </DialogDescription>
         </DialogHeader>
 
@@ -51,7 +51,7 @@ export function MarkDoneDialog({
           <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
             Evidence{" "}
             <span className="font-normal text-ink-tertiary">
-              (optional — image or PDF)
+              (optional, image or PDF)
             </span>
             <input
               name="evidence"

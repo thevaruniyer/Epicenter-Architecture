@@ -28,7 +28,7 @@ const STATUS: Record<
   { label: string; Icon: LucideIcon; className: string }
 > = {
   neutral: {
-    label: "—",
+    label: "Not set",
     Icon: Circle,
     className: "bg-surface-muted border-border-strong text-ink-secondary",
   },

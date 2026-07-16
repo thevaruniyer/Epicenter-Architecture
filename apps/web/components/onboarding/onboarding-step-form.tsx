@@ -153,7 +153,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           name="extracurriculars"
           kind="extracurriculars"
           label="Extracurriculars"
-          placeholder={"Robotics Club — Team Lead\nDebate Team — 2 yrs"}
+          placeholder={"Robotics Club · Team Lead\nDebate Team · 2 yrs"}
           defaultValue={(profile.extracurriculars ?? [])
             .map((ec) => ec.activity ?? "")
             .filter(Boolean)

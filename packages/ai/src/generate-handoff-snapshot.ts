@@ -24,9 +24,10 @@ const SYSTEM = [
   "You are given the student's real data. Rules:",
   "- Summarise ONLY what the data shows. Never invent history, plans, or concerns not present.",
   "- Cover: where the student is overall, what's in progress, and what needs attention next.",
-  "- 4–7 short sentences or bullets. Practical and neutral — this is a handoff, not an evaluation.",
+  "- 4–7 short sentences or bullets. Practical and neutral. This is a handoff, not an evaluation.",
   "- Private notes are included because both parties are counsellors; treat them as context, don't quote verbatim.",
   "- No greeting, no sign-off. Return plain text.",
+  "- Never use an em dash (—) in your output; use a period, comma, or separate sentence instead.",
 ].join("\n");
 
 function fmt(ctx: HandoffContext): string {

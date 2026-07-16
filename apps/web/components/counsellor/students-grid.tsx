@@ -84,7 +84,7 @@ export function StudentsGrid({ students }: { students: StudentSummary[] }) {
                 ) : null}
                 <span className="text-base font-bold text-ink">{s.name}</span>
                 <span className="mt-1 text-sm text-ink-secondary">
-                  {s.grade ? `Grade ${s.grade}` : "Grade —"}
+                  {s.grade ? `Grade ${s.grade}` : "Grade -"}
                   {s.major ? ` · ${s.major}` : ""}
                 </span>
                 {!selectMode ? (

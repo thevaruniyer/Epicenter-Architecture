@@ -99,7 +99,7 @@ export default async function StudentRoadmapPage() {
                     : undefined;
                   const isImage = ext ? IMAGE_EXT.includes(ext) : false;
                   return (
-                    <li key={t.id} className="py-4">
+                    <li key={t.id} id={`task-${t.id}`} className="scroll-mt-4 py-4">
                       <div className="flex flex-wrap items-center gap-3">
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-ink">

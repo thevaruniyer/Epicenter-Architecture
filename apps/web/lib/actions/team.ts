@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 import { generateAndStoreHandoff } from "@/lib/handoff";
 import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notifications";
 
 export type ReassignState = { error?: string; reassignedAt?: number };
 
@@ -59,6 +60,23 @@ export async function reassignStudents(
     })),
   );
   if (caseloadError) return { error: caseloadError.message };
+
+  // Notify the receiving counsellor (Stage 9 Prompt 9.7). One notification per
+  // reassignment action, not per student — a CTA only makes sense when exactly
+  // one student moved (a single obvious destination); otherwise this is
+  // informational only, per the confirmed pattern that not every notification
+  // needs to lead somewhere.
+  const single = studentIds.length === 1 ? studentIds[0] : null;
+  await createNotification(supabase, {
+    userId: toCounsellorId,
+    type: "reassignment",
+    title:
+      studentIds.length === 1
+        ? "A student was reassigned to you."
+        : `${studentIds.length} students were reassigned to you.`,
+    ctaLabel: single ? "View student" : null,
+    ctaHref: single ? `/counsellor/students/${single}` : null,
+  });
 
   // Caseload counts (the Team view's bars) update immediately on the next
   // render. The handoff snapshot is generated in the background per student —

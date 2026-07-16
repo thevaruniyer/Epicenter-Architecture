@@ -12,6 +12,7 @@ const SYSTEM = [
   "Rules:",
   "- Use ONLY the task title and the number of days given. Invent nothing else.",
   "- One short sentence, plain and factual. No greeting, no advice, no sign-off. Return plain text (no quotes).",
+  "- Never use an em dash (—) in the sentence; use a comma instead.",
 ].join("\n");
 
 /**

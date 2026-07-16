@@ -96,7 +96,7 @@ export default async function StudentProfilePage() {
                   <li key={i} className="text-sm text-ink">
                     <span className="font-semibold">{ec.activity}</span>
                     {ec.role ? (
-                      <span className="text-ink-secondary"> — {ec.role}</span>
+                      <span className="text-ink-secondary"> · {ec.role}</span>
                     ) : null}
                     {ec.duration ? (
                       <span className="text-ink-secondary"> · {ec.duration}</span>

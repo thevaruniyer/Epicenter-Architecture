@@ -53,7 +53,7 @@ export function AddUpdate() {
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border-soft bg-surface-muted px-3 py-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink">
               <Sparkles className="size-3.5" aria-hidden />
-              AI-tidied draft — check it still sounds like you, then share.
+              AI-tidied draft. Check it still sounds like you, then share.
             </span>
             <button
               type="button"

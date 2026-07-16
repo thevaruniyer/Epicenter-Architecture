@@ -112,7 +112,7 @@ export async function prepareMeeting(
     briefing = await cached(meetingId);
   } catch (err) {
     Sentry.captureException(err, { tags: { ai_feature: "meeting_prep" } });
-    return { error: "AI prep is unavailable right now — open the full record." };
+    return { error: "AI prep is unavailable right now. Open the full record." };
   }
 
   try {

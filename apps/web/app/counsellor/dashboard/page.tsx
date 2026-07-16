@@ -7,6 +7,8 @@ import { getDigest } from "@/lib/digest";
 import { DigestCard } from "@/components/counsellor/digest-card";
 import { AttentionListCard, type AttentionItem } from "@/components/counsellor/attention-list-card";
 import { MiniCalendarCard } from "@/components/counsellor/mini-calendar-card";
+import { ProductTour } from "@/components/shared/product-tour";
+import { COUNSELLOR_TOUR_STEPS } from "@/lib/tour-steps";
 
 function firstName(email: string | null): string {
   if (!email) return "there";
@@ -53,6 +55,7 @@ export default async function CounsellorDashboardPage() {
     { data: pendingTasks },
     { data: submittedReqs },
     { data: suggestions },
+    { data: userRow },
   ] = await Promise.all([
     user ? getDigest(user.id) : Promise.resolve([] as string[]),
     supabase
@@ -95,7 +98,17 @@ export default async function CounsellorDashboardPage() {
       .select("id, university_name, student_id, users:student_id(full_name)")
       .eq("status", "awaiting_review")
       .eq("suggested_by", "student"),
+    supabase
+      .from("users")
+      .select("product_tour_completed_at")
+      .eq("id", user!.id)
+      .maybeSingle(),
   ]);
+
+  const tourCompleted = Boolean(
+    (userRow as { product_tour_completed_at: string | null } | null)
+      ?.product_tour_completed_at,
+  );
 
   // "Requires attention" — undismissed risk + stalled signals, deduped per
   // student (a student can carry both) with reasons combined into one row.
@@ -185,68 +198,72 @@ export default async function CounsellorDashboardPage() {
         </h1>
       </div>
 
-      <DigestCard lines={digest} />
+      <div data-tour="dashboard-overview" className="flex flex-col gap-6">
+        <DigestCard lines={digest} />
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="md:col-span-2">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-semibold text-ink">Today</h2>
-            <p className="text-xs text-ink-secondary">
-              {meetingItems.length} counselling{" "}
-              {meetingItems.length === 1 ? "meeting" : "meetings"}
-            </p>
-          </div>
-          {meetingItems.length === 0 ? (
-            <p className="mt-3 text-sm text-ink-secondary">No meetings scheduled today.</p>
-          ) : (
-            <ul className="mt-3 flex flex-col divide-y divide-border-soft">
-              {meetingItems.map((m) => (
-                <li key={m.id}>
-                  <Link
-                    href="/counsellor/calendar"
-                    className="-mx-1 flex items-center gap-3 rounded-md px-1 py-2 text-sm transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
-                  >
-                    <Clock className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
-                    <span className="w-16 shrink-0 font-semibold text-ink">
-                      {new Date(m.starts_at).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    <span className="text-ink">{studentName(m) !== "Unnamed student" ? studentName(m) : m.title}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="md:col-span-2">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-ink">Today</h2>
+              <p className="text-xs text-ink-secondary">
+                {meetingItems.length} counselling{" "}
+                {meetingItems.length === 1 ? "meeting" : "meetings"}
+              </p>
+            </div>
+            {meetingItems.length === 0 ? (
+              <p className="mt-3 text-sm text-ink-secondary">No meetings scheduled today.</p>
+            ) : (
+              <ul className="mt-3 flex flex-col divide-y divide-border-soft">
+                {meetingItems.map((m) => (
+                  <li key={m.id}>
+                    <Link
+                      href="/counsellor/calendar"
+                      className="-mx-1 flex items-center gap-3 rounded-md px-1 py-2 text-sm transition-colors hover:bg-surface-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
+                    >
+                      <Clock className="size-4 shrink-0 text-ink-tertiary" aria-hidden />
+                      <span className="w-16 shrink-0 font-semibold text-ink">
+                        {new Date(m.starts_at).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      <span className="text-ink">{studentName(m) !== "Unnamed student" ? studentName(m) : m.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
 
-        <MiniCalendarCard eventDates={monthEventDates} />
+          <MiniCalendarCard eventDates={monthEventDates} />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <AttentionListCard
+            title="Requires attention"
+            description="Prioritised by risk and stalled progress."
+            tone="overdue"
+            items={attentionItems}
+            emptyLabel="No students currently flagged."
+          />
+          <AttentionListCard
+            title="Overdue"
+            description="Owner and how overdue, before you open it."
+            tone="overdue"
+            items={overdueItems}
+            emptyLabel="Nothing overdue."
+          />
+          <AttentionListCard
+            title="Awaiting your review"
+            description="Open the exact task, requirement, or suggestion."
+            tone="review"
+            items={awaitingItems}
+            emptyLabel="Nothing waiting on you."
+          />
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <AttentionListCard
-          title="Requires attention"
-          description="Prioritised by risk and stalled progress."
-          tone="overdue"
-          items={attentionItems}
-          emptyLabel="No students currently flagged."
-        />
-        <AttentionListCard
-          title="Overdue"
-          description="Owner and how overdue, before you open it."
-          tone="overdue"
-          items={overdueItems}
-          emptyLabel="Nothing overdue."
-        />
-        <AttentionListCard
-          title="Awaiting your review"
-          description="Open the exact task, requirement, or suggestion."
-          tone="review"
-          items={awaitingItems}
-          emptyLabel="Nothing waiting on you."
-        />
-      </div>
+      <ProductTour steps={COUNSELLOR_TOUR_STEPS} active={!tourCompleted} />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function OnboardingTagField({
       const res: TagState = await suggestOnboardingTags({}, fd);
       if (res.error) setError(res.error);
       else if (res.tags && res.tags.length) setTags(res.tags);
-      else setError("No tags to suggest — your text is saved as-is.");
+      else setError("No tags to suggest. Your text is saved as-is.");
     });
   }
 
@@ -99,7 +99,7 @@ export function OnboardingTagField({
               represent is submitted through this hidden mirror instead. */}
           <input type="hidden" name={name} value={hiddenValue} />
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink">
-            <AiBadge /> Suggested — edit before you continue
+            <AiBadge /> Suggested, edit before you continue
           </span>
           <ul className="flex flex-wrap gap-1.5">
             {tags.map((tag, i) => (

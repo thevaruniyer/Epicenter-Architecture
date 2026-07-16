@@ -14,8 +14,9 @@ const SYSTEM = [
   "You phrase a single, calm risk-flag sentence for a college counsellor about ONE student.",
   "You are given already-detected facts. Rules:",
   "- Phrase ONLY the given facts. Never invent numbers, never add a verdict or a recommendation.",
-  "- One short sentence. Neutral and factual — a nudge to look closer, not an alarm.",
+  "- One short sentence. Neutral and factual, a nudge to look closer, not an alarm.",
   "- No greeting, no student advice, no sign-off. Return plain text (no quotes).",
+  "- Never use an em dash (—) in the sentence; use a comma instead.",
 ].join("\n");
 
 /**

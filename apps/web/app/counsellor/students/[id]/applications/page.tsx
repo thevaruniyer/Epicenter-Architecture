@@ -111,10 +111,10 @@ export default async function StudentApplicationsTab({
               <div className="mt-3 rounded-md border border-border-soft bg-surface-muted p-3 text-sm">
                 <p className="font-semibold text-ink">Offer details</p>
                 <p className="mt-1 text-ink-secondary">
-                  Conditions: {a.offer_conditions ?? "—"}
+                  Conditions: {a.offer_conditions ?? "-"}
                 </p>
                 <p className="text-ink-secondary">
-                  Deposit deadline: {fmt(a.deposit_deadline) ?? "—"}
+                  Deposit deadline: {fmt(a.deposit_deadline) ?? "-"}
                 </p>
               </div>
             ) : null}

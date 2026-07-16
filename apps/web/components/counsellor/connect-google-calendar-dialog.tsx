@@ -59,7 +59,7 @@ export function ConnectGoogleCalendarDialog({
               </DialogFooter>
             ) : (
               <p className="text-sm text-ink-secondary">
-                Google Calendar isn&rsquo;t connected yet — your administrator
+                Google Calendar isn&rsquo;t connected yet. Your administrator
                 needs to finish the Google Cloud OAuth setup first.
               </p>
             )}

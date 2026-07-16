@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { canTransition, TASK_MODEL, type TaskStatus } from "@/lib/tick-then-confirm";
+import { createNotification } from "@/lib/notifications";
 
 export type RoadmapState = { error?: string; savedAt?: number };
 
@@ -51,16 +52,31 @@ export async function createTask(
   if (!title) return { error: "Give the task a title." };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("tasks").insert({
-    student_id: studentId,
-    milestone_id: milestoneId || null,
-    title,
-    due_date: dueDate || null,
-    category,
-    assignee: "student",
-    status: "not_started",
-  });
+  const { data: task, error } = await supabase
+    .from("tasks")
+    .insert({
+      student_id: studentId,
+      milestone_id: milestoneId || null,
+      title,
+      due_date: dueDate || null,
+      category,
+      assignee: "student",
+      status: "not_started",
+    })
+    .select("id")
+    .single();
   if (error) return { error: error.message };
+
+  // Notify the student (Stage 9 Prompt 9.7) — deep-links to the specific task
+  // via the #task-{id} anchor the roadmap page renders on each row, not just
+  // the roadmap list.
+  await createNotification(supabase, {
+    userId: studentId,
+    type: "task_assigned",
+    title: `New task: ${title}`,
+    ctaLabel: "Go to Task",
+    ctaHref: `/student/roadmap#task-${task.id}`,
+  });
 
   revalidateRoadmap(studentId);
   return { savedAt: Date.now() };

@@ -22,6 +22,7 @@ const SYSTEM = [
   "- Use ONLY what is given. Never invent progress, concerns, or deadlines.",
   "- 3–5 short bullets: where things stand, what's open, what to raise in the meeting.",
   "- Practical and neutral. No greeting, no sign-off. Return plain text with '- ' bullets.",
+  "- Never use an em dash (—) in your output; use a period, comma, or separate sentence instead.",
 ].join("\n");
 
 function fmt(ctx: MeetingPrepContext): string {

@@ -102,7 +102,7 @@ export default async function StudentShortlistTab({
           </h2>
           <p className="mt-1 text-sm text-ink-secondary">{priLine}</p>
           <p className="mt-2 text-xs text-ink-tertiary">
-            Set by the student — informational only. Every reach/target/safety
+            Set by the student, informational only. Every reach/target/safety
             call is still yours.
           </p>
         </Card>
