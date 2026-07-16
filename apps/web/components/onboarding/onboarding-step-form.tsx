@@ -63,7 +63,14 @@ export function OnboardingStepForm({
 
       <form action={saveOnboardingStep} className="mt-8 flex flex-col gap-6">
         <input type="hidden" name="step" value={step} />
-        <StepField step={step} profile={profile} />
+        {/* Keyed by step: adjacent steps render structurally identical trees
+            (e.g. name and age are both a single labeled text/number input),
+            so without a key React reconciles the same DOM node in place
+            across the transition and its defaultValue-initialized state
+            (or, for OnboardingTagField, its internal useState) never
+            re-applies — the field shows the previous step's leftover text
+            until the user overwrites it by hand. */}
+        <StepField key={step} step={step} profile={profile} />
         <StepSubmitButton label={isLast ? "Finish" : "Next"} />
       </form>
     </div>
