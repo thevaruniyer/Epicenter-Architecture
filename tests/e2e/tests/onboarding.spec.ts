@@ -49,8 +49,10 @@ test("a brand-new student completes all 7 steps and lands on the sparse Home wit
   await page.getByRole("button", { name: "Finish" }).click();
 
   // Lands on the sparse Home — no resume banner, and the name entered at
-  // step 1 actually shows up in the greeting, not just saved to the DB.
-  await page.waitForURL("**/student/home");
+  // step 1 actually shows up in the greeting, not just saved to the DB. The
+  // ?welcome=1 flag (Stage 10 Prompt 10.6) triggers the welcome sequence, but
+  // the underlying dashboard content is still real and checkable underneath it.
+  await page.waitForURL("**/student/home**");
   await expect(page.getByRole("heading", { name: "Hi Priya" })).toBeVisible();
   await expect(page.getByText("Your journey starts here")).toBeVisible();
   await expect(page.getByText("Finish setting up your profile")).toHaveCount(0);

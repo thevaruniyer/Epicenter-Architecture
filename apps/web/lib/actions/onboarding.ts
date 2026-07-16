@@ -88,8 +88,11 @@ export async function saveOnboardingStep(formData: FormData): Promise<void> {
   // A redirect back to the same route the form is already on is a redundant
   // extra navigation on top of what revalidatePath already triggers — every
   // step paid for two full round trips instead of one. Only redirect when
-  // actually leaving the page (finishing onboarding).
-  if (!error && isLast) redirect("/student/home");
+  // actually leaving the page (finishing onboarding). The ?welcome=1 flag
+  // marks "just finished onboarding this session" — Home reads it to decide
+  // whether to play the Stage 10 welcome sequence ahead of the tour, or (for
+  // every other path into Home) just the plain Stage 9 tour-only experience.
+  if (!error && isLast) redirect("/student/home?welcome=1");
 }
 
 export async function onboardingBack(formData: FormData): Promise<void> {
