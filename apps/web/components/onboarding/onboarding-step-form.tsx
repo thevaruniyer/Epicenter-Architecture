@@ -147,7 +147,6 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
       return (
         <OnboardingTagField
           name="hobbies"
-          kind="hobbies"
           label="Hobbies & interests"
           placeholder="Tell us in your own words…"
           defaultValue={(profile.hobbies ?? []).join("\n")}
@@ -157,7 +156,6 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
       return (
         <OnboardingTagField
           name="intended_major"
-          kind="major"
           label="Intended major"
           placeholder="However you'd describe it"
           defaultValue={profile.intended_major ?? ""}
@@ -168,7 +166,6 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
       return (
         <OnboardingTagField
           name="extracurriculars"
-          kind="extracurriculars"
           label="Extracurriculars"
           placeholder={"Robotics Club · Team Lead\nDebate Team · 2 yrs"}
           defaultValue={(profile.extracurriculars ?? [])
