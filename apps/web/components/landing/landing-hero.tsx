@@ -99,7 +99,7 @@ function LoginSignupControl() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="landing-auth-options"
-        className="flex items-center gap-2 rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+        className="flex items-center gap-2 rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
       >
         Get started
         <ChevronDown
@@ -119,13 +119,13 @@ function LoginSignupControl() {
           <div className="flex justify-center gap-3">
             <Link
               href="/login"
-              className="rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+              className="rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="rounded-md border border-border-strong bg-surface-raised px-5 py-2.5 font-semibold text-ink transition-[background-color,transform] duration-150 ease-out hover:bg-surface-muted active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+              className="rounded-md border border-border-strong bg-surface-raised px-5 py-2.5 font-semibold text-ink transition-[background-color,transform] duration-150 ease-out hover:bg-surface-muted active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
             >
               Sign up
             </Link>

@@ -116,7 +116,7 @@ export function NotificationBell({
                 type="button"
                 aria-label="Close notifications"
                 onClick={() => setOpen(false)}
-                className="rounded-md p-1 text-ink-tertiary transition-colors hover:bg-black/5 hover:text-ink"
+                className="rounded-md p-1 text-ink-tertiary transition-colors hover:bg-black/5 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
               >
                 ×
               </button>
@@ -142,7 +142,7 @@ export function NotificationBell({
                         <Link
                           href={n.cta_href}
                           onClick={() => setOpen(false)}
-                          className="text-xs font-semibold text-ink underline decoration-yellow decoration-2 underline-offset-2 hover:text-ink-secondary"
+                          className="rounded text-xs font-semibold text-ink underline decoration-yellow decoration-2 underline-offset-2 hover:text-ink-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
                         >
                           {n.cta_label}
                         </Link>

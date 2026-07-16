@@ -194,7 +194,7 @@ export function ProductTour({
             type="button"
             aria-label="Skip tour"
             onClick={() => setOpen(false)}
-            className="rounded-md p-0.5 text-ink-tertiary transition-colors hover:bg-black/5 hover:text-ink"
+            className="rounded-md p-0.5 text-ink-tertiary transition-colors hover:bg-black/5 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
           >
             <X className="size-4" aria-hidden />
           </button>
@@ -209,7 +209,7 @@ export function ProductTour({
           <button
             type="button"
             onClick={handleNext}
-            className="rounded-md bg-yellow px-3 py-1.5 text-xs font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+            className="rounded-md bg-yellow px-3 py-1.5 text-xs font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow"
           >
             {isLast ? "Done" : "Next"}
           </button>
