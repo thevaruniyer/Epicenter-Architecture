@@ -58,7 +58,7 @@ export function NoteComposer({ studentId }: { studentId: string }) {
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border-soft bg-surface-muted px-3 py-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink">
               <Sparkles className="size-3.5" aria-hidden />
-              AI-assisted draft — review and edit, then save. The badge stays once
+              AI-assisted draft. Review and edit, then save. The badge stays once
               saved.
             </span>
             <button

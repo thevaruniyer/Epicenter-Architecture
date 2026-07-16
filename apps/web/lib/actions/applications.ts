@@ -298,7 +298,7 @@ export async function extractChecklist(
   }
   if (!items.length) {
     return {
-      error: "Couldn't find any requirements in that text — add them manually.",
+      error: "Couldn't find any requirements in that text. Add them manually.",
     };
   }
 

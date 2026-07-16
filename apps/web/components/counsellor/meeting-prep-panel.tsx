@@ -26,7 +26,7 @@ export function MeetingPrepPanel({
         <div>
           <h3 className="text-sm font-bold text-ink">Meeting prep</h3>
           <p className="text-xs text-ink-secondary">
-            A quick catch-up before your meeting — generated only when you ask.
+            A quick catch-up before your meeting, generated only when you ask.
           </p>
         </div>
         <form action={action}>

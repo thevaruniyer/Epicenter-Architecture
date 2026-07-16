@@ -52,8 +52,9 @@ export function Sidebar({
   return (
     <aside className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col rounded-xl border border-black/[0.08] bg-glass p-4 shadow-glass backdrop-blur-glass">
       <div className="mb-6 px-2 pt-2">
-        <p className="text-sm font-bold tracking-tight text-ink">EPICENTER.</p>
-        <p className="mt-0.5 text-xs text-ink-tertiary">{ROLE_LABELS[role]}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          {ROLE_LABELS[role]}
+        </p>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">

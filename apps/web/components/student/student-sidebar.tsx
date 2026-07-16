@@ -20,11 +20,11 @@ type NavItem = { label: string; href: string; icon: LucideIcon };
 
 // Stage 8 Prompt 8.5, flagged Doctrine exception: a persistent left sidebar
 // identical to the counsellor's, reversing Doctrine §18.2's documented
-// "simpler, not the counsellor's persistent sidebar" distinction — a
+// "simpler, not the counsellor's persistent sidebar" distinction. A
 // deliberate product call, not a misread. Built directly from
 // apps/web/components/counsellor/sidebar.tsx's structure/treatment: same
-// glass surface, same active-state left accent bar, same text-only
-// "EPICENTER." wordmark with no icon.
+// glass surface, same active-state left accent bar. Stage 9 Prompt 9.6
+// removed the wordmark from both sidebars entirely (no logo at all now).
 const NAV: NavItem[] = [
   { label: "Home", href: "/student/home", icon: Home },
   { label: "Roadmap", href: "/student/roadmap", icon: Compass },
@@ -41,8 +41,9 @@ export function StudentSidebar({ email }: { email: string | null }) {
   return (
     <aside className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col rounded-xl border border-black/[0.08] bg-glass p-4 shadow-glass backdrop-blur-glass">
       <div className="mb-6 px-2 pt-2">
-        <p className="text-sm font-bold tracking-tight text-ink">EPICENTER.</p>
-        <p className="mt-0.5 text-xs text-ink-tertiary">Student</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          Student
+        </p>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">

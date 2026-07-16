@@ -34,6 +34,7 @@ const SYSTEM = [
   "- Only extract requirements actually stated in the text. Never invent items or deadlines.",
   "- Keep each title short and concrete (e.g. 'Personal statement (4000 char max)', 'One academic reference').",
   "- Return an empty array if the text contains no clear requirements.",
+  "- Never use an em dash (—) in a title; use a comma instead.",
 ].join("\n");
 
 /**

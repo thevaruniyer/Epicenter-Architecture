@@ -72,7 +72,7 @@ export default function UiPreviewPage() {
         <Card>
           <CardHeader>
             <CardTitle>AI marker</CardTitle>
-            <CardDescription>Minimal black badge — never violet.</CardDescription>
+            <CardDescription>Minimal black badge. Never violet.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap items-center gap-3">
             <AiBadge />

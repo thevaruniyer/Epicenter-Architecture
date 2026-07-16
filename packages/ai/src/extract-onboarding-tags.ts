@@ -13,7 +13,7 @@ const GUIDANCE: Record<OnboardingField, string> = {
   major:
     "Extract the intended field(s) of study as 1–3 short tags (e.g. 'Computer Science', 'Artificial Intelligence'). Do not add fields the student did not mention.",
   extracurriculars:
-    "Extract each activity as one tag combining activity plus any role/duration the student gave, e.g. 'Robotics Club — Team Lead', 'Debate Team — 2 yrs'. One tag per activity.",
+    "Extract each activity as one tag combining activity plus any role/duration the student gave, e.g. 'Robotics Club, Team Lead', 'Debate Team, 2 yrs'. One tag per activity.",
 };
 
 function systemFor(kind: OnboardingField): string {
@@ -24,6 +24,7 @@ function systemFor(kind: OnboardingField): string {
     "- Only produce tags grounded in what the student wrote. Never invent activities, interests, or fields.",
     "- Keep each tag concise (a few words). Fix obvious spelling/casing.",
     "- Return an empty array if there is nothing meaningful to tag.",
+    "- Never use an em dash (—) in a tag; use a comma instead.",
   ].join("\n");
 }
 

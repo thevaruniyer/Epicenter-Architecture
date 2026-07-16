@@ -91,8 +91,8 @@ export function EssayReviewPanel({ studentId }: { studentId: string }) {
             </div>
             {aiAssisted ? (
               <p className="text-xs text-ink-tertiary">
-                Structure, clarity, and pacing only. Edit freely before saving —
-                the student never sees the AI marker on your saved feedback.
+                Structure, clarity, and pacing only. Edit freely before saving.
+                The student never sees the AI marker on your saved feedback.
               </p>
             ) : null}
             <textarea

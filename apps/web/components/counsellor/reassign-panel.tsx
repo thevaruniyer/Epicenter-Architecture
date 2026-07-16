@@ -138,7 +138,7 @@ export function ReassignPanel({
                 {toName} will immediately see every note, task, and shortlist
                 decision {from.name} made, plus a permanent AI-generated handoff
                 summary. This updates who is responsible for these students right
-                away — you can reassign them again later, but this specific
+                away. You can reassign them again later, but this specific
                 action can&rsquo;t be undone.
               </DialogDescription>
             </DialogHeader>

@@ -41,7 +41,7 @@ export async function draftEssayFeedback(
     feedback = await cached(essay);
   } catch (err) {
     Sentry.captureException(err, { tags: { ai_feature: "essay_feedback" } });
-    return { error: "AI feedback is unavailable right now — write yours below." };
+    return { error: "AI feedback is unavailable right now. Write yours below." };
   }
 
   try {

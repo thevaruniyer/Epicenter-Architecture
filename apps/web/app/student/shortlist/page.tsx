@@ -129,7 +129,7 @@ export default async function StudentShortlistPage() {
           What do I want out of my list?
         </h2>
         <p className="mt-1 text-sm text-ink-secondary">
-          A preferences worksheet for your counsellor — this is never used to
+          A preferences worksheet for your counsellor. This is never used to
           auto-match universities.
         </p>
         <div className="mt-4">

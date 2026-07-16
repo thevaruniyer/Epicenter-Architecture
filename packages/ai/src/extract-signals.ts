@@ -27,7 +27,7 @@ export interface ExtractedSignal {
 
 const SYSTEM = [
   "You extract short, factual signals from a college counsellor's meeting note about one student.",
-  "Each signal is a brief tag describing something concrete the note says about the student — a concern, interest, achievement, or to-do — that could inform a future task.",
+  "Each signal is a brief tag describing something concrete the note says about the student: a concern, interest, achievement, or to-do, that could inform a future task.",
   "Categorise each into exactly one of:",
   "- academic (grades, coursework, subjects)",
   "- ec (extracurriculars, achievements, activities)",
@@ -39,6 +39,7 @@ const SYSTEM = [
   "- Only extract what the note actually states. Never invent, infer beyond the text, or add generic advice.",
   "- Each tag is at most ~60 characters, plain and specific (e.g. 'stressed about the essay', 'physics grade dropped').",
   "- Return an empty array if the note contains nothing task-relevant.",
+  "- Never use an em dash (—) in a tag; use a comma instead.",
 ].join("\n");
 
 /**

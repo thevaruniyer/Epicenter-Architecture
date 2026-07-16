@@ -74,8 +74,8 @@ export default async function FormResponsesPage({
           <CardHeader>
             <CardTitle>Assignment status</CardTitle>
             <CardDescription>
-              {f.source === "microsoft_forms" ? "Microsoft Forms" : "Google Forms"} embed —
-              responses are collected there, not in Epicenter. Students confirm
+              {f.source === "microsoft_forms" ? "Microsoft Forms" : "Google Forms"} embed.
+              Responses are collected there, not in Epicenter. Students confirm
               completion manually.
             </CardDescription>
           </CardHeader>
@@ -133,7 +133,7 @@ export default async function FormResponsesPage({
                       <ul className="mt-1 flex flex-col gap-0.5 text-ink-secondary">
                         {questions.map((q, i) => (
                           <li key={i}>
-                            {q.prompt}: &ldquo;{r.answers?.[String(i)] ?? "—"}&rdquo;
+                            {q.prompt}: &ldquo;{r.answers?.[String(i)] ?? "-"}&rdquo;
                           </li>
                         ))}
                       </ul>

@@ -39,7 +39,7 @@ export function EventDetailDialog({
         <DialogHeader>
           <DialogTitle>
             {event.title}
-            {event.studentName ? ` — ${event.studentName}` : ""}
+            {event.studentName ? `, ${event.studentName}` : ""}
           </DialogTitle>
           <DialogDescription>{time}</DialogDescription>
         </DialogHeader>

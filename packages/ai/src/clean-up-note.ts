@@ -15,6 +15,7 @@ const MEETING_SYSTEM = [
   "- Preserve every fact exactly. Do NOT invent details, names, dates, or conclusions that are not in the raw text.",
   "- Do not add commentary, greetings, or a summary the counsellor did not write.",
   "- Keep it concise and professional.",
+  "- Never use an em dash (—) in your output; use a period, comma, or separate sentence instead.",
 ].join("\n");
 
 // Student updates: a short note, not a formal record — tidy grammar/clarity only,
@@ -26,6 +27,7 @@ const UPDATE_SYSTEM = [
   "- Do NOT restructure it into headings or bullet points; it stays a short, natural message.",
   "- Do NOT add content, facts, or a summary the student did not write.",
   "- Keep it roughly the same length.",
+  "- Never use an em dash (—) in your output; use a period, comma, or separate sentence instead.",
 ].join("\n");
 
 /**
@@ -41,7 +43,7 @@ export async function cleanUpNote(
   const label = mode === "meeting" ? "meeting notes" : "student update";
   const prompt = [
     `Clean up the following ${label}.`,
-    "Return ONLY the cleaned text — no preamble, no explanation, no surrounding quotes.",
+    "Return ONLY the cleaned text. No preamble, no explanation, no surrounding quotes.",
     "",
     "--- RAW ---",
     raw,

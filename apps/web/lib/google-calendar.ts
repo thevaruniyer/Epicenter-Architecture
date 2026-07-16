@@ -25,7 +25,7 @@ export function isGoogleCalendarConfigured(): boolean {
 function requireConfig() {
   if (!isGoogleCalendarConfigured()) {
     throw new Error(
-      "Google Calendar isn't configured yet — GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_OAUTH_REDIRECT_URI are not set.",
+      "Google Calendar isn't configured yet. GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_OAUTH_REDIRECT_URI are not set.",
     );
   }
   return {

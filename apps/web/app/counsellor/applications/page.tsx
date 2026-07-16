@@ -80,7 +80,7 @@ export default async function CounsellorApplicationsPage() {
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-base font-bold text-ink">
-                          {name} — {uni?.university_name ?? "University"}
+                          {name}, {uni?.university_name ?? "University"}
                         </p>
                         {meta ? (
                           <p className="mt-0.5 text-sm text-ink-secondary">

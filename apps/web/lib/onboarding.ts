@@ -14,7 +14,7 @@ export const ONBOARDING_STEPS = [
   {
     key: "subjects",
     question: "What subjects do you take?",
-    subtitle: "Confirm or edit — one per line or comma-separated.",
+    subtitle: "Confirm or edit, one per line or comma-separated.",
   },
   {
     key: "hobbies",
@@ -24,12 +24,12 @@ export const ONBOARDING_STEPS = [
   {
     key: "major",
     question: "What's your intended major?",
-    subtitle: "No preset list — however you'd describe it.",
+    subtitle: "No preset list, however you'd describe it.",
   },
   {
     key: "extracurriculars",
     question: "What does your EC list look like?",
-    subtitle: "Activities, roles, anything notable — one per line.",
+    subtitle: "Activities, roles, anything notable, one per line.",
   },
 ] as const;
 

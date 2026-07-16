@@ -18,6 +18,7 @@ const SYSTEM = [
   "- Give 3–5 concise, concrete observations as short bullet points (use '- ').",
   "- Neutral, constructive, specific to what you see. No score, no greeting, no sign-off.",
   "- This is a draft the counsellor will edit before it reaches the student; keep it as notes, not a letter.",
+  "- Never use an em dash (—) in your output; use a period, comma, or separate sentence instead.",
 ].join("\n");
 
 /**

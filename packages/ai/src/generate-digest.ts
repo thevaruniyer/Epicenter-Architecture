@@ -23,6 +23,7 @@ const SYSTEM = [
   "- One short, plain-language line per fact. Warm but efficient; no greeting, no sign-off.",
   "- Keep the student names exactly as given.",
   "- Return a JSON array of strings (one line per fact), in the same order.",
+  "- Never use an em dash (—) in a line; use a period or comma instead.",
 ].join("\n");
 
 /**
@@ -32,7 +33,7 @@ const SYSTEM = [
  */
 export async function generateDigest(items: DigestItem[]): Promise<string[]> {
   if (items.length === 0) {
-    return ["You're all caught up — nothing needs your attention right now."];
+    return ["You're all caught up. Nothing needs your attention right now."];
   }
 
   const factLines = items.map((it, i) => {
