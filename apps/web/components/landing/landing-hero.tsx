@@ -59,8 +59,11 @@ export function LandingHero() {
       <p className="text-lg font-semibold tracking-tight text-ink-secondary">
         Epicenter.
       </p>
-      <h1 className="mt-2 min-h-[1.2em] text-4xl font-bold tracking-tight text-ink">
-        {TITLE.slice(0, typedLength)}
+      <h1
+        aria-label={TITLE}
+        className="mt-2 min-h-[1.2em] text-4xl font-bold tracking-tight text-ink"
+      >
+        <span aria-hidden>{TITLE.slice(0, typedLength)}</span>
         <span
           aria-hidden
           className={`ml-0.5 inline-block h-[1em] w-[2px] translate-y-[0.1em] bg-ink align-middle ${
@@ -96,7 +99,7 @@ function LoginSignupControl() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="landing-auth-options"
-        className="flex items-center gap-2 rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition hover:brightness-95"
+        className="flex items-center gap-2 rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
       >
         Get started
         <ChevronDown
@@ -116,13 +119,13 @@ function LoginSignupControl() {
           <div className="flex justify-center gap-3">
             <Link
               href="/login"
-              className="rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition hover:brightness-95"
+              className="rounded-md bg-yellow px-5 py-2.5 font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="rounded-md border border-border-strong bg-surface-raised px-5 py-2.5 font-semibold text-ink transition hover:bg-surface-muted"
+              className="rounded-md border border-border-strong bg-surface-raised px-5 py-2.5 font-semibold text-ink transition-[background-color,transform] duration-150 ease-out hover:bg-surface-muted active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
             >
               Sign up
             </Link>

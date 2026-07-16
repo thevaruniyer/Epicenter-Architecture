@@ -32,7 +32,11 @@ Use these; do not re-derive or reinvent them per screen.
   hidden from students once saved.
 - Shared primitives live in `packages/ui/src` (`Card`, `Button`, `StatusPill`,
   `AiBadge`, `Dialog`). All pop-up panels render **centered** (Doctrine §4/§23);
-  the `Dialog` already does this — reuse it, don't hand-roll modals.
+  the `Dialog` already does this — reuse it, don't hand-roll modals. **Two
+  Stage 9 exceptions, both Product Owner-confirmed, both positional by
+  necessity — see below**: the Notifications panel and the product tour's
+  coach-mark callout. Don't add a third non-centered panel without the same
+  confirmation.
 
 ## 2. Tick-then-confirm status machine (reuse it)
 
@@ -87,6 +91,31 @@ addendum once this stage merges.
   counsellor shell (built directly from `apps/web/components/counsellor/sidebar.tsx`
   and `topbar.tsx`). `student-nav.tsx` (the old top pill-nav) was deleted; nothing
   else referenced it.
+
+## Stage 9 additions — two non-centered panels, and the focus-trap pattern for both
+
+- **Notifications panel** (`apps/web/components/shared/notification-bell.tsx`).
+  The confirmed, sole CLAUDE.md §4 exception on record before this stage: a
+  right-edge floating panel anchored to the Bell icon, not a centered `Dialog`.
+  Shared between both shells via one component; only the icon-button classes
+  passed by the caller differ.
+- **Product tour coach-mark** (`apps/web/components/shared/product-tour.tsx`).
+  A second non-centered panel, added this stage — inherently positional (it
+  points at the sidebar item or widget it's explaining), so centering it would
+  defeat the pattern. Reusable spotlight/cutout engine, driven by per-role
+  step content in `apps/web/lib/tour-steps.ts`; targets are marked with a
+  `data-tour="..."` attribute on the element to spotlight. Completion is
+  persisted server-side (`apps/web/lib/actions/product-tour.ts`,
+  `product_tour_completed_at` on `student_profiles`/`users`) the moment the
+  tour mounts, not when the user finishes it — so a refresh mid-tour never
+  restarts it.
+- **`useFocusTrap`** (`apps/web/lib/use-focus-trap.ts`). Both panels above are
+  non-modal floating dialogs (no dimming backdrop stealing all interaction, or
+  in the tour's case a backdrop that's still `aria-hidden`), so keyboard focus
+  can drift into the page behind them unless trapped. Reuse this hook — pass
+  it the panel's ref and its open/closed boolean — for any future non-centered
+  or non-`Dialog` floating panel; pair with an Escape handler and focusing the
+  panel container on open (both existing panels do all three).
 
 ## When in doubt
 

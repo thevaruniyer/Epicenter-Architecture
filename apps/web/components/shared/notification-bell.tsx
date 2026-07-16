@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { markAllNotificationsRead } from "@/lib/actions/notifications";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 export type NotificationRow = {
   id: string;
@@ -41,6 +42,8 @@ export function NotificationBell({
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(initialNotifications);
   const unreadCount = notifications.filter((n) => !n.read_at).length;
+  const panelRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(panelRef, open);
 
   useEffect(() => {
     if (!open) return;
@@ -49,6 +52,10 @@ export function NotificationBell({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) panelRef.current?.focus();
   }, [open]);
 
   function handleToggle() {
@@ -91,14 +98,17 @@ export function NotificationBell({
               backdrop, this is a lightweight floating panel, not a modal. */}
           <button
             type="button"
+            tabIndex={-1}
             aria-label="Close notifications"
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
           <div
+            ref={panelRef}
             role="dialog"
             aria-label="Notifications"
-            className="animate-in fade-in slide-in-from-top-2 fixed right-4 top-20 z-50 flex max-h-[70vh] w-[360px] flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-glass shadow-glass-float backdrop-blur-glass duration-150 ease-out motion-reduce:animate-none"
+            tabIndex={-1}
+            className="animate-in fade-in slide-in-from-top-2 fixed right-4 top-20 z-50 flex max-h-[70vh] w-[360px] flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-glass shadow-glass-float backdrop-blur-glass outline-none duration-150 ease-out motion-reduce:animate-none"
           >
             <div className="flex items-center justify-between border-b border-border-soft px-4 py-3">
               <h2 className="text-sm font-bold text-ink">Notifications</h2>

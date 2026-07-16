@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { completeProductTour } from "@/lib/actions/product-tour";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 export type TourStep = {
   /** Matches a `data-tour="..."` attribute on the element to spotlight. */
@@ -36,6 +37,7 @@ export function ProductTour({
   const [rect, setRect] = useState<Rect | null>(null);
   const markedRef = useRef(false);
   const calloutRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(calloutRef, open);
 
   useEffect(() => {
     if (!active || steps.length === 0) return;
@@ -140,39 +142,42 @@ export function ProductTour({
 
   return (
     <div className="fixed inset-0 z-[70]" role="presentation">
-      {spot ? (
-        <>
-          <div
-            className="fixed inset-x-0 top-0 bg-black/50 backdrop-blur-[1px] transition-all duration-200 ease-out motion-reduce:transition-none"
-            style={{ height: Math.max(spot.top, 0) }}
-          />
-          <div
-            className="fixed inset-x-0 bottom-0 bg-black/50 backdrop-blur-[1px] transition-all duration-200 ease-out motion-reduce:transition-none"
-            style={{ top: spot.top + spot.height }}
-          />
-          <div
-            className="fixed bg-black/50 backdrop-blur-[1px] transition-all duration-200 ease-out motion-reduce:transition-none"
-            style={{ top: spot.top, height: spot.height, left: 0, width: Math.max(spot.left, 0) }}
-          />
-          <div
-            className="fixed bg-black/50 backdrop-blur-[1px] transition-all duration-200 ease-out motion-reduce:transition-none"
-            style={{ top: spot.top, height: spot.height, left: spot.left + spot.width, right: 0 }}
-          />
-          <div
-            aria-hidden
-            className="fixed rounded-lg ring-2 ring-yellow transition-all duration-200 ease-out motion-reduce:transition-none"
-            style={{ top: spot.top, left: spot.left, width: spot.width, height: spot.height }}
-          />
-          {/* Blocks interaction with the spotlighted element itself — the tour
-              is linear (Next/Skip only), not a click-through walkthrough. */}
-          <div
-            className="fixed"
-            style={{ top: spot.top, left: spot.left, width: spot.width, height: spot.height }}
-          />
-        </>
-      ) : (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px]" />
-      )}
+      {/* Purely visual backdrop/spotlight — the tour's accessible surface is
+          the callout dialog below; screen readers skip all of this. */}
+      <div aria-hidden>
+        {spot ? (
+          <>
+            <div
+              className="fixed inset-x-0 top-0 bg-black/50 backdrop-blur-[1px] transition-[height] duration-200 ease-out motion-reduce:transition-none"
+              style={{ height: Math.max(spot.top, 0) }}
+            />
+            <div
+              className="fixed inset-x-0 bottom-0 bg-black/50 backdrop-blur-[1px] transition-[top] duration-200 ease-out motion-reduce:transition-none"
+              style={{ top: spot.top + spot.height }}
+            />
+            <div
+              className="fixed bg-black/50 backdrop-blur-[1px] transition-[top,left,width,height] duration-200 ease-out motion-reduce:transition-none"
+              style={{ top: spot.top, height: spot.height, left: 0, width: Math.max(spot.left, 0) }}
+            />
+            <div
+              className="fixed bg-black/50 backdrop-blur-[1px] transition-[top,left,height] duration-200 ease-out motion-reduce:transition-none"
+              style={{ top: spot.top, height: spot.height, left: spot.left + spot.width, right: 0 }}
+            />
+            <div
+              className="fixed rounded-lg ring-2 ring-yellow transition-[top,left,width,height] duration-200 ease-out motion-reduce:transition-none"
+              style={{ top: spot.top, left: spot.left, width: spot.width, height: spot.height }}
+            />
+            {/* Blocks interaction with the spotlighted element itself — the
+                tour is linear (Next/Skip only), not a click-through walkthrough. */}
+            <div
+              className="fixed"
+              style={{ top: spot.top, left: spot.left, width: spot.width, height: spot.height }}
+            />
+          </>
+        ) : (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px]" />
+        )}
+      </div>
 
       <div
         ref={calloutRef}
@@ -180,7 +185,7 @@ export function ProductTour({
         aria-label={step.title}
         aria-describedby="product-tour-content"
         tabIndex={-1}
-        className="fixed rounded-xl border border-black/[0.08] bg-glass p-4 shadow-glass-float backdrop-blur-glass outline-none"
+        className="fixed rounded-xl border border-black/[0.08] bg-glass p-4 shadow-glass-float backdrop-blur-glass outline-none transition-[top,left] duration-200 ease-out motion-reduce:transition-none"
         style={{ width: CALLOUT_WIDTH, ...calloutStyle }}
       >
         <div className="flex items-start justify-between gap-2">
@@ -204,7 +209,7 @@ export function ProductTour({
           <button
             type="button"
             onClick={handleNext}
-            className="rounded-md bg-yellow px-3 py-1.5 text-xs font-bold text-ink transition hover:brightness-95"
+            className="rounded-md bg-yellow px-3 py-1.5 text-xs font-bold text-ink transition-[filter,transform] duration-150 ease-out hover:brightness-95 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
           >
             {isLast ? "Done" : "Next"}
           </button>
