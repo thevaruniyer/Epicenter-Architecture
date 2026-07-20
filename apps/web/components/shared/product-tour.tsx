@@ -12,11 +12,16 @@ export type TourStep = {
   content: string;
 };
 
-type Rect = { top: number; left: number; width: number; height: number };
+type Rect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  borderRadius: string;
+};
 
 const CALLOUT_WIDTH = 300;
 const GAP = 12;
-const PAD = 8;
 
 // Stage 9 Prompt 9.10: reusable first-time tour engine — dims/blurs the
 // screen, cuts a spotlight out around the current step's target, and shows a
@@ -60,7 +65,11 @@ export function ProductTour({
         return;
       }
       const r = el.getBoundingClientRect();
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+      // The cutout should reveal the exact component, not a padded rectangle
+      // built around it — so it takes the target's real border-radius too,
+      // not a fixed generic one.
+      const borderRadius = window.getComputedStyle(el).borderRadius;
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height, borderRadius });
     }
 
     const el = document.querySelector(`[data-tour="${step.target}"]`);
@@ -110,14 +119,9 @@ export function ProductTour({
     setStepIndex((i) => i + 1);
   }
 
-  const spot = rect
-    ? {
-        top: rect.top - PAD,
-        left: rect.left - PAD,
-        width: rect.width + PAD * 2,
-        height: rect.height + PAD * 2,
-      }
-    : null;
+  // No padding: the cutout matches the target's real getBoundingClientRect()
+  // exactly, so it reads as revealing that component, not a box drawn near it.
+  const spot = rect;
 
   const calloutStyle: React.CSSProperties = spot
     ? (() => {
@@ -164,8 +168,14 @@ export function ProductTour({
               style={{ top: spot.top, height: spot.height, left: spot.left + spot.width, right: 0 }}
             />
             <div
-              className="fixed rounded-lg ring-2 ring-yellow transition-[top,left,width,height] duration-200 ease-out motion-reduce:transition-none"
-              style={{ top: spot.top, left: spot.left, width: spot.width, height: spot.height }}
+              className="fixed ring-2 ring-yellow transition-[top,left,width,height] duration-200 ease-out motion-reduce:transition-none"
+              style={{
+                top: spot.top,
+                left: spot.left,
+                width: spot.width,
+                height: spot.height,
+                borderRadius: spot.borderRadius,
+              }}
             />
             {/* Blocks interaction with the spotlighted element itself — the
                 tour is linear (Next/Skip only), not a click-through walkthrough. */}

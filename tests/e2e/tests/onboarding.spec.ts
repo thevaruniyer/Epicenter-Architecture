@@ -17,10 +17,14 @@ test.beforeEach(async () => {
   await resetOnboardingStudent();
 });
 
-test("a brand-new student completes all 6 steps and lands on the sparse Home", async ({
+test("a brand-new student completes all 7 steps and lands on the sparse Home with their real name", async ({
   page,
 }) => {
   await loginAndStartOnboarding(page);
+
+  await expect(page.getByRole("heading", { name: "What's your name?" })).toBeVisible();
+  await page.fill('input[name="full_name"]', "Priya Sharma");
+  await page.getByRole("button", { name: "Next" }).click();
 
   await expect(page.getByRole("heading", { name: "How old are you?" })).toBeVisible();
   await page.fill('input[name="age"]', "16");
@@ -41,11 +45,15 @@ test("a brand-new student completes all 6 steps and lands on the sparse Home", a
   await page.getByRole("button", { name: "Next" }).click();
 
   await expect(page.getByRole("heading", { name: /EC list/i })).toBeVisible();
-  await page.fill('textarea[name="extracurriculars"]', "Robotics Club — Team Lead");
+  await page.fill('textarea[name="extracurriculars"]', "Robotics Club, Team Lead");
   await page.getByRole("button", { name: "Finish" }).click();
 
-  // Lands on the sparse Home — no resume banner.
-  await page.waitForURL("**/student/home");
+  // Lands on the sparse Home — no resume banner, and the name entered at
+  // step 1 actually shows up in the greeting, not just saved to the DB. The
+  // ?welcome=1 flag (Stage 10 Prompt 10.6) triggers the welcome sequence, but
+  // the underlying dashboard content is still real and checkable underneath it.
+  await page.waitForURL("**/student/home**");
+  await expect(page.getByRole("heading", { name: "Hi Priya" })).toBeVisible();
   await expect(page.getByText("Your journey starts here")).toBeVisible();
   await expect(page.getByText("Finish setting up your profile")).toHaveCount(0);
 });
@@ -55,7 +63,11 @@ test("skipping shows the resume banner on Home and resumes from the saved step",
 }) => {
   await loginAndStartOnboarding(page);
 
-  // Advance one step (age → grade) so the saved step is not the first.
+  // Advance two steps (name → age → grade) so the saved step is not the first.
+  await expect(page.getByRole("heading", { name: "What's your name?" })).toBeVisible();
+  await page.fill('input[name="full_name"]', "Priya Sharma");
+  await page.getByRole("button", { name: "Next" }).click();
+
   await expect(page.getByRole("heading", { name: "How old are you?" })).toBeVisible();
   await page.fill('input[name="age"]', "17");
   await page.getByRole("button", { name: "Next" }).click();
@@ -66,10 +78,11 @@ test("skipping shows the resume banner on Home and resumes from the saved step",
   await page.waitForURL("**/student/home");
   await expect(page.getByText("Finish setting up your profile")).toBeVisible();
 
-  // Resume → back into onboarding at the saved step (grade, not age).
+  // Resume → back into onboarding at the saved step (grade, not name/age).
   await page.getByRole("link", { name: "Resume" }).click();
   await page.waitForURL("**/onboarding");
   await expect(page.getByRole("heading", { name: "What grade are you in?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What's your name?" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "How old are you?" })).toHaveCount(0);
 });
 
@@ -88,5 +101,5 @@ test("a self-signup student with no profile row yet is routed into onboarding on
   await page.click('button[type="submit"]');
 
   await page.waitForURL("**/onboarding");
-  await expect(page.getByRole("heading", { name: "How old are you?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What's your name?" })).toBeVisible();
 });

@@ -580,6 +580,69 @@ Run the full test suite, lint, typecheck. Trigger the Sentry test route and conf
 
 ---
 
+## Stage 10 — Name Capture, Logo Cleanup, and the Real Welcome Sequence
+
+Continues the retrofit pattern. Grounded directly against the current codebase (branch `stage-9-onboarding-notifications-polish` as of this audit, which already went further than its original 13 prompts — it also cut onboarding step-transition latency, centered the new login/signup control, and closed remaining loading/focus gaps — so some of what's below interacts with work that landed after the original Stage 9 prompts were written).
+
+**Root causes already diagnosed, so they don't need rediscovering:**
+- **Missing name field:** `users.full_name` already exists as a column and is already correctly read everywhere it's displayed — `apps/web/app/student/home/page.tsx` already renders `Hi {name}` and `Welcome back, {name}` off it, with "there" only as the fallback when it's null. Nothing needs to change in how the name is *displayed*. The gap is purely that nothing ever *captures* it — `apps/web/lib/onboarding.ts`'s `ONBOARDING_STEPS` has no name step, and `apps/web/lib/actions/onboarding.ts`'s `saveOnboardingStep` has no case that writes to `users.full_name` (every existing case writes to `student_profiles` via `patchProfile()`, a different table).
+- **Textbox not clearing between steps:** `apps/web/components/onboarding/tag-field.tsx`'s `OnboardingTagField` (used for the hobbies/major/extracurriculars steps) initializes `const [text, setText] = useState(defaultValue)`. Because those three consecutive steps all render the same component type at the same position in the tree, React reconciles rather than remounts when moving between them, so `useState`'s initial value never re-applies and stale text lingers until the user types over it. This is a missing `key`, not a data bug.
+- **Lingering Sparkles logo:** Stage 8/9 already removed the wordmark from both sidebars, but `apps/web/components/auth/auth-panel.tsx` (login/signup) and `apps/web/components/onboarding/onboarding-shell.tsx` (the onboarding wizard) both still render the identical icon-in-a-black-box + "EPICENTER." lockup — these are the two remaining spots. Do not touch the other files where `Sparkles` appears (`add-update.tsx`, `note-composer.tsx`, `paste-requirements-dialog.tsx`, `essay-review-panel.tsx`, `meeting-prep-panel.tsx`) — those are the Doctrine-mandated AI-affordance icon (§7.10/§35.7), not the logo, and removing them would be a Doctrine violation in the other direction.
+
+**Prompt 10.1 — Confirm Stage 9 is merged, then branch + baseline audit**
+```
+Hard gate, same pattern as Prompts 8.1 and 9.1: run `git log --oneline main` and `git branch -a` and confirm stage-9-onboarding-notifications-polish has actually been merged into main. If it hasn't, stop and tell me — do not branch off an unmerged Stage 9. Once confirmed merged: checkout main, pull latest, create branch stage-10-welcome-sequence. Screenshot the current onboarding flow end to end (all steps, including the hobbies → major → extracurriculars transition where the textbox staleness shows up), the login/signup AuthPanel, the post-onboarding landing on Home, and the current product tour's spotlight shape on at least two different targets (a small one like a single stat tile and a large one like the whole To Do panel, since the "rectangle with borders" complaint may look different at different target sizes). Report findings before proceeding.
+```
+
+**Prompt 10.2 — Add the name step, wire it to users.full_name, renumber the rest**
+```
+Add a new first step to apps/web/lib/onboarding.ts's ONBOARDING_STEPS array — key "name", question along the lines of "What's your name?", asked before age. Renumber every existing step by one (age becomes step 1, grade step 2, subjects step 3, hobbies step 4, major step 5, extracurriculars step 6) and update TOTAL_STEPS accordingly. Add the matching case 0 in apps/web/components/onboarding/onboarding-step-form.tsx's StepField (a plain text input, first/full name per your judgment on which reads more natural for a one-question screen) and renumber that switch's other cases to match. In apps/web/lib/actions/onboarding.ts's saveOnboardingStep, add handling for the new step 0: since full_name lives on the users table and every existing case in this function writes to student_profiles via patchProfile(), the name step needs its own separate supabase.from("users").update({ full_name }).eq("id", user.id) call in addition to (not instead of) the normal onboarding_current_step bookkeeping that already happens for every step. Confirm the RLS policy allows a user to update their own users.full_name — if it doesn't, add the policy. Write or extend an E2E test confirming a name entered during onboarding actually shows up as "Hi {name}" on the student Home dashboard afterward, not just that the onboarding step itself saves. Commit with message "[stage-10] Add name as the first onboarding step, wired to users.full_name".
+```
+
+**Prompt 10.3 — Fix stale onboarding textbox on step transitions**
+```
+In apps/web/components/onboarding/onboarding-step-form.tsx, key the rendered StepField (or, more targeted, key each OnboardingTagField usage in cases 4/5/6 post-renumbering) by the current step number, so React fully remounts the field — and therefore resets its internal useState — every time the step changes, instead of reconciling the same component instance in place across the hobbies → major → extracurriculars sequence. Verify by walking through those three consecutive steps and confirming the field is visibly empty (or shows that step's own defaultValue, never the previous step's leftover text) immediately on arrival, with no need to type first. Commit with message "[stage-10] Fix stale onboarding field state across step transitions with a step-keyed remount".
+```
+
+**Prompt 10.4 — Remove "Suggest tags with AI" from onboarding**
+```
+Simplify apps/web/components/onboarding/tag-field.tsx's OnboardingTagField back down to a plain text/textarea field, matching the pre-AI Stage 3 baseline — remove the "Suggest tags with AI" button, the chip-editing UI, the AiBadge display, and the suggest() call into suggestOnboardingTags. The field should just be a plain input/textarea the student types into directly, no AI affordance visible anywhere on the onboarding steps. Leave apps/web/lib/actions/onboarding.ts's suggestOnboardingTags server action and the underlying extractOnboardingTags AI function in place but unused, unless a repo-wide check confirms nothing else references them, in which case remove them too — your call once you've checked. Commit with message "[stage-10] Remove AI tag suggestion from onboarding, revert to plain text fields".
+```
+
+**Prompt 10.5 — Remove the Sparkles logo from AuthPanel and OnboardingShell**
+```
+Remove the icon-in-a-black-box + "EPICENTER." lockup entirely from apps/web/components/auth/auth-panel.tsx and apps/web/components/onboarding/onboarding-shell.tsx — same treatment already applied to both sidebars in Stage 8/9, just the two remaining locations. No replacement logo, no wordmark, nothing in its place — per confirmed direction, there is no real logo yet and none should appear anywhere. Confirm with a repo-wide search that these were the last two occurrences of the icon-lockup pattern before committing. Do not touch the Sparkles icon anywhere it's functioning as the Doctrine AI-affordance marker (essay-review-panel.tsx, note-composer.tsx, paste-requirements-dialog.tsx, meeting-prep-panel.tsx, add-update.tsx) — that's a different, intentional use and stays. Commit with message "[stage-10] Remove remaining Sparkles logo lockup from AuthPanel and OnboardingShell".
+```
+
+**Prompt 10.6 — Real welcome sequence: name fade-in, transition card, into the existing tour**
+```
+Extend the ProductTour engine/flow from Stage 9 (Prompts 9.10/9.11) with a new opening phase that plays before the first spotlight step, using the same product_tour_completed_at gating already built — this is one continuous first-time experience, not a second trigger to design from scratch:
+
+1. Immediately after onboarding finishes (the Finish action on the last step redirects to Home), show "Welcome to Epicenter, {name}" as a smooth, dynamic fade-in using the name captured in Prompt 10.2 — full screen, calm entrance, no sparkle/gradient effects (Doctrine's AI-content restrictions don't apply here, but the "factual not magical" spirit still does — keep it clean).
+2. That fades out into the dashboard itself, visible but blurred behind an overlay, with a centered card reading "Welcome to Epicenter. Let's get you familiar with things." and a "Next" button.
+3. Clicking Next hands off directly into the existing per-component spotlight tour from Prompt 9.11 — same steps, same engine, no gap or redundant intro screen between the transition card and the first spotlight.
+
+This sequence is student-first-onboarding-specific (it only makes sense immediately after finishing the wizard), so gate it on having just completed onboarding this session, not merely on product_tour_completed_at being null in general — a student who reaches the tour some other way (e.g. an already-onboarded account that hasn't seen the tour yet for some other reason) should still get the existing Stage 9 tour-only experience, not a "Welcome to Epicenter" replay that no longer makes contextual sense. Respect prefers-reduced-motion by collapsing straight to the transition card. Commit with message "[stage-10] Add post-onboarding welcome animation and transition card ahead of the existing product tour".
+```
+
+**Prompt 10.7 — Fix the product tour spotlight to capture the component's actual shape**
+```
+In apps/web/components/shared/product-tour.tsx, the spotlight cutout currently pads the target's bounding box by 8px (PAD) and draws a fixed rounded-lg ring around it — which is exactly what reads as "a rectangle built around the component" rather than the component itself being revealed. Remove the padding (or bring it as close to zero as still looks intentional) so the cutout's top/left/width/height match the target element's actual getBoundingClientRect() precisely. Read the target element's own computed border-radius (getComputedStyle) and apply that to the cutout instead of the fixed rounded-lg, so a component with large rounded corners gets a matching cutout shape rather than a generically-rounded rectangle. Reconsider whether the yellow ring border is even needed once the cutout hugs the component exactly — a tight, correctly-rounded cutout against the blurred backdrop may not need an additional border to read clearly; try both and use your judgment, but the padding and shape-mismatch are the two concrete things to fix regardless. Verify against both a small target (a stat tile) and a large one (the whole To Do panel) — confirm it reads as "revealing that exact component" at both sizes, not a box drawn near it. Commit with message "[stage-10] Fix product tour spotlight to conform exactly to target component shape, not a padded rectangle".
+```
+
+**Prompt 10.8 — Design-skill review pass**
+```
+Run /impeccable audit, the taste-skill review, and the emil-design-eng animation review across every screen touched this stage — the welcome sequence and the reshaped spotlight both deserve real scrutiny, they're the most visually novel pieces. Re-read .claude/skills/epicenter-conventions/SKILL.md and update it via skill-creator if the welcome-sequence pattern or the shape-matched spotlight approach are worth encoding for future stages. For each screen, re-open its closest UI Inspiration/ reference and compare side by side per Doctrine §3.2. Report what each skill flagged before committing, then commit with message "[stage-10] Apply design-skill review findings".
+```
+
+**Prompt 10.9 — End of stage**
+```
+Run the full test suite, lint, typecheck. Trigger the Sentry test route and confirm capture. Run the UI/UX Doctrine's Design Review Checklist (Part XIV) against everything touched this stage. Confirm specifically: a new student is asked for their name as the very first onboarding step, and their real name (not "there") shows on Home immediately afterward; the hobbies/major/extracurriculars steps show clean, empty (or correctly pre-filled) fields on arrival, never leftover text from the previous step; "Suggest tags with AI" no longer appears anywhere in onboarding; no Sparkles-logo lockup remains in AuthPanel or OnboardingShell, while the AI-affordance sparkle icon is untouched everywhere else it legitimately belongs; the welcome animation plays exactly once, immediately after onboarding finishes, then hands off cleanly into the existing tour with no gap or redundant screen; the tour's spotlight now visibly conforms to each target's real shape and size rather than a padded rectangle, checked on both a small and a large target. Run /graphify to refresh the index. Push stage-10-welcome-sequence and open a PR against main titled "Stage 10: Name Capture, Logo Cleanup, and the Real Welcome Sequence". Summarize the diff before I review.
+```
+(Merge, then `git checkout main && git pull`.)
+
+---
+
 ## After Stage 6 — where the initial pilot build stops
 
 Phase 7 (Microsoft Entra ID SSO migration + OneDrive/Graph API storage migration) is explicitly a later milestone, not part of the initial pilot build — it isn't included as a stage here on purpose. When you're ready to start it, budget the dedicated Entra ID ↔ Supabase Auth migration spike CLAUDE.md §9 calls out, and treat it as its own stage (`stage-7-entra-onedrive`) with the same branch/commit/PR/merge discipline as everything above.

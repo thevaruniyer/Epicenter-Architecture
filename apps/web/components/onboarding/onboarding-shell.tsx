@@ -1,9 +1,9 @@
-import { Sparkles } from "lucide-react";
-
 // Onboarding split-panel (fidelity reference: UI Inspiration/Onboarding Ref 1-5.png)
 // re-skinned in Doctrine tokens: left = Epicenter-yellow brand panel; right = one
 // question per screen with a progress indicator. The "Previous Page" back link and
-// the field live in the step form (children).
+// the field live in the step form (children). Stage 10: no logo lockup — there is
+// no real logo yet, same call already applied to both sidebars in Stage 8/9 and to
+// AuthPanel.
 export function OnboardingShell({
   step,
   totalSteps,
@@ -17,14 +17,8 @@ export function OnboardingShell({
 
   return (
     <main className="grid min-h-screen bg-paper md:grid-cols-2">
-      <div className="relative hidden flex-col justify-between p-10 text-ink md:flex bg-[radial-gradient(circle_at_25%_20%,#FFE88A,transparent_60%),linear-gradient(160deg,#EDC001,#F6D652)]">
-        <div className="inline-flex items-center gap-2 font-bold tracking-tight">
-          <span className="grid size-7 place-items-center rounded-md bg-ink text-white">
-            <Sparkles className="size-4" aria-hidden />
-          </span>
-          EPICENTER.
-        </div>
-        <div>
+      <div className="relative hidden flex-col p-10 text-ink md:flex bg-[radial-gradient(circle_at_25%_20%,#FFE88A,transparent_60%),linear-gradient(160deg,#EDC001,#F6D652)]">
+        <div className="mt-auto">
           <p className="text-sm font-semibold text-ink/70">Let&rsquo;s set you up</p>
           <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-balance">
             A few quick questions to personalise your journey.

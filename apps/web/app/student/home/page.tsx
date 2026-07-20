@@ -14,6 +14,7 @@ import { getSessionUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { TodoPanel, type MeetingItem } from "@/components/student/todo-panel";
 import { ProductTour } from "@/components/shared/product-tour";
+import { WelcomeSequence } from "@/components/shared/welcome-sequence";
 import { STUDENT_TOUR_STEPS } from "@/lib/tour-steps";
 import { formatDue } from "@/lib/format-due";
 import type { Question } from "@/lib/actions/forms";
@@ -36,9 +37,21 @@ function firstName(full: string | null): string {
   return full.split(" ")[0] ?? full;
 }
 
-export default async function StudentHomePage() {
+export default async function StudentHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
   const user = await getSessionUser();
   const supabase = await createClient();
+  const { welcome } = await searchParams;
+  // Only true when the Finish action's redirect put ?welcome=1 in the URL —
+  // never for any other path into Home, including an already-onboarded
+  // account reaching the tour some other way. Once the tour actually mounts
+  // (WelcomeSequence's "tour" phase) it marks product_tour_completed_at
+  // immediately, so even a refresh with the flag still in the URL falls
+  // through to tourCompleted below and skips straight past this.
+  const justOnboarded = welcome === "1";
 
   const [{ data: userRow }, { data: profile }, { data: taskRows }, { data: noteRows }, { data: shortlist }, { data: assignmentRows }, { data: meetingRows }] =
     await Promise.all([
@@ -360,10 +373,13 @@ export default async function StudentHomePage() {
         </div>
       </div>
 
-      <ProductTour
-        steps={STUDENT_TOUR_STEPS}
-        active={onboardingDone && !tourCompleted}
-      />
+      {onboardingDone && !tourCompleted ? (
+        justOnboarded ? (
+          <WelcomeSequence name={name} steps={STUDENT_TOUR_STEPS} />
+        ) : (
+          <ProductTour steps={STUDENT_TOUR_STEPS} active />
+        )
+      ) : null}
     </div>
   );
 }

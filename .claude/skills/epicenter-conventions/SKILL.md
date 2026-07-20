@@ -117,6 +117,35 @@ addendum once this stage merges.
   or non-`Dialog` floating panel; pair with an Escape handler and focusing the
   panel container on open (both existing panels do all three).
 
+## Stage 10 additions — the welcome sequence, and shape-matched spotlights
+
+- **`WelcomeSequence`** (`apps/web/components/shared/welcome-sequence.tsx`).
+  A third phase ahead of the Stage 9 product tour, specific to the moment a
+  student finishes onboarding: a full-screen name fade-in, then a centered
+  `Dialog` transition card, then a direct handoff into `ProductTour` (same
+  engine, no gap). Gate this kind of "just did X" sequence on an explicit
+  signal in the URL (here, the Finish action's `?welcome=1` redirect flag),
+  never on the same completion-flag-is-null check used for the general
+  tour-only path — an already-onboarded account reaching the tour some other
+  way should get the plain tour, not a welcome message that no longer makes
+  contextual sense. The transition card intentionally disables Escape/outside
+  dismissal (`onEscapeKeyDown`/`onPointerDownOutside`/`onInteractOutside`,
+  all `preventDefault()`) since it's a mandatory one-time beat with a single
+  forward path, not a real dialog with alternate outcomes.
+- **Tailwind arbitrary-duration gotcha, found in review**: `duration-600` is
+  not a valid utility — Tailwind's default duration scale only has
+  75/100/150/200/300/500/700/1000. A class like `duration-600` silently
+  generates no CSS rule (no error, no visible transition) rather than failing
+  loudly. Use `duration-[600ms]` for any duration outside that scale, and
+  double-check any duration constant used for `setTimeout` sequencing against
+  its paired Tailwind class actually exists in the default scale.
+- **Shape-matched spotlight** (`apps/web/components/shared/product-tour.tsx`).
+  The cutout now matches the target's real `getBoundingClientRect()` with no
+  padding, and reads the target's own `getComputedStyle(el).borderRadius` for
+  the ring instead of a fixed `rounded-lg` — apply this "hug the real
+  element, don't approximate it" principle to any future spotlight/cutout/
+  highlight UI that points at an arbitrary DOM target.
+
 ## When in doubt
 
 Authority order (later wins): PRD → AI specs → v3 storyboards (structure/fields)

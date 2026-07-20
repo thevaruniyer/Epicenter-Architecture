@@ -19,6 +19,7 @@ type Profile = {
   hobbies: string[] | null;
   intended_major: string | null;
   extracurriculars: Extracurricular[] | null;
+  full_name: string | null;
 };
 
 const fieldClass =
@@ -62,7 +63,14 @@ export function OnboardingStepForm({
 
       <form action={saveOnboardingStep} className="mt-8 flex flex-col gap-6">
         <input type="hidden" name="step" value={step} />
-        <StepField step={step} profile={profile} />
+        {/* Keyed by step: adjacent steps render structurally identical trees
+            (e.g. name and age are both a single labeled text/number input),
+            so without a key React reconciles the same DOM node in place
+            across the transition and its defaultValue-initialized state
+            (or, for OnboardingTagField, its internal useState) never
+            re-applies — the field shows the previous step's leftover text
+            until the user overwrites it by hand. */}
+        <StepField key={step} step={step} profile={profile} />
         <StepSubmitButton label={isLast ? "Finish" : "Next"} />
       </form>
     </div>
@@ -72,6 +80,20 @@ export function OnboardingStepForm({
 function StepField({ step, profile }: { step: number; profile: Profile }) {
   switch (step) {
     case 0:
+      return (
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+          Full name
+          <input
+            name="full_name"
+            type="text"
+            defaultValue={profile.full_name ?? ""}
+            required
+            autoComplete="name"
+            className={fieldClass}
+          />
+        </label>
+      );
+    case 1:
       return (
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
           Age
@@ -86,7 +108,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           />
         </label>
       );
-    case 1:
+    case 2:
       return (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-sm font-medium text-ink">Grade</legend>
@@ -108,7 +130,7 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           ))}
         </fieldset>
       );
-    case 2:
+    case 3:
       return (
         <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
           Subjects
@@ -121,32 +143,29 @@ function StepField({ step, profile }: { step: number; profile: Profile }) {
           />
         </label>
       );
-    case 3:
+    case 4:
       return (
         <OnboardingTagField
           name="hobbies"
-          kind="hobbies"
           label="Hobbies & interests"
           placeholder="Tell us in your own words…"
           defaultValue={(profile.hobbies ?? []).join("\n")}
         />
       );
-    case 4:
+    case 5:
       return (
         <OnboardingTagField
           name="intended_major"
-          kind="major"
           label="Intended major"
           placeholder="However you'd describe it"
           defaultValue={profile.intended_major ?? ""}
           multiline={false}
         />
       );
-    case 5:
+    case 6:
       return (
         <OnboardingTagField
           name="extracurriculars"
-          kind="extracurriculars"
           label="Extracurriculars"
           placeholder={"Robotics Club · Team Lead\nDebate Team · 2 yrs"}
           defaultValue={(profile.extracurriculars ?? [])
